@@ -252,8 +252,16 @@ CustomMouseArea {
                 visibilities.dashboard = false;
         }
 
+        // Show popouts on hover
+        if (inBarArea(x, y)) {
+            bar.checkPopout(isBarHorizontal ? x : y);
+        } else if ((!popouts.currentName.startsWith("traymenu") || ((popouts.current as StackView)?.depth ?? 0) <= 1) && !inLeftPanel(panels.popoutsWrapper, x, y)) {
+            popouts.hasCurrent = false;
+            bar.closeTray();
+        }
+
         // Show utilities on hover
-        const showUtilities = inBottomPanel(panels.utilities, x, y, true);
+        const showUtilities = !popouts.hasCurrent && panels.popoutsWrapper.offsetScale > 0.99 && inBottomPanel(panels.utilities, x, y, true);
 
         // Always update visibility based on hover if not in shortcut mode
         if (!utilitiesShortcutActive) {
@@ -261,14 +269,6 @@ CustomMouseArea {
         } else if (showUtilities) {
             // If hovering over utilities area while in shortcut mode, transition to hover control
             utilitiesShortcutActive = false;
-        }
-
-        // Show popouts on hover
-        if (inBarArea(x, y)) {
-            bar.checkPopout(isBarHorizontal ? x : y);
-        } else if ((!popouts.currentName.startsWith("traymenu") || ((popouts.current as StackView)?.depth ?? 0) <= 1) && !inLeftPanel(panels.popoutsWrapper, x, y)) {
-            popouts.hasCurrent = false;
-            bar.closeTray();
         }
     }
 
