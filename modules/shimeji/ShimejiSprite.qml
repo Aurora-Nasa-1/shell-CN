@@ -9,10 +9,14 @@ Item {
     required property var borderThickness
     required property string imgPath
 
-    readonly property real floorY: screenSize.height - 128 - borderThickness
-    readonly property real minX: 0
-    readonly property real maxX: screenSize.width - 128
-    readonly property real maxY: screenSize.height - 128
+    property string barPosition: ""
+    property int barExclusiveZone: 0
+
+    readonly property real minX: barPosition === "left" ? barExclusiveZone : 0
+    readonly property real maxX: screenSize.width - 128 - (barPosition === "right" ? barExclusiveZone : 0)
+    readonly property real minY: barPosition === "top" ? barExclusiveZone : 0
+    readonly property real maxY: screenSize.height - 128 - (barPosition === "bottom" ? barExclusiveZone : 0)
+    readonly property real floorY: screenSize.height - 128 - borderThickness - (barPosition === "bottom" ? barExclusiveZone : 0)
 
     property real vx: 0
     property real vy: 0
@@ -39,7 +43,9 @@ Item {
 
     Component.onCompleted: {
         const margin = 50;
-        x = margin + Math.random() * (screenSize.width - 128 - margin * 2);
+        const low = Math.max(minX, margin);
+        const high = Math.max(low, maxX - margin);
+        x = low + Math.random() * (high - low);
         y = floorY;
         onGround = true;
         vx = 0;
@@ -62,7 +68,9 @@ Item {
 
     function walkRandom() {
         const margin = 100;
-        walkTarget = margin + Math.random() * (screenSize.width - 128 - margin * 2);
+        const low = Math.max(minX, margin);
+        const high = Math.max(low, maxX - margin);
+        walkTarget = low + Math.random() * (high - low);
         currentAnim = "walk";
         facingRight = walkTarget > root.x;
         frameIndex = 0;
@@ -132,8 +140,8 @@ Item {
             } else if (vy < 0) {
                 onGround = false;
             }
-        } else if (root.y < 0) {
-            root.y = 0;
+        } else if (root.y < minY) {
+            root.y = minY;
             vy = Math.abs(vy) * 0.6;
         }
     }

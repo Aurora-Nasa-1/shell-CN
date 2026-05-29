@@ -16,6 +16,14 @@ StyledWindow {
 
     readonly property alias shimejiScreen: root.modelData
 
+    readonly property var barWrapper: {
+        let name = root.shimejiScreen ? root.shimejiScreen.name : undefined;
+        let bar = name ? Visibilities.bars.get(name) : undefined;
+        return bar;
+    }
+    readonly property int barExclusiveZone: barWrapper ? barWrapper.exclusiveZone : 0
+    readonly property string barPosition: Config.bar.position
+
     readonly property bool shouldBeVisible: !GlobalConfig.forScreen(modelData.name).shimeji.autoHide || (Hypr.monitorFor(modelData)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true)
 
     screen: modelData
@@ -76,6 +84,8 @@ StyledWindow {
                 screenSize: Qt.size(shimejiScreen.width, shimejiScreen.height)
                 borderThickness: root.borderThickness
                 imgPath: root.getImgPath()
+                barPosition: root.barPosition
+                barExclusiveZone: root.barExclusiveZone
             }
         }
     }

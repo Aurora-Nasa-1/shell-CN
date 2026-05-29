@@ -28,6 +28,13 @@ Variants {
         anchors.left: true
         anchors.right: true
 
+        readonly property var barWrapper: {
+            let name = win.screen ? win.screen.name : undefined;
+            let bar = name ? Visibilities.bars.get(name) : undefined;
+            return bar;
+        }
+        readonly property int barExclusiveZone: barWrapper ? barWrapper.exclusiveZone : 0
+
         Item {
             id: behindClock
 
@@ -68,8 +75,17 @@ Variants {
             asynchronous: true
             active: (Config?.background?.desktopClock?.enabled ?? false)
 
-            anchors.margins: Tokens.padding.large * 2
-            anchors.leftMargin: Tokens.padding.large * 2 + Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.smaller, Config?.border?.thickness ?? 0)
+            readonly property real baseMargin: Tokens.padding.large * 2
+
+            anchors.leftMargin: (Config?.bar?.position === "left" && state.indexOf("left") !== -1) ? (baseMargin + win.barExclusiveZone) : baseMargin
+            anchors.rightMargin: (Config?.bar?.position === "right" && state.indexOf("right") !== -1) ? (baseMargin + win.barExclusiveZone) : baseMargin
+            anchors.topMargin: (Config?.bar?.position === "top" && state.indexOf("top") !== -1) ? (baseMargin + win.barExclusiveZone) : baseMargin
+            anchors.bottomMargin: (Config?.bar?.position === "bottom" && state.indexOf("bottom") !== -1) ? (baseMargin + win.barExclusiveZone) : baseMargin
+
+            Behavior on anchors.leftMargin { Anim {} }
+            Behavior on anchors.rightMargin { Anim {} }
+            Behavior on anchors.topMargin { Anim {} }
+            Behavior on anchors.bottomMargin { Anim {} }
 
             state: Config?.background?.desktopClock?.position ?? "bottom-right"
             states: [
@@ -173,8 +189,17 @@ Variants {
             asynchronous: true
             active: (Config?.background?.desktopLyrics?.enabled ?? false)
 
-            anchors.margins: Tokens.padding.large * 2
-            anchors.leftMargin: Tokens.padding.large * 2 + Tokens.sizes.bar.innerWidth + Math.max(Tokens.padding.smaller, Config?.border?.thickness ?? 0)
+            readonly property real baseMargin: Tokens.padding.large * 2
+
+            anchors.leftMargin: (Config?.bar?.position === "left" && state.indexOf("left") !== -1) ? (baseMargin + win.barExclusiveZone) : baseMargin
+            anchors.rightMargin: (Config?.bar?.position === "right" && state.indexOf("right") !== -1) ? (baseMargin + win.barExclusiveZone) : baseMargin
+            anchors.topMargin: (Config?.bar?.position === "top" && state.indexOf("top") !== -1) ? (baseMargin + win.barExclusiveZone) : baseMargin
+            anchors.bottomMargin: (Config?.bar?.position === "bottom" && state.indexOf("bottom") !== -1) ? (baseMargin + win.barExclusiveZone) : baseMargin
+
+            Behavior on anchors.leftMargin { Anim {} }
+            Behavior on anchors.rightMargin { Anim {} }
+            Behavior on anchors.topMargin { Anim {} }
+            Behavior on anchors.bottomMargin { Anim {} }
 
             state: (Config?.background?.desktopLyrics?.position ?? "bottom-center")
             states: [
