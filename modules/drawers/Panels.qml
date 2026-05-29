@@ -89,6 +89,18 @@ Item {
         id: sessionWrapper
 
         anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: {
+            const centerToBottomDistance = parent.height / 2 - implicitHeight / 2;
+            if (Config.bar.position === "top") {
+                const shift = notifications.anchors.topMargin - centerToBottomDistance;
+                return shift > 0 ? shift : 0;
+            }
+            if (Config.bar.position === "bottom") {
+                const shift = notifications.anchors.bottomMargin - centerToBottomDistance;
+                return shift > 0 ? -shift : 0;
+            }
+            return 0;
+        }
         anchors.right: parent.right
         anchors.leftMargin: Config.bar.position === "right" ? sidebar.width * (1 - sidebar.offsetScale) : 0
         anchors.rightMargin: Config.bar.position !== "right" ? sidebar.width * (1 - sidebar.offsetScale) : 0
