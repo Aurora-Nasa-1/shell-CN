@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
+import QtQuick.FilterEffect
 import Quickshell
 import Quickshell.Services.Mpris
 import Caelestia.Config
@@ -398,6 +399,8 @@ Item {
             implicitHeight: visualiser.height
 
             AnimatedImage {
+                id: gif
+
                 anchors.centerIn: parent
 
                 width: visualiser.width * 0.75
@@ -408,6 +411,13 @@ Item {
                 source: Paths.absolutePath(Config.paths.mediaGif)
                 asynchronous: true
                 fillMode: AnimatedImage.PreserveAspectFit
+            }
+            MultiEffect {
+                anchors.fill: gif
+                source: gif
+
+                colorization: 1
+                colorizationColor: Colours.palette.m3primary
             }
         }
     }
