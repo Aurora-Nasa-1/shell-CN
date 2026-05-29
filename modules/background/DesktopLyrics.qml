@@ -17,7 +17,7 @@ Item {
     required property real absX
     required property real absY
 
-    readonly property real lyricsScale: (Config?.background?.desktopLyrics?.scale ?? GlobalConfig.instance()?.background?.desktopLyrics?.scale) ?? 1.0
+    property real lyricsScale: (Config?.background?.desktopLyrics?.scale ?? GlobalConfig.instance()?.background?.desktopLyrics?.scale) ?? 1.0
     readonly property bool bgEnabled: (Config?.background?.desktopLyrics?.background?.enabled ?? GlobalConfig.instance()?.background?.desktopLyrics?.background?.enabled) ?? false
     readonly property bool blurEnabled: bgEnabled && (Config?.background?.desktopLyrics?.background?.blur ?? GlobalConfig.instance()?.background?.desktopLyrics?.background?.blur) && !GameMode.enabled
     readonly property bool invertColors: (Config?.background?.desktopLyrics?.invertColors ?? GlobalConfig.instance()?.background?.desktopLyrics?.invertColors) ?? false
