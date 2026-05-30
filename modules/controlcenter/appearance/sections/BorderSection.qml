@@ -292,6 +292,52 @@ CollapsibleSection {
                         rootPane.saveConfig();
                     }
                 }
+
+                StyledText {
+                    text: qsTr("Animation")
+                    font.pointSize: Tokens.font.size.normal
+                    font.weight: Font.Medium
+                }
+
+                Flow {
+                    Layout.fillWidth: true
+                    spacing: Tokens.spacing.small
+
+                    Repeater {
+                        model: ["fade", "slideUp", "scale", "typewriter"]
+
+                        delegate: TextButton {
+                            required property string modelData
+
+                            text: modelData
+                            checked: rootPane.lyricsAnimType === modelData
+                            accent: "Primary"
+                            Layout.preferredWidth: implicitWidth
+
+                            onClicked: {
+                                rootPane.lyricsAnimType = modelData;
+                                rootPane.saveConfig();
+                            }
+                        }
+                    }
+                }
+
+                SliderInput {
+                    Layout.fillWidth: true
+
+                    label: qsTr("Animation duration")
+                    value: rootPane.lyricsAnimDuration
+                    from: 50
+                    to: 1000
+                    stepSize: 50
+                    decimals: 0
+                    suffix: "ms"
+
+                    onValueModified: newValue => {
+                        rootPane.lyricsAnimDuration = newValue;
+                        rootPane.saveConfig();
+                    }
+                }
             }
         }
 

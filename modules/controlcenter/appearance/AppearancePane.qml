@@ -41,6 +41,8 @@ Item {
     property real lyricsFontSize: GlobalConfig.services.lyricsFontSize ?? 12
     property int lyricsUpdateInterval: GlobalConfig.services.lyricsUpdateInterval ?? 500
     property string lyricsFontFamily: GlobalConfig.services.lyricsFontFamily ?? ""
+    property string lyricsAnimType: GlobalConfig.services.lyricsAnimType ?? "fade"
+    property int lyricsAnimDuration: GlobalConfig.services.lyricsAnimDuration ?? 300
 
     property bool desktopClockEnabled: Config.background.desktopClock.enabled ?? false
     property real desktopClockScale: Config.background.desktopClock.scale ?? 1
@@ -102,6 +104,8 @@ Item {
         GlobalConfig.services.lyricsFontSize = root.lyricsFontSize;
         GlobalConfig.services.lyricsUpdateInterval = root.lyricsUpdateInterval;
         GlobalConfig.services.lyricsFontFamily = root.lyricsFontFamily;
+        GlobalConfig.services.lyricsAnimType = root.lyricsAnimType;
+        GlobalConfig.services.lyricsAnimDuration = root.lyricsAnimDuration;
     }
 
     anchors.fill: parent

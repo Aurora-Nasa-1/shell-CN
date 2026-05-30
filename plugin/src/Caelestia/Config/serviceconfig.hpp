@@ -37,6 +37,8 @@ class ServiceConfig : public ConfigObject {
     CONFIG_GLOBAL_PROPERTY(qreal, lyricsFontSize, 12.0)
     CONFIG_GLOBAL_PROPERTY(int, lyricsUpdateInterval, 500)
     CONFIG_GLOBAL_PROPERTY(QString, lyricsFontFamily, u""_s)
+    CONFIG_GLOBAL_PROPERTY(QString, lyricsAnimType, u"fade"_s)
+    CONFIG_GLOBAL_PROPERTY(int, lyricsAnimDuration, 300)
 
 public:
     explicit ServiceConfig(QObject* parent = nullptr)
