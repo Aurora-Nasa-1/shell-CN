@@ -10,9 +10,13 @@ import "modules/background"
 import "modules/areapicker"
 import "modules/lock"
 import Quickshell
+import qs.utils
 
 ShellRoot {
     settings.watchFiles: true
+
+    // i18n: Locale is initialized in utils/I18n.qml (default: zh_CN)
+    // To switch to English, change the locale property there to "en_US"
 
     Background {}
     Drawers {}
