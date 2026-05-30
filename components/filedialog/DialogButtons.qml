@@ -2,6 +2,7 @@ import QtQuick.Layouts
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.utils
 
 StyledRect {
     id: root
@@ -22,7 +23,7 @@ StyledRect {
         spacing: Tokens.spacing.small
 
         StyledText {
-            text: qsTr("Filter:")
+            text: I18n.tr("Filter:")
         }
 
         StyledRect {
@@ -59,7 +60,7 @@ StyledRect {
                 anchors.centerIn: parent
                 anchors.margins: Tokens.padding.normal
 
-                text: qsTr("Select")
+                text: I18n.tr("Select")
                 color: root.dialog.selectionValid ? Colours.palette.m3onSurface : Colours.palette.m3outline
             }
         }
@@ -83,7 +84,7 @@ StyledRect {
                 anchors.centerIn: parent
                 anchors.margins: Tokens.padding.normal
 
-                text: qsTr("Cancel")
+                text: I18n.tr("Cancel")
             }
         }
     }

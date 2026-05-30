@@ -7,6 +7,7 @@ import Quickshell.Widgets
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.utils
 
 StackView {
     id: root
@@ -216,7 +217,7 @@ StackView {
 
                         StyledText {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: qsTr("Back")
+                            text: I18n.tr("Back")
                             color: Colours.palette.m3onSecondaryContainer
                         }
                     }

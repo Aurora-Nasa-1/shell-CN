@@ -3,6 +3,7 @@ import QtQuick.Shapes
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.utils
 
 Item {
     id: root
@@ -82,7 +83,7 @@ Item {
             Connections {
                 function onCurrentItemChanged(): void {
                     if (root.currentItem)
-                        content.text = qsTr(`"%1" selected`).arg(root.currentItem.modelData.name);
+                        content.text = I18n.tr(`"%1" selected`).arg(root.currentItem.modelData.name);
                 }
 
                 target: root

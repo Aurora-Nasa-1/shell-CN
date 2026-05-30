@@ -21,12 +21,12 @@ ColumnLayout {
     StyledText {
         Layout.topMargin: Tokens.padding.normal
         Layout.rightMargin: Tokens.padding.small
-        text: qsTr("Bluetooth")
+        text: I18n.tr("Bluetooth")
         font.weight: 500
     }
 
     Toggle {
-        label: qsTr("Enabled")
+        label: I18n.tr("Enabled")
         checked: Bluetooth.defaultAdapter?.enabled ?? false // qmllint disable unresolved-type
         toggle.onToggled: {
             const adapter = Bluetooth.defaultAdapter; // qmllint disable unresolved-type
@@ -36,7 +36,7 @@ ColumnLayout {
     }
 
     Toggle {
-        label: qsTr("Discovering")
+        label: I18n.tr("Discovering")
         checked: Bluetooth.defaultAdapter?.discovering ?? false // qmllint disable unresolved-type
         toggle.onToggled: {
             const adapter = Bluetooth.defaultAdapter; // qmllint disable unresolved-type
@@ -50,10 +50,10 @@ ColumnLayout {
         Layout.rightMargin: Tokens.padding.small
         text: {
             const devices = Bluetooth.devices.values; // qmllint disable unresolved-type
-            let available = qsTr("%1 device%2 available").arg(devices.length).arg(devices.length === 1 ? "" : "s");
+            let available = I18n.tr("%1 device%2 available").arg(devices.length).arg(devices.length === 1 ? "" : "s");
             const connected = devices.filter(d => d.connected).length;
             if (connected > 0)
-                available += qsTr(" (%1 connected)").arg(connected);
+                available += I18n.tr(" (%1 connected)").arg(connected);
             return available;
         }
         color: Colours.palette.m3onSurfaceVariant
@@ -173,7 +173,7 @@ ColumnLayout {
         inactiveColour: Colours.palette.m3primaryContainer
         inactiveOnColour: Colours.palette.m3onPrimaryContainer
         verticalPadding: Tokens.padding.small
-        text: qsTr("Open settings")
+        text: I18n.tr("Open settings")
         icon: "settings"
 
         onClicked: root.popouts.detachRequested("bluetooth")

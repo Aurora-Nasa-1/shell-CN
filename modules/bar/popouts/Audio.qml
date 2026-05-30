@@ -8,6 +8,7 @@ import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.services
+import qs.utils
 
 Item {
     id: root
@@ -33,7 +34,7 @@ Item {
         spacing: Tokens.spacing.normal
 
         StyledText {
-            text: qsTr("Output device")
+            text: I18n.tr("Output device")
             font.weight: 500
         }
 
@@ -54,7 +55,7 @@ Item {
 
         StyledText {
             Layout.topMargin: Tokens.spacing.smaller
-            text: qsTr("Input device")
+            text: I18n.tr("Input device")
             font.weight: 500
         }
 
@@ -74,7 +75,7 @@ Item {
         StyledText {
             Layout.topMargin: Tokens.spacing.smaller
             Layout.bottomMargin: -Tokens.spacing.small / 2
-            text: qsTr("Volume (%1)").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`)
+            text: I18n.tr("Volume (%1)").arg(Audio.muted ? I18n.tr("Muted") : `${Math.round(Audio.volume * 100)}%`)
             font.weight: 500
         }
 
@@ -109,7 +110,7 @@ Item {
             inactiveColour: Colours.palette.m3primaryContainer
             inactiveOnColour: Colours.palette.m3onPrimaryContainer
             verticalPadding: Tokens.padding.small
-            text: qsTr("Open settings")
+            text: I18n.tr("Open settings")
             icon: "settings"
 
             onClicked: root.popouts.detachRequested("audio")

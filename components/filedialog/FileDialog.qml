@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Quickshell
 import qs.components
 import qs.services
+import qs.utils
 
 LazyLoader {
     id: loader
@@ -12,7 +13,7 @@ LazyLoader {
     property list<string> cwd: ["Home"]
     property string filterLabel: "All files"
     property list<string> filters: ["*"]
-    property string title: qsTr("Select a file")
+    property string title: I18n.tr("Select a file")
 
     signal accepted(path: string)
     signal rejected

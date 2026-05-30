@@ -6,6 +6,7 @@ import Caelestia.Config
 import qs.components
 import qs.components.filedialog
 import qs.services
+import qs.utils
 
 StyledRect {
     id: root
@@ -30,7 +31,7 @@ StyledRect {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: Tokens.padding.small / 2
             Layout.bottomMargin: Tokens.spacing.normal
-            text: qsTr("Files")
+            text: I18n.tr("Files")
             color: Colours.palette.m3onSurface
             font.pointSize: Tokens.font.size.larger
             font.bold: true

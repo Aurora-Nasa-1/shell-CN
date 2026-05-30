@@ -64,7 +64,7 @@ Item {
             }
 
             StyledText {
-                text: qsTr("This folder is empty")
+                text: I18n.tr("This folder is empty")
                 color: Colours.palette.m3outline
                 font.pointSize: Tokens.font.size.large
                 font.weight: 500

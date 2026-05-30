@@ -5,6 +5,7 @@ import Quickshell.Services.UPower
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.utils
 
 Column {
     id: root
@@ -13,7 +14,7 @@ Column {
     width: Tokens.sizes.bar.batteryWidth
 
     StyledText {
-        text: UPower.displayDevice.isLaptopBattery ? qsTr("Remaining: %1%").arg(Math.round(UPower.displayDevice.percentage * 100)) : qsTr("No battery detected")
+        text: UPower.displayDevice.isLaptopBattery ? I18n.tr("Remaining: %1%").arg(Math.round(UPower.displayDevice.percentage * 100)) : I18n.tr("No battery detected")
     }
 
     StyledText {
@@ -33,7 +34,7 @@ Column {
             return comps.join(", ") || fallback;
         }
 
-        text: UPower.displayDevice.isLaptopBattery ? qsTr("Time %1: %2").arg(UPower.onBattery ? "remaining" : "until charged").arg(UPower.onBattery ? formatSeconds(UPower.displayDevice.timeToEmpty, "Calculating...") : formatSeconds(UPower.displayDevice.timeToFull, "Fully charged!")) : qsTr("Power profile: %1").arg(PowerProfile.toString(PowerProfiles.profile))
+        text: UPower.displayDevice.isLaptopBattery ? I18n.tr("Time %1: %2").arg(UPower.onBattery ? "remaining" : "until charged").arg(UPower.onBattery ? formatSeconds(UPower.displayDevice.timeToEmpty, "Calculating...") : formatSeconds(UPower.displayDevice.timeToFull, "Fully charged!")) : I18n.tr("Power profile: %1").arg(PowerProfile.toString(PowerProfiles.profile))
     }
 
     Loader {
@@ -70,7 +71,7 @@ Column {
 
                     StyledText {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: qsTr("Performance Degraded")
+                        text: I18n.tr("Performance Degraded")
                         color: Colours.palette.m3onError
                         font.family: Tokens.font.family.mono
                         font.weight: 500
@@ -88,7 +89,7 @@ Column {
                 StyledText {
                     anchors.horizontalCenter: parent.horizontalCenter
 
-                    text: qsTr("Reason: %1").arg(PerformanceDegradationReason.toString(PowerProfiles.degradationReason))
+                    text: I18n.tr("Reason: %1").arg(PerformanceDegradationReason.toString(PowerProfiles.degradationReason))
                     color: Colours.palette.m3onError
                 }
             }
