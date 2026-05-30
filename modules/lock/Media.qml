@@ -7,6 +7,7 @@ import Caelestia.Config
 import qs.components
 import qs.components.effects
 import qs.services
+import qs.utils
 
 Item {
     id: root
@@ -77,7 +78,7 @@ Item {
         StyledText {
             Layout.topMargin: Tokens.padding.large
             Layout.bottomMargin: Tokens.spacing.larger
-            text: qsTr("Now playing")
+            text: I18n.tr("Now playing")
             color: Colours.palette.m3onSurfaceVariant
             font.family: Tokens.font.family.mono
             font.weight: 500
@@ -86,7 +87,7 @@ Item {
         StyledText {
             Layout.fillWidth: true
             animate: true
-            text: Players.active?.trackArtist ?? qsTr("No media")
+            text: Players.active?.trackArtist ?? I18n.tr("No media")
             color: Colours.palette.m3primary
             horizontalAlignment: Text.AlignHCenter
             font.pointSize: Tokens.font.size.large
@@ -98,7 +99,7 @@ Item {
         StyledText {
             Layout.fillWidth: true
             animate: true
-            text: Players.active?.trackTitle ?? qsTr("No media")
+            text: Players.active?.trackTitle ?? I18n.tr("No media")
             horizontalAlignment: Text.AlignHCenter
             font.pointSize: Tokens.font.size.larger
             font.family: Tokens.font.family.mono

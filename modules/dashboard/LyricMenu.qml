@@ -6,6 +6,7 @@ import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.services
+import qs.utils
 
 StyledRect {
     id: root
@@ -309,7 +310,7 @@ StyledRect {
                         Binding {
                             target: searchTitle
                             property: "text"
-                            value: (Players.active?.trackTitle ?? qsTr("title")) || qsTr("title")
+                            value: (Players.active?.trackTitle ?? I18n.tr("title")) || I18n.tr("title")
                         }
                     }
 
@@ -322,7 +323,7 @@ StyledRect {
                         Binding {
                             target: searchArtist
                             property: "text"
-                            value: (Players.active?.trackArtist ?? qsTr("artist")) || qsTr("artist")
+                            value: (Players.active?.trackArtist ?? I18n.tr("artist")) || I18n.tr("artist")
                         }
                     }
 

@@ -126,7 +126,7 @@ Item {
 
         animate: true
         horizontalAlignment: Text.AlignHCenter
-        text: (Players.active?.trackTitle ?? qsTr("No media")) || qsTr("Unknown title")
+        text: (Players.active?.trackTitle ?? I18n.tr("No media")) || I18n.tr("Unknown title")
         color: Colours.palette.m3primary
         font.pointSize: Tokens.font.size.normal
 
@@ -143,7 +143,7 @@ Item {
 
         animate: true
         horizontalAlignment: Text.AlignHCenter
-        text: (Players.active?.trackAlbum ?? qsTr("No media")) || qsTr("Unknown album")
+        text: (Players.active?.trackAlbum ?? I18n.tr("No media")) || I18n.tr("Unknown album")
         color: Colours.palette.m3outline
         font.pointSize: Tokens.font.size.small
 
@@ -160,7 +160,7 @@ Item {
 
         animate: true
         horizontalAlignment: Text.AlignHCenter
-        text: (Players.active?.trackArtist ?? qsTr("No media")) || qsTr("Unknown artist")
+        text: (Players.active?.trackArtist ?? I18n.tr("No media")) || I18n.tr("Unknown artist")
         color: Colours.palette.m3secondary
 
         width: parent.implicitWidth - Tokens.padding.large * 2

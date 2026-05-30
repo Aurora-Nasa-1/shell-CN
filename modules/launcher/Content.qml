@@ -6,6 +6,7 @@ import qs.components
 import qs.components.controls
 import qs.services
 import qs.modules.launcher.services
+import qs.utils
 
 Item {
     id: root
@@ -78,7 +79,7 @@ Item {
             topPadding: Tokens.padding.larger
             bottomPadding: Tokens.padding.larger
 
-            placeholderText: qsTr("Type \"%1\" for commands").arg(GlobalConfig.launcher.actionPrefix)
+            placeholderText: I18n.tr("Type \"%1\" for commands").arg(GlobalConfig.launcher.actionPrefix)
 
             onAccepted: {
                 const currentItem = list.currentList?.currentItem;

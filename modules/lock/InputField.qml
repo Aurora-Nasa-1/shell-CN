@@ -6,6 +6,7 @@ import Quickshell
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.utils
 
 Item {
     id: root
@@ -41,10 +42,10 @@ Item {
 
         text: {
             if (root.pam.passwd.active)
-                return qsTr("Loading...");
+                return I18n.tr("Loading...");
             if (root.pam.state === "max")
-                return qsTr("You have reached the maximum number of tries");
-            return qsTr("Enter your password");
+                return I18n.tr("You have reached the maximum number of tries");
+            return I18n.tr("Enter your password");
         }
 
         animate: true

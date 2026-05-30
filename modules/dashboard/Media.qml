@@ -215,7 +215,7 @@ Item {
 
             animate: true
             horizontalAlignment: Text.AlignHCenter
-            text: (Players.active?.trackTitle ?? qsTr("No media")) || qsTr("Unknown title")
+            text: (Players.active?.trackTitle ?? I18n.tr("No media")) || I18n.tr("Unknown title")
             color: Players.active ? Colours.palette.m3primary : Colours.palette.m3onSurface
             font.pointSize: Tokens.font.size.normal
             elide: Text.ElideRight
@@ -230,7 +230,7 @@ Item {
             animate: true
             horizontalAlignment: Text.AlignHCenter
             visible: !!Players.active
-            text: Players.active?.trackAlbum || qsTr("Unknown album")
+            text: Players.active?.trackAlbum || I18n.tr("Unknown album")
             color: Colours.palette.m3outline
             font.pointSize: Tokens.font.size.small
             elide: Text.ElideRight
@@ -244,7 +244,7 @@ Item {
 
             animate: true
             horizontalAlignment: Text.AlignHCenter
-            text: (Players.active?.trackArtist ?? qsTr("Play some music for stuff to show up here!")) || qsTr("Unknown artist")
+            text: (Players.active?.trackArtist ?? I18n.tr("Play some music for stuff to show up here!")) || I18n.tr("Unknown artist")
             color: Players.active ? Colours.palette.m3secondary : Colours.palette.m3outline
             elide: Text.ElideRight
             wrapMode: Players.active ? Text.NoWrap : Text.WordWrap
@@ -463,7 +463,7 @@ Item {
 
             menuItems: playerList.instances
             fallbackIcon: "music_off"
-            fallbackText: qsTr("No players")
+            fallbackText: I18n.tr("No players")
 
             label.Layout.maximumWidth: slider.implicitWidth * 0.28
             label.elide: Text.ElideRight

@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.utils
 
 Item {
     id: root
@@ -28,14 +29,14 @@ Item {
                 spacing: Tokens.spacing.small / 2
 
                 StyledText {
-                    text: Weather.city || qsTr("Loading...")
+                    text: Weather.city || I18n.tr("加载中...")
                     font.pointSize: Tokens.font.size.extraLarge
                     font.weight: 600
                     color: Colours.palette.m3onSurface
                 }
 
                 StyledText {
-                    text: new Date().toLocaleDateString(Qt.locale(), "dddd, MMMM d")
+                    text: new Date().toLocaleDateString(Qt.locale("zh_CN"), "yyyy年M月d日 dddd")
                     font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
@@ -50,14 +51,14 @@ Item {
 
                 WeatherStat {
                     icon: "wb_twilight"
-                    label: "Sunrise"
+                    label: I18n.tr("日出")
                     value: Weather.sunrise
                     colour: Colours.palette.m3tertiary
                 }
 
                 WeatherStat {
                     icon: "bedtime"
-                    label: "Sunset"
+                    label: I18n.tr("日落")
                     value: Weather.sunset
                     colour: Colours.palette.m3tertiary
                 }
@@ -112,20 +113,20 @@ Item {
 
             DetailCard {
                 icon: "water_drop"
-                label: "Humidity"
+                label: I18n.tr("湿度")
                 value: Weather.humidity + "%"
                 colour: Colours.palette.m3secondary
             }
             DetailCard {
                 icon: "thermostat"
-                label: "Feels Like"
+                label: I18n.tr("体感温度")
                 value: Weather.feelsLike
                 colour: Colours.palette.m3primary
             }
             DetailCard {
                 icon: "air"
-                label: "Wind"
-                value: Weather.windSpeed ? Weather.windSpeed + " km/h" : "--"
+                label: I18n.tr("风力")
+                value: Weather.windSpeed ? `${Weather.windLevelLabel}` : "--"
                 colour: Colours.palette.m3tertiary
             }
         }
@@ -134,7 +135,7 @@ Item {
             Layout.topMargin: Tokens.spacing.normal
             Layout.leftMargin: Tokens.padding.normal
             visible: forecastRepeater.count > 0
-            text: qsTr("7-Day Forecast")
+            text: I18n.tr("7日天气预报")
             font.pointSize: Tokens.font.size.normal
             font.weight: 600
             color: Colours.palette.m3onSurface
@@ -169,7 +170,7 @@ Item {
 
                         StyledText {
                             Layout.alignment: Qt.AlignHCenter
-                            text: forecastItem.index === 0 ? qsTr("Today") : new Date(forecastItem.modelData.date).toLocaleDateString(Qt.locale(), "ddd")
+                            text: forecastItem.index === 0 ? I18n.tr("今天") : new Date(forecastItem.modelData.date).toLocaleDateString(Qt.locale("zh_CN"), "ddd")
                             font.pointSize: Tokens.font.size.normal
                             font.weight: 600
                             color: Colours.palette.m3primary
@@ -178,7 +179,7 @@ Item {
                         StyledText {
                             Layout.topMargin: -Tokens.spacing.small / 2
                             Layout.alignment: Qt.AlignHCenter
-                            text: new Date(forecastItem.modelData.date).toLocaleDateString(Qt.locale(), "MMM d")
+                            text: new Date(forecastItem.modelData.date).toLocaleDateString(Qt.locale("zh_CN"), "M/d")
                             font.pointSize: Tokens.font.size.small
                             opacity: 0.7
                             color: Colours.palette.m3onSurfaceVariant

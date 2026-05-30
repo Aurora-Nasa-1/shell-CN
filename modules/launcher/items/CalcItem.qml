@@ -5,6 +5,7 @@ import Caelestia
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.utils
 
 Item {
     id: root
@@ -57,7 +58,7 @@ Item {
                 return Colours.palette.m3onSurface;
             }
 
-            text: root.math.length > 0 ? (Qalculator.result || qsTr("Calculating...")) : qsTr("Type an expression to calculate")
+            text: root.math.length > 0 ? (Qalculator.result || I18n.tr("Calculating...")) : I18n.tr("Type an expression to calculate")
             elide: Text.ElideLeft
 
             Layout.fillWidth: true
@@ -92,7 +93,7 @@ Item {
                 anchors.right: icon.left
                 anchors.rightMargin: Tokens.spacing.small
 
-                text: qsTr("Open in calculator")
+                text: I18n.tr("Open in calculator")
                 color: Colours.palette.m3onTertiary
                 font.pointSize: Tokens.font.size.normal
 

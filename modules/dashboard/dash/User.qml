@@ -149,7 +149,7 @@ Row {
             id: uptime
 
             icon: "timer"
-            text: qsTr("up %1").arg(SysInfo.uptime)
+            text: I18n.tr("up %1").arg(SysInfo.uptime)
             colour: Colours.palette.m3tertiary
         }
     }

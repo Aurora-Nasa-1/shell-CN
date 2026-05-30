@@ -7,6 +7,7 @@ import Caelestia.Internal
 import qs.components
 import qs.components.misc
 import qs.services
+import qs.utils
 
 Item {
     id: root
@@ -43,14 +44,14 @@ Item {
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
-                text: qsTr("No widgets enabled")
+                text: I18n.tr("No widgets enabled")
                 font.pointSize: Tokens.font.size.large
                 color: Colours.palette.m3onSurface
             }
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
-                text: qsTr("Enable widgets in dashboard settings")
+                text: I18n.tr("Enable widgets in dashboard settings")
                 font.pointSize: Tokens.font.size.small
                 color: Colours.palette.m3onSurfaceVariant
             }
@@ -86,11 +87,11 @@ Item {
                     Layout.preferredHeight: 150
                     visible: Config.dashboard.performance.showCpu
                     icon: "memory"
-                    title: SystemUsage.cpuName ? `CPU - ${SystemUsage.cpuName}` : qsTr("CPU")
+                    title: SystemUsage.cpuName ? `CPU - ${SystemUsage.cpuName}` : I18n.tr("CPU")
                     mainValue: `${Math.round(SystemUsage.cpuPerc * 100)}%`
-                    mainLabel: qsTr("Usage")
+                    mainLabel: I18n.tr("Usage")
                     secondaryValue: root.displayTemp(SystemUsage.cpuTemp)
-                    secondaryLabel: qsTr("Temp")
+                    secondaryLabel: I18n.tr("Temp")
                     usage: SystemUsage.cpuPerc
                     temperature: SystemUsage.cpuTemp
                     accentColor: Colours.palette.m3primary
@@ -102,11 +103,11 @@ Item {
                     Layout.preferredHeight: 150
                     visible: Config.dashboard.performance.showGpu && SystemUsage.gpuType !== "NONE"
                     icon: "desktop_windows"
-                    title: SystemUsage.gpuName ? `GPU - ${SystemUsage.gpuName}` : qsTr("GPU")
+                    title: SystemUsage.gpuName ? `GPU - ${SystemUsage.gpuName}` : I18n.tr("GPU")
                     mainValue: `${Math.round(SystemUsage.gpuPerc * 100)}%`
-                    mainLabel: qsTr("Usage")
+                    mainLabel: I18n.tr("Usage")
                     secondaryValue: root.displayTemp(SystemUsage.gpuTemp)
-                    secondaryLabel: qsTr("Temp")
+                    secondaryLabel: I18n.tr("Temp")
                     usage: SystemUsage.gpuPerc
                     temperature: SystemUsage.gpuTemp
                     accentColor: Colours.palette.m3secondary
@@ -123,7 +124,7 @@ Item {
                     Layout.preferredHeight: 220
                     Layout.fillWidth: !Config.dashboard.performance.showStorage && !Config.dashboard.performance.showNetwork
                     icon: "memory_alt"
-                    title: qsTr("Memory")
+                    title: I18n.tr("Memory")
                     percentage: SystemUsage.memPerc
                     subtitle: {
                         const usedFmt = SystemUsage.formatKib(SystemUsage.memUsed);
@@ -220,7 +221,7 @@ Item {
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: qsTr("Battery")
+                    text: I18n.tr("Battery")
                     font.pointSize: Tokens.font.size.normal
                     color: Colours.palette.m3onSurface
                 }
@@ -247,14 +248,14 @@ Item {
                     Layout.alignment: Qt.AlignRight
                     text: {
                         if (UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
-                            return qsTr("Full");
+                            return I18n.tr("Full");
 
                         if (batteryTank.isCharging)
-                            return qsTr("Charging");
+                            return I18n.tr("Charging");
 
                         const s = UPower.displayDevice.timeToEmpty;
                         if (s === 0)
-                            return qsTr("...");
+                            return I18n.tr("...");
 
                         const hr = Math.floor(s / 3600);
                         const min = Math.floor((s % 3600) / 60);
@@ -573,7 +574,7 @@ Item {
             CardHeader {
                 icon: "hard_disk"
                 title: {
-                    const base = qsTr("Storage");
+                    const base = I18n.tr("Storage");
                     if (!storageGaugeCard.currentDisk)
                         return base;
 
@@ -589,7 +590,7 @@ Item {
                     visible: storageGaugeCard.diskCount > 1
                     opacity: 0.7
                     ToolTip.visible: hintHover.hovered
-                    ToolTip.text: qsTr("Scroll to switch disks")
+                    ToolTip.text: I18n.tr("Scroll to switch disks")
                     ToolTip.delay: 500
 
                     HoverHandler {
@@ -664,7 +665,7 @@ Item {
 
             CardHeader {
                 icon: "swap_vert"
-                title: qsTr("Network")
+                title: I18n.tr("Network")
                 accentColor: networkCard.accentColor
             }
 
@@ -718,7 +719,7 @@ Item {
                 // "No data" placeholder
                 StyledText {
                     anchors.centerIn: parent
-                    text: qsTr("Collecting data...")
+                    text: I18n.tr("Collecting data...")
                     font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                     visible: NetworkUsage.downloadBuffer.count < 2
@@ -738,7 +739,7 @@ Item {
                 }
 
                 StyledText {
-                    text: qsTr("Download")
+                    text: I18n.tr("Download")
                     font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
@@ -770,7 +771,7 @@ Item {
                 }
 
                 StyledText {
-                    text: qsTr("Upload")
+                    text: I18n.tr("Upload")
                     font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
@@ -802,7 +803,7 @@ Item {
                 }
 
                 StyledText {
-                    text: qsTr("Total")
+                    text: I18n.tr("Total")
                     font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }

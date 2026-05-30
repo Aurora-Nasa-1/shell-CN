@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.utils
 
 ColumnLayout {
     id: root
@@ -27,7 +28,7 @@ ColumnLayout {
         visible: active
 
         sourceComponent: StyledText {
-            text: qsTr("Weather")
+            text: I18n.tr("天气")
             color: Colours.palette.m3primary
             font.pointSize: Tokens.font.size.extraLarge
             font.weight: 500
@@ -63,7 +64,18 @@ ColumnLayout {
                 Layout.fillWidth: true
 
                 animate: true
-                text: qsTr("Humidity: %1%").arg(Weather.humidity)
+                text: I18n.tr("湿度: %1%").arg(Weather.humidity)
+                color: Colours.palette.m3onSurfaceVariant
+                font.pointSize: Tokens.font.size.normal
+                elide: Text.ElideRight
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                visible: Weather.windSpeed > 0
+
+                animate: true
+                text: I18n.tr("风力: %1").arg(Weather.windLevelLabel)
                 color: Colours.palette.m3onSurfaceVariant
                 font.pointSize: Tokens.font.size.normal
                 elide: Text.ElideRight
@@ -95,7 +107,7 @@ ColumnLayout {
                     Layout.fillWidth: true
 
                     animate: true
-                    text: qsTr("Feels like: %1").arg(Weather.feelsLike)
+                    text: I18n.tr("体感: %1").arg(Weather.feelsLike)
                     color: Colours.palette.m3outline
                     horizontalAlignment: Text.AlignRight
                     font.pointSize: Tokens.font.size.smaller
@@ -143,7 +155,9 @@ ColumnLayout {
                         Layout.fillWidth: true
                         text: {
                             const hour = forecastHour.modelData?.hour ?? 0;
-                            return hour > 12 ? `${(hour - 12).toString().padStart(2, "0")} PM` : `${hour.toString().padStart(2, "0")} AM`;
+                            if (hour === 0) return "00:00";
+                            if (hour === 12) return "12:00";
+                            return hour > 12 ? `${(hour - 12).toString().padStart(2, "0")}:00` : `${hour.toString().padStart(2, "0")}:00`;
                         }
                         color: Colours.palette.m3outline
                         horizontalAlignment: Text.AlignHCenter
