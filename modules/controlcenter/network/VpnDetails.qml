@@ -30,7 +30,7 @@ DeviceDetails {
     headerComponent: Component {
         ConnectionHeader {
             icon: "vpn_key"
-            title: root.vpnProvider?.displayName ?? qsTr("Unknown")
+            title: root.vpnProvider?.displayName ?? I18n.tr("Unknown")
         }
     }
 
@@ -40,13 +40,13 @@ DeviceDetails {
                 spacing: Tokens.spacing.normal
 
                 SectionHeader {
-                    title: qsTr("Connection status")
-                    description: qsTr("VPN connection settings")
+                    title: I18n.tr("Connection status")
+                    description: I18n.tr("VPN connection settings")
                 }
 
                 SectionContainer {
                     ToggleRow {
-                        label: qsTr("Enable this provider")
+                        label: I18n.tr("Enable this provider")
                         checked: root.providerEnabled
                         toggle.onToggled: {
                             if (!root.vpnProvider)
@@ -101,7 +101,7 @@ DeviceDetails {
                             enabled: !VPN.connecting
                             inactiveColour: Colours.palette.m3primaryContainer
                             inactiveOnColour: Colours.palette.m3onPrimaryContainer
-                            text: VPN.connected ? qsTr("Disconnect") : qsTr("Connect")
+                            text: VPN.connected ? I18n.tr("Disconnect") : I18n.tr("Connect")
 
                             onClicked: {
                                 VPN.toggle();
@@ -110,7 +110,7 @@ DeviceDetails {
 
                         TextButton {
                             Layout.fillWidth: true
-                            text: qsTr("Edit Provider")
+                            text: I18n.tr("Edit Provider")
                             inactiveColour: Colours.palette.m3secondaryContainer
                             inactiveOnColour: Colours.palette.m3onSecondaryContainer
 
@@ -128,7 +128,7 @@ DeviceDetails {
 
                         TextButton {
                             Layout.fillWidth: true
-                            text: qsTr("Delete Provider")
+                            text: I18n.tr("Delete Provider")
                             inactiveColour: Colours.palette.m3errorContainer
                             inactiveOnColour: Colours.palette.m3onErrorContainer
 
@@ -149,7 +149,7 @@ DeviceDetails {
                         Layout.fillWidth: true
                         Layout.topMargin: Tokens.spacing.normal
                         visible: root.providerEnabled && VPN.status.state === "needs-auth" && VPN.status.authUrl !== ""
-                        text: qsTr("Open Login Page")
+                        text: I18n.tr("Open Login Page")
                         inactiveColour: Colours.palette.m3tertiaryContainer
                         inactiveOnColour: Colours.palette.m3onTertiaryContainer
 
@@ -162,7 +162,7 @@ DeviceDetails {
                         Layout.fillWidth: true
                         Layout.topMargin: Tokens.spacing.normal
                         visible: root.providerEnabled && VPN.status.state === "needs-auth" && VPN.status.authUrl === ""
-                        text: qsTr("Click 'Connect' to generate authentication URL")
+                        text: I18n.tr("Click 'Connect' to generate authentication URL")
                         font.pointSize: Tokens.font.size.small
                         color: Colours.palette.m3onSurfaceVariant
                         horizontalAlignment: Text.AlignHCenter
@@ -176,52 +176,52 @@ DeviceDetails {
                 spacing: Tokens.spacing.normal
 
                 SectionHeader {
-                    title: qsTr("Provider details")
-                    description: qsTr("VPN provider information")
+                    title: I18n.tr("Provider details")
+                    description: I18n.tr("VPN provider information")
                 }
 
                 SectionContainer {
                     contentSpacing: Tokens.spacing.small / 2
 
                     PropertyRow {
-                        label: qsTr("Provider")
-                        value: root.vpnProvider?.name ?? qsTr("Unknown")
+                        label: I18n.tr("Provider")
+                        value: root.vpnProvider?.name ?? I18n.tr("Unknown")
                     }
 
                     PropertyRow {
                         showTopMargin: true
-                        label: qsTr("Display name")
-                        value: root.vpnProvider?.displayName ?? qsTr("Unknown")
+                        label: I18n.tr("Display name")
+                        value: root.vpnProvider?.displayName ?? I18n.tr("Unknown")
                     }
 
                     PropertyRow {
                         showTopMargin: true
-                        label: qsTr("Interface")
-                        value: root.vpnProvider?.interface || qsTr("N/A")
+                        label: I18n.tr("Interface")
+                        value: root.vpnProvider?.interface || I18n.tr("N/A")
                     }
 
                     PropertyRow {
                         showTopMargin: true
-                        label: qsTr("Status")
+                        label: I18n.tr("Status")
                         value: {
                             if (!root.providerEnabled)
-                                return qsTr("Disabled");
+                                return I18n.tr("Disabled");
                             if (VPN.connecting)
-                                return qsTr("Connecting...");
+                                return I18n.tr("Connecting...");
 
                             switch (VPN.status.state) {
                             case "connected":
-                                return qsTr("Connected");
+                                return I18n.tr("Connected");
                             case "disconnected":
-                                return qsTr("Disconnected");
+                                return I18n.tr("Disconnected");
                             case "connecting":
-                                return qsTr("Connecting...");
+                                return I18n.tr("Connecting...");
                             case "needs-auth":
-                                return qsTr("Authentication required");
+                                return I18n.tr("Authentication required");
                             case "error":
-                                return qsTr("Error");
+                                return I18n.tr("Error");
                             default:
-                                return qsTr("Unknown");
+                                return I18n.tr("Unknown");
                             }
                         }
                     }
@@ -229,14 +229,14 @@ DeviceDetails {
                     PropertyRow {
                         visible: VPN.status.reason !== ""
                         showTopMargin: true
-                        label: qsTr("Details")
+                        label: I18n.tr("Details")
                         value: VPN.status.reason
                     }
 
                     PropertyRow {
                         showTopMargin: true
-                        label: qsTr("Enabled")
-                        value: root.providerEnabled ? qsTr("Yes") : qsTr("No")
+                        label: I18n.tr("Enabled")
+                        value: root.providerEnabled ? I18n.tr("Yes") : I18n.tr("No")
                     }
                 }
             }
@@ -319,7 +319,7 @@ DeviceDetails {
             spacing: Tokens.spacing.normal
 
             StyledText {
-                text: qsTr("Edit VPN Provider")
+                text: I18n.tr("Edit VPN Provider")
                 font.pointSize: Tokens.font.size.large
                 font.weight: 500
             }
@@ -329,7 +329,7 @@ DeviceDetails {
                 spacing: Tokens.spacing.smaller / 2
 
                 StyledText {
-                    text: qsTr("Display Name")
+                    text: I18n.tr("Display Name")
                     font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
@@ -366,7 +366,7 @@ DeviceDetails {
                 spacing: Tokens.spacing.smaller / 2
 
                 StyledText {
-                    text: qsTr("Interface (e.g., wg0, torguard)")
+                    text: I18n.tr("Interface (e.g., wg0, torguard)")
                     font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
@@ -404,7 +404,7 @@ DeviceDetails {
                 visible: editVpnDialog.connectCmd.length > 0
 
                 StyledText {
-                    text: qsTr("Connect Command")
+                    text: I18n.tr("Connect Command")
                     font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
@@ -442,7 +442,7 @@ DeviceDetails {
                 visible: editVpnDialog.disconnectCmd.length > 0
 
                 StyledText {
-                    text: qsTr("Disconnect Command")
+                    text: I18n.tr("Disconnect Command")
                     font.pointSize: Tokens.font.size.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
@@ -481,7 +481,7 @@ DeviceDetails {
 
                 TextButton {
                     Layout.fillWidth: true
-                    text: qsTr("Cancel")
+                    text: I18n.tr("Cancel")
                     inactiveColour: Colours.tPalette.m3surfaceContainerHigh
                     inactiveOnColour: Colours.palette.m3onSurface
                     onClicked: editVpnDialog.closeWithAnimation()
@@ -489,7 +489,7 @@ DeviceDetails {
 
                 TextButton {
                     Layout.fillWidth: true
-                    text: qsTr("Save")
+                    text: I18n.tr("Save")
                     enabled: editVpnDialog.interfaceName.length > 0
                     inactiveColour: Colours.palette.m3primaryContainer
                     inactiveOnColour: Colours.palette.m3onPrimaryContainer

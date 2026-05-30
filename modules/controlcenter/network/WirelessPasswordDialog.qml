@@ -48,7 +48,7 @@ Item {
                 connectButton.connecting = false;
                 connectButton.hasError = true;
                 connectButton.enabled = true;
-                connectButton.text = qsTr("Connect");
+                connectButton.text = I18n.tr("Connect");
                 passwordContainer.passwordBuffer = "";
                 if (root.network && root.network.ssid) {
                     Nmcli.forgetNetwork(root.network.ssid);
@@ -66,7 +66,7 @@ Item {
         passwordContainer.passwordBuffer = "";
         connectButton.connecting = false;
         connectButton.hasError = false;
-        connectButton.text = qsTr("Connect");
+        connectButton.text = I18n.tr("Connect");
         connectionMonitor.stop();
     }
 
@@ -154,14 +154,14 @@ Item {
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
-                text: qsTr("Enter password")
+                text: I18n.tr("Enter password")
                 font.pointSize: Tokens.font.size.large
                 font.weight: 500
             }
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
-                text: root.network ? qsTr("Network: %1").arg(root.network.ssid) : ""
+                text: root.network ? I18n.tr("Network: %1").arg(root.network.ssid) : ""
                 color: Colours.palette.m3outline
                 font.pointSize: Tokens.font.size.small
             }
@@ -174,10 +174,10 @@ Item {
                 visible: connectButton.connecting || connectButton.hasError
                 text: {
                     if (connectButton.hasError) {
-                        return qsTr("Connection failed. Please check your password and try again.");
+                        return I18n.tr("Connection failed. Please check your password and try again.");
                     }
                     if (connectButton.connecting) {
-                        return qsTr("Connecting...");
+                        return I18n.tr("Connecting...");
                     }
                     return "";
                 }
@@ -300,7 +300,7 @@ Item {
                     id: placeholder
 
                     anchors.centerIn: parent
-                    text: qsTr("Password")
+                    text: I18n.tr("Password")
                     color: Colours.palette.m3outline
                     font.pointSize: Tokens.font.size.normal
                     font.family: Tokens.font.family.mono
@@ -401,7 +401,7 @@ Item {
                     Layout.minimumHeight: Tokens.font.size.normal + Tokens.padding.normal * 2
                     inactiveColour: Colours.palette.m3secondaryContainer
                     inactiveOnColour: Colours.palette.m3onSecondaryContainer
-                    text: qsTr("Cancel")
+                    text: I18n.tr("Cancel")
 
                     onClicked: root.closeDialog()
                 }
@@ -416,7 +416,7 @@ Item {
                     Layout.minimumHeight: Tokens.font.size.normal + Tokens.padding.normal * 2
                     inactiveColour: Colours.palette.m3primary
                     inactiveOnColour: Colours.palette.m3onPrimary
-                    text: qsTr("Connect")
+                    text: I18n.tr("Connect")
                     enabled: passwordContainer.passwordBuffer.length > 0 && !connecting
 
                     onClicked: {
@@ -432,7 +432,7 @@ Item {
                         hasError = false;
                         connecting = true;
                         enabled = false;
-                        text = qsTr("Connecting...");
+                        text = I18n.tr("Connecting...");
 
                         NetworkConnection.connectWithPassword(root.network, password, result => {
                             if (result && result.success) {} else if (result && result.needsPassword) {
@@ -440,7 +440,7 @@ Item {
                                 connecting = false;
                                 hasError = true;
                                 enabled = true;
-                                text = qsTr("Connect");
+                                text = I18n.tr("Connect");
                                 passwordContainer.passwordBuffer = "";
                                 if (root.network && root.network.ssid) {
                                     Nmcli.forgetNetwork(root.network.ssid);
@@ -450,7 +450,7 @@ Item {
                                 connecting = false;
                                 hasError = true;
                                 enabled = true;
-                                text = qsTr("Connect");
+                                text = I18n.tr("Connect");
                                 passwordContainer.passwordBuffer = "";
                                 if (root.network && root.network.ssid) {
                                     Nmcli.forgetNetwork(root.network.ssid);
@@ -495,7 +495,7 @@ Item {
                 if (stillConnected) {
                     connectionMonitor.stop();
                     connectButton.connecting = false;
-                    connectButton.text = qsTr("Connect");
+                    connectButton.text = I18n.tr("Connect");
                     closeDialog();
                 }
             }
@@ -514,7 +514,7 @@ Item {
                 connectButton.connecting = false;
                 connectButton.hasError = true;
                 connectButton.enabled = true;
-                connectButton.text = qsTr("Connect");
+                connectButton.text = I18n.tr("Connect");
                 passwordContainer.passwordBuffer = "";
                 Nmcli.forgetNetwork(ssid);
             }

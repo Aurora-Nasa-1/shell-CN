@@ -9,6 +9,7 @@ import qs.components
 import qs.components.controls
 import qs.components.effects
 import qs.services
+import qs.utils
 
 ColumnLayout {
     id: root
@@ -19,18 +20,18 @@ ColumnLayout {
 
     SettingsHeader {
         icon: "cable"
-        title: qsTr("Ethernet settings")
+        title: I18n.tr("Ethernet settings")
     }
 
     StyledText {
         Layout.topMargin: Tokens.spacing.large
-        text: qsTr("Ethernet devices")
+        text: I18n.tr("Ethernet devices")
         font.pointSize: Tokens.font.size.larger
         font.weight: 500
     }
 
     StyledText {
-        text: qsTr("Available ethernet devices")
+        text: I18n.tr("Available ethernet devices")
         color: Colours.palette.m3outline
     }
 
@@ -52,22 +53,22 @@ ColumnLayout {
             spacing: Tokens.spacing.small / 2
 
             StyledText {
-                text: qsTr("Total devices")
+                text: I18n.tr("Total devices")
             }
 
             StyledText {
-                text: qsTr("%1").arg(Nmcli.ethernetDevices.length)
+                text: I18n.tr("%1").arg(Nmcli.ethernetDevices.length)
                 color: Colours.palette.m3outline
                 font.pointSize: Tokens.font.size.small
             }
 
             StyledText {
                 Layout.topMargin: Tokens.spacing.normal
-                text: qsTr("Connected devices")
+                text: I18n.tr("Connected devices")
             }
 
             StyledText {
-                text: qsTr("%1").arg(Nmcli.ethernetDevices.filter(d => d.connected).length)
+                text: I18n.tr("%1").arg(Nmcli.ethernetDevices.filter(d => d.connected).length)
                 color: Colours.palette.m3outline
                 font.pointSize: Tokens.font.size.small
             }

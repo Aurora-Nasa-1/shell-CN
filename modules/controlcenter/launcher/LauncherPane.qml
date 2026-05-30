@@ -155,7 +155,7 @@ Item {
                     spacing: Tokens.spacing.smaller
 
                     StyledText {
-                        text: qsTr("Launcher")
+                        text: I18n.tr("Launcher")
                         font.pointSize: Tokens.font.size.large
                         font.weight: 500
                     }
@@ -171,7 +171,7 @@ Item {
                         iconSize: Tokens.font.size.normal
                         horizontalPadding: Tokens.padding.normal
                         verticalPadding: Tokens.padding.smaller
-                        tooltip: qsTr("Launcher settings")
+                        tooltip: I18n.tr("Launcher settings")
 
                         onClicked: {
                             if (root.session.launcher.active) {
@@ -187,13 +187,13 @@ Item {
 
                 StyledText {
                     Layout.topMargin: Tokens.spacing.large
-                    text: qsTr("Applications (%1)").arg(root.searchText ? root.filteredApps.length : allAppsDb.apps.length)
+                    text: I18n.tr("Applications (%1)").arg(root.searchText ? root.filteredApps.length : allAppsDb.apps.length)
                     font.pointSize: Tokens.font.size.normal
                     font.weight: 500
                 }
 
                 StyledText {
-                    text: qsTr("All applications available in the launcher")
+                    text: I18n.tr("All applications available in the launcher")
                     color: Colours.palette.m3outline
                 }
 
@@ -229,7 +229,7 @@ Item {
                         topPadding: Tokens.padding.normal
                         bottomPadding: Tokens.padding.normal
 
-                        placeholderText: qsTr("Search applications...")
+                        placeholderText: I18n.tr("Search applications...")
 
                         onTextChanged: {
                             root.searchText = text;
@@ -353,7 +353,7 @@ Item {
 
                                 StyledText {
                                     Layout.fillWidth: true
-                                    text: modelData.name || modelData.entry?.name || qsTr("Unknown")
+                                    text: modelData.name || modelData.entry?.name || I18n.tr("Unknown")
                                     font.pointSize: Tokens.font.size.normal
                                 }
 
@@ -525,7 +525,7 @@ Item {
                 Layout.topMargin: Tokens.padding.large * 2
                 visible: displayedApp === null
                 icon: "apps"
-                title: qsTr("Launcher Applications")
+                title: I18n.tr("Launcher Applications")
             }
 
             Item {
@@ -563,7 +563,7 @@ Item {
                         id: appTitleText
 
                         Layout.alignment: Qt.AlignHCenter
-                        text: displayedApp ? (displayedApp.name || displayedApp.entry?.name || qsTr("Application Details")) : ""
+                        text: displayedApp ? (displayedApp.name || displayedApp.entry?.name || I18n.tr("Application Details")) : ""
                         font.pointSize: Tokens.font.size.large
                         font.bold: true
                     }
@@ -599,7 +599,7 @@ Item {
                         SwitchRow {
                             Layout.topMargin: Tokens.spacing.normal
                             visible: appDetailsLayout.displayedApp !== null
-                            label: qsTr("Mark as favourite")
+                            label: I18n.tr("Mark as favourite")
                             checked: root.favouriteChecked
                             // disabled if:
                             // * app is hidden
@@ -631,7 +631,7 @@ Item {
                         SwitchRow {
                             Layout.topMargin: Tokens.spacing.normal
                             visible: appDetailsLayout.displayedApp !== null
-                            label: qsTr("Hide from launcher")
+                            label: I18n.tr("Hide from launcher")
                             checked: root.hideFromLauncherChecked
                             // disabled if:
                             // * app is favourited

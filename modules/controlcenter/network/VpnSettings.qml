@@ -12,6 +12,7 @@ import qs.components.containers
 import qs.components.controls
 import qs.components.effects
 import qs.services
+import qs.utils
 
 ColumnLayout {
     id: root
@@ -22,18 +23,18 @@ ColumnLayout {
 
     SettingsHeader {
         icon: "vpn_key"
-        title: qsTr("VPN Settings")
+        title: I18n.tr("VPN Settings")
     }
 
     SectionHeader {
         Layout.topMargin: Tokens.spacing.large
-        title: qsTr("General")
-        description: qsTr("VPN configuration")
+        title: I18n.tr("General")
+        description: I18n.tr("VPN configuration")
     }
 
     SectionContainer {
         ToggleRow {
-            label: qsTr("VPN enabled")
+            label: I18n.tr("VPN enabled")
             checked: GlobalConfig.utilities.vpn.enabled
             toggle.onToggled: {
                 GlobalConfig.utilities.vpn.enabled = checked;
@@ -43,8 +44,8 @@ ColumnLayout {
 
     SectionHeader {
         Layout.topMargin: Tokens.spacing.large
-        title: qsTr("Providers")
-        description: qsTr("Manage VPN providers")
+        title: I18n.tr("Providers")
+        description: I18n.tr("Manage VPN providers")
     }
 
     SectionContainer {
@@ -108,7 +109,7 @@ ColumnLayout {
                             }
 
                             StyledText {
-                                text: qsTr("%1 • %2").arg(modelData.name).arg(modelData.interface || qsTr("No interface"))
+                                text: I18n.tr("%1 • %2").arg(modelData.name).arg(modelData.interface || I18n.tr("No interface"))
                                 font.pointSize: Tokens.font.size.small
                                 color: Colours.palette.m3outline
                             }
@@ -184,7 +185,7 @@ ColumnLayout {
         TextButton {
             Layout.fillWidth: true
             Layout.topMargin: Tokens.spacing.normal
-            text: qsTr("+ Add Provider")
+            text: I18n.tr("+ Add Provider")
             inactiveColour: Colours.palette.m3primaryContainer
             inactiveOnColour: Colours.palette.m3onPrimaryContainer
 
@@ -196,8 +197,8 @@ ColumnLayout {
 
     SectionHeader {
         Layout.topMargin: Tokens.spacing.large
-        title: qsTr("Quick Add")
-        description: qsTr("Add common VPN providers")
+        title: I18n.tr("Quick Add")
+        description: I18n.tr("Add common VPN providers")
     }
 
     SectionContainer {
@@ -205,7 +206,7 @@ ColumnLayout {
 
         TextButton {
             Layout.fillWidth: true
-            text: qsTr("+ Add NetBird")
+            text: I18n.tr("+ Add NetBird")
             inactiveColour: Colours.tPalette.m3surfaceContainerHigh
             inactiveOnColour: Colours.palette.m3onSurface
 
@@ -222,7 +223,7 @@ ColumnLayout {
 
         TextButton {
             Layout.fillWidth: true
-            text: qsTr("+ Add Tailscale")
+            text: I18n.tr("+ Add Tailscale")
             inactiveColour: Colours.tPalette.m3surfaceContainerHigh
             inactiveOnColour: Colours.palette.m3onSurface
 
@@ -239,7 +240,7 @@ ColumnLayout {
 
         TextButton {
             Layout.fillWidth: true
-            text: qsTr("+ Add Cloudflare WARP")
+            text: I18n.tr("+ Add Cloudflare WARP")
             inactiveColour: Colours.tPalette.m3surfaceContainerHigh
             inactiveOnColour: Colours.palette.m3onSurface
 

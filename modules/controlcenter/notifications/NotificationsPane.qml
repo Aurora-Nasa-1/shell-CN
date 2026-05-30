@@ -12,6 +12,7 @@ import qs.components.containers
 import qs.components.controls
 import qs.components.effects
 import qs.services
+import qs.utils
 
 Item {
     id: root
@@ -122,7 +123,7 @@ Item {
                         alignTop: true
 
                         StyledText {
-                            text: qsTr("Notifications")
+                            text: I18n.tr("Notifications")
                             font.pointSize: Tokens.font.size.normal
                         }
 
@@ -133,7 +134,7 @@ Item {
                                 active = root.notificationsFullscreen === "off" ? notificationsFullscreenOffItem : notificationsFullscreenOnItem;
                             }
 
-                            label: qsTr("Show in fullscreen")
+                            label: I18n.tr("Show in fullscreen")
                             menuItems: [notificationsFullscreenOffItem, notificationsFullscreenOnItem]
 
                             Component.onCompleted: syncActiveItem()
@@ -149,9 +150,9 @@ Item {
                             MenuItem {
                                 id: notificationsFullscreenOffItem
 
-                                text: qsTr("Off")
+                                text: I18n.tr("Off")
                                 icon: "notifications_off"
-                                activeText: qsTr("Off")
+                                activeText: I18n.tr("Off")
                                 onClicked: {
                                     root.notificationsFullscreen = "off";
                                     root.saveConfig();
@@ -161,9 +162,9 @@ Item {
                             MenuItem {
                                 id: notificationsFullscreenOnItem
 
-                                text: qsTr("On")
+                                text: I18n.tr("On")
                                 icon: "notifications"
-                                activeText: qsTr("On")
+                                activeText: I18n.tr("On")
                                 onClicked: {
                                     root.notificationsFullscreen = "on";
                                     root.saveConfig();
@@ -172,7 +173,7 @@ Item {
                         }
 
                         SwitchRow {
-                            label: qsTr("Expire automatically")
+                            label: I18n.tr("Expire automatically")
                             checked: root.notificationsExpire
                             onToggled: checked => {
                                 root.notificationsExpire = checked;
@@ -181,7 +182,7 @@ Item {
                         }
 
                         SwitchRow {
-                            label: qsTr("Open expanded")
+                            label: I18n.tr("Open expanded")
                             checked: root.notificationsOpenExpanded
                             onToggled: checked => {
                                 root.notificationsOpenExpanded = checked;
@@ -190,7 +191,7 @@ Item {
                         }
 
                         SpinBoxRow {
-                            label: qsTr("Default timeout")
+                            label: I18n.tr("Default timeout")
                             value: root.notificationsDefaultExpireTimeout
                             min: 1000
                             max: 60000
@@ -202,7 +203,7 @@ Item {
                         }
 
                         SpinBoxRow {
-                            label: qsTr("Group preview count")
+                            label: I18n.tr("Group preview count")
                             value: root.notificationsGroupPreviewNum
                             min: 1
                             max: 10
@@ -225,7 +226,7 @@ Item {
                         alignTop: true
 
                         StyledText {
-                            text: qsTr("Toast settings")
+                            text: I18n.tr("Toast settings")
                             font.pointSize: Tokens.font.size.normal
                         }
 
@@ -248,7 +249,7 @@ Item {
 
                             Layout.fillWidth: true
                             z: expanded ? 100 : 0
-                            label: qsTr("Show in fullscreen")
+                            label: I18n.tr("Show in fullscreen")
                             menuItems: [toastFullscreenOffItem, toastFullscreenImportantItem, toastFullscreenAllItem]
 
                             Component.onCompleted: syncActiveItem()
@@ -264,9 +265,9 @@ Item {
                             MenuItem {
                                 id: toastFullscreenOffItem
 
-                                text: qsTr("Off")
+                                text: I18n.tr("Off")
                                 icon: "notifications_off"
-                                activeText: qsTr("Off")
+                                activeText: I18n.tr("Off")
                                 onClicked: {
                                     root.toastsFullscreen = "off";
                                     root.saveConfig();
@@ -276,9 +277,9 @@ Item {
                             MenuItem {
                                 id: toastFullscreenImportantItem
 
-                                text: qsTr("Important")
+                                text: I18n.tr("Important")
                                 icon: "priority_high"
-                                activeText: qsTr("Important")
+                                activeText: I18n.tr("Important")
                                 onClicked: {
                                     root.toastsFullscreen = "important";
                                     root.saveConfig();
@@ -288,9 +289,9 @@ Item {
                             MenuItem {
                                 id: toastFullscreenAllItem
 
-                                text: qsTr("On")
+                                text: I18n.tr("On")
                                 icon: "notifications"
-                                activeText: qsTr("On")
+                                activeText: I18n.tr("On")
                                 onClicked: {
                                     root.toastsFullscreen = "all";
                                     root.saveConfig();
@@ -300,7 +301,7 @@ Item {
 
                         SpinBoxRow {
                             Layout.fillWidth: true
-                            label: qsTr("Visible toasts")
+                            label: I18n.tr("Visible toasts")
                             value: root.maxToasts
                             min: 1
                             max: 10
@@ -319,7 +320,7 @@ Item {
 
                             SwitchRow {
                                 Layout.fillWidth: true
-                                label: qsTr("Charging changes")
+                                label: I18n.tr("Charging changes")
                                 checked: root.chargingChanged
                                 onToggled: checked => {
                                     root.chargingChanged = checked;
@@ -329,7 +330,7 @@ Item {
 
                             SwitchRow {
                                 Layout.fillWidth: true
-                                label: qsTr("Game mode changes")
+                                label: I18n.tr("Game mode changes")
                                 checked: root.gameModeChanged
                                 onToggled: checked => {
                                     root.gameModeChanged = checked;
@@ -339,7 +340,7 @@ Item {
 
                             SwitchRow {
                                 Layout.fillWidth: true
-                                label: qsTr("Do not disturb")
+                                label: I18n.tr("Do not disturb")
                                 checked: root.dndChanged
                                 onToggled: checked => {
                                     root.dndChanged = checked;
@@ -349,7 +350,7 @@ Item {
 
                             SwitchRow {
                                 Layout.fillWidth: true
-                                label: qsTr("Audio output changes")
+                                label: I18n.tr("Audio output changes")
                                 checked: root.audioOutputChanged
                                 onToggled: checked => {
                                     root.audioOutputChanged = checked;
@@ -359,7 +360,7 @@ Item {
 
                             SwitchRow {
                                 Layout.fillWidth: true
-                                label: qsTr("Audio input changes")
+                                label: I18n.tr("Audio input changes")
                                 checked: root.audioInputChanged
                                 onToggled: checked => {
                                     root.audioInputChanged = checked;
@@ -369,7 +370,7 @@ Item {
 
                             SwitchRow {
                                 Layout.fillWidth: true
-                                label: qsTr("Caps lock changes")
+                                label: I18n.tr("Caps lock changes")
                                 checked: root.capsLockChanged
                                 onToggled: checked => {
                                     root.capsLockChanged = checked;
@@ -379,7 +380,7 @@ Item {
 
                             SwitchRow {
                                 Layout.fillWidth: true
-                                label: qsTr("Num lock changes")
+                                label: I18n.tr("Num lock changes")
                                 checked: root.numLockChanged
                                 onToggled: checked => {
                                     root.numLockChanged = checked;
@@ -389,7 +390,7 @@ Item {
 
                             SwitchRow {
                                 Layout.fillWidth: true
-                                label: qsTr("Keyboard layout changes")
+                                label: I18n.tr("Keyboard layout changes")
                                 checked: root.kbLayoutChanged
                                 onToggled: checked => {
                                     root.kbLayoutChanged = checked;
@@ -399,7 +400,7 @@ Item {
 
                             SwitchRow {
                                 Layout.fillWidth: true
-                                label: qsTr("VPN changes")
+                                label: I18n.tr("VPN changes")
                                 checked: root.vpnChanged
                                 onToggled: checked => {
                                     root.vpnChanged = checked;
@@ -409,7 +410,7 @@ Item {
 
                             SwitchRow {
                                 Layout.fillWidth: true
-                                label: qsTr("Now playing")
+                                label: I18n.tr("Now playing")
                                 checked: root.nowPlaying
                                 onToggled: checked => {
                                     root.nowPlaying = checked;

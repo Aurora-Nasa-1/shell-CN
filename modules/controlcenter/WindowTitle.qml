@@ -3,6 +3,7 @@ import Quickshell
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.utils
 
 StyledRect {
     id: root
@@ -19,7 +20,7 @@ StyledRect {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
 
-        text: qsTr("Caelestia Settings - %1").arg(root.session.active)
+        text: I18n.tr("Caelestia Settings - %1").arg(root.session.active)
         font.capitalization: Font.Capitalize
         font.pointSize: Tokens.font.size.larger
         font.weight: 500

@@ -9,17 +9,18 @@ import qs.components
 import qs.components.containers
 import qs.components.controls
 import qs.services
+import qs.utils
 
 CollapsibleSection {
     id: root
 
     required property var rootPane
 
-    title: qsTr("Background")
+    title: I18n.tr("Background")
     showBackground: true
 
     SwitchRow {
-        label: qsTr("Background enabled")
+        label: I18n.tr("Background enabled")
         checked: rootPane.backgroundEnabled
         onToggled: checked => {
             rootPane.backgroundEnabled = checked;
@@ -28,7 +29,7 @@ CollapsibleSection {
     }
 
     SwitchRow {
-        label: qsTr("Wallpaper enabled")
+        label: I18n.tr("Wallpaper enabled")
         checked: rootPane.wallpaperEnabled
         onToggled: checked => {
             rootPane.wallpaperEnabled = checked;
@@ -38,13 +39,13 @@ CollapsibleSection {
 
     StyledText {
         Layout.topMargin: Tokens.spacing.normal
-        text: qsTr("Desktop Clock")
+        text: I18n.tr("Desktop Clock")
         font.pointSize: Tokens.font.size.larger
         font.weight: 500
     }
 
     SwitchRow {
-        label: qsTr("Desktop Clock enabled")
+        label: I18n.tr("Desktop Clock enabled")
         checked: rootPane.desktopClockEnabled
         onToggled: checked => {
             rootPane.desktopClockEnabled = checked;
@@ -68,32 +69,32 @@ CollapsibleSection {
         z: 1
 
         StyledText {
-            text: qsTr("Positioning")
+            text: I18n.tr("Positioning")
             font.pointSize: Tokens.font.size.larger
             font.weight: 500
         }
 
         SplitButtonRow {
-            label: qsTr("Vertical Position")
+            label: I18n.tr("Vertical Position")
             enabled: rootPane.desktopClockEnabled
 
             menuItems: [
                 MenuItem {
                     property string val: "top"
 
-                    text: qsTr("Top")
+                    text: I18n.tr("Top")
                     icon: "vertical_align_top"
                 },
                 MenuItem {
                     property string val: "middle"
 
-                    text: qsTr("Middle")
+                    text: I18n.tr("Middle")
                     icon: "vertical_align_center"
                 },
                 MenuItem {
                     property string val: "bottom"
 
-                    text: qsTr("Bottom")
+                    text: I18n.tr("Bottom")
                     icon: "vertical_align_bottom"
                 }
             ]
@@ -110,7 +111,7 @@ CollapsibleSection {
         }
 
         SplitButtonRow {
-            label: qsTr("Horizontal Position")
+            label: I18n.tr("Horizontal Position")
             enabled: rootPane.desktopClockEnabled
             expandedZ: 99
 
@@ -118,19 +119,19 @@ CollapsibleSection {
                 MenuItem {
                     property string val: "left"
 
-                    text: qsTr("Left")
+                    text: I18n.tr("Left")
                     icon: "align_horizontal_left"
                 },
                 MenuItem {
                     property string val: "center"
 
-                    text: qsTr("Center")
+                    text: I18n.tr("Center")
                     icon: "align_horizontal_center"
                 },
                 MenuItem {
                     property string val: "right"
 
-                    text: qsTr("Right")
+                    text: I18n.tr("Right")
                     icon: "align_horizontal_right"
                 }
             ]
@@ -147,7 +148,7 @@ CollapsibleSection {
     }
 
     SwitchRow {
-        label: qsTr("Invert colors")
+        label: I18n.tr("Invert colors")
         checked: rootPane.desktopClockInvertColors
         onToggled: checked => {
             rootPane.desktopClockInvertColors = checked;
@@ -159,13 +160,13 @@ CollapsibleSection {
         contentSpacing: Tokens.spacing.small
 
         StyledText {
-            text: qsTr("Shadow")
+            text: I18n.tr("Shadow")
             font.pointSize: Tokens.font.size.larger
             font.weight: 500
         }
 
         SwitchRow {
-            label: qsTr("Enabled")
+            label: I18n.tr("Enabled")
             checked: rootPane.desktopClockShadowEnabled
             onToggled: checked => {
                 rootPane.desktopClockShadowEnabled = checked;
@@ -179,7 +180,7 @@ CollapsibleSection {
             SliderInput {
                 Layout.fillWidth: true
 
-                label: qsTr("Opacity")
+                label: I18n.tr("Opacity")
                 value: rootPane.desktopClockShadowOpacity * 100
                 from: 0
                 to: 100
@@ -204,7 +205,7 @@ CollapsibleSection {
             SliderInput {
                 Layout.fillWidth: true
 
-                label: qsTr("Blur")
+                label: I18n.tr("Blur")
                 value: rootPane.desktopClockShadowBlur * 100
                 from: 0
                 to: 100
@@ -228,13 +229,13 @@ CollapsibleSection {
         contentSpacing: Tokens.spacing.small
 
         StyledText {
-            text: qsTr("Background")
+            text: I18n.tr("Background")
             font.pointSize: Tokens.font.size.larger
             font.weight: 500
         }
 
         SwitchRow {
-            label: qsTr("Enabled")
+            label: I18n.tr("Enabled")
             checked: rootPane.desktopClockBackgroundEnabled
             onToggled: checked => {
                 rootPane.desktopClockBackgroundEnabled = checked;
@@ -243,7 +244,7 @@ CollapsibleSection {
         }
 
         SwitchRow {
-            label: qsTr("Blur enabled")
+            label: I18n.tr("Blur enabled")
             checked: rootPane.desktopClockBackgroundBlur
             onToggled: checked => {
                 rootPane.desktopClockBackgroundBlur = checked;
@@ -257,7 +258,7 @@ CollapsibleSection {
             SliderInput {
                 Layout.fillWidth: true
 
-                label: qsTr("Opacity")
+                label: I18n.tr("Opacity")
                 value: rootPane.desktopClockBackgroundOpacity * 100
                 from: 0
                 to: 100
@@ -279,13 +280,13 @@ CollapsibleSection {
 
     StyledText {
         Layout.topMargin: Tokens.spacing.normal
-        text: qsTr("Visualiser")
+        text: I18n.tr("Visualiser")
         font.pointSize: Tokens.font.size.larger
         font.weight: 500
     }
 
     SwitchRow {
-        label: qsTr("Visualiser enabled")
+        label: I18n.tr("Visualiser enabled")
         checked: rootPane.visualiserEnabled
         onToggled: checked => {
             rootPane.visualiserEnabled = checked;
@@ -294,7 +295,7 @@ CollapsibleSection {
     }
 
     SwitchRow {
-        label: qsTr("Visualiser auto hide")
+        label: I18n.tr("Visualiser auto hide")
         checked: rootPane.visualiserAutoHide
         onToggled: checked => {
             rootPane.visualiserAutoHide = checked;
@@ -308,7 +309,7 @@ CollapsibleSection {
         SliderInput {
             Layout.fillWidth: true
 
-            label: qsTr("Visualiser rounding")
+            label: I18n.tr("Visualiser rounding")
             value: rootPane.visualiserRounding
             from: 0
             to: 10
@@ -333,7 +334,7 @@ CollapsibleSection {
         SliderInput {
             Layout.fillWidth: true
 
-            label: qsTr("Visualiser spacing")
+            label: I18n.tr("Visualiser spacing")
             value: rootPane.visualiserSpacing
             from: 0
             to: 2

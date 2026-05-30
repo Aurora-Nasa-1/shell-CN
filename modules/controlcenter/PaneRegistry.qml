@@ -1,6 +1,7 @@
 pragma Singleton
 
 import QtQuick
+import qs.utils
 
 QtObject {
     id: root
@@ -9,48 +10,56 @@ QtObject {
         QtObject {
             readonly property string id: "network"
             readonly property string label: "network"
+            readonly property string displayLabel: I18n.tr("Network")
             readonly property string icon: "router"
             readonly property string component: "network/NetworkingPane.qml"
         },
         QtObject {
             readonly property string id: "bluetooth"
             readonly property string label: "bluetooth"
+            readonly property string displayLabel: I18n.tr("Bluetooth")
             readonly property string icon: "settings_bluetooth"
             readonly property string component: "bluetooth/BtPane.qml"
         },
         QtObject {
             readonly property string id: "audio"
             readonly property string label: "audio"
+            readonly property string displayLabel: I18n.tr("Audio")
             readonly property string icon: "volume_up"
             readonly property string component: "audio/AudioPane.qml"
         },
         QtObject {
             readonly property string id: "appearance"
             readonly property string label: "appearance"
+            readonly property string displayLabel: I18n.tr("Appearance")
             readonly property string icon: "palette"
             readonly property string component: "appearance/AppearancePane.qml"
         },
         QtObject {
             readonly property string id: "taskbar"
             readonly property string label: "taskbar"
+            readonly property string displayLabel: I18n.tr("Taskbar")
             readonly property string icon: "task_alt"
             readonly property string component: "taskbar/TaskbarPane.qml"
         },
         QtObject {
             readonly property string id: "notifications"
             readonly property string label: "notifications"
+            readonly property string displayLabel: I18n.tr("Notifications")
             readonly property string icon: "notifications"
             readonly property string component: "notifications/NotificationsPane.qml"
         },
         QtObject {
             readonly property string id: "launcher"
             readonly property string label: "launcher"
+            readonly property string displayLabel: I18n.tr("Launcher")
             readonly property string icon: "apps"
             readonly property string component: "launcher/LauncherPane.qml"
         },
         QtObject {
             readonly property string id: "dashboard"
             readonly property string label: "dashboard"
+            readonly property string displayLabel: I18n.tr("Dashboard")
             readonly property string icon: "dashboard"
             readonly property string component: "dashboard/DashboardPane.qml"
         }

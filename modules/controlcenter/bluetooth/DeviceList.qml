@@ -20,8 +20,8 @@ DeviceList {
     readonly property bool smallDiscoverable: width <= 540
     readonly property bool smallPairable: width <= 480
 
-    title: qsTr("Devices (%1)").arg(Bluetooth.devices.values.length)
-    description: qsTr("All available bluetooth devices")
+    title: I18n.tr("Devices (%1)").arg(Bluetooth.devices.values.length)
+    description: I18n.tr("All available bluetooth devices")
     activeItem: session.bt.active
 
     model: ScriptModel {
@@ -35,7 +35,7 @@ DeviceList {
             spacing: Tokens.spacing.smaller
 
             StyledText {
-                text: qsTr("Bluetooth")
+                text: I18n.tr("Bluetooth")
                 font.pointSize: Tokens.font.size.large
                 font.weight: 500
             }
@@ -51,7 +51,7 @@ DeviceList {
                 iconSize: Tokens.font.size.normal
                 horizontalPadding: Tokens.padding.normal
                 verticalPadding: Tokens.padding.smaller
-                tooltip: qsTr("Toggle Bluetooth")
+                tooltip: I18n.tr("Toggle Bluetooth")
 
                 onClicked: {
                     const adapter = Bluetooth.defaultAdapter;
@@ -63,11 +63,11 @@ DeviceList {
             ToggleButton {
                 toggled: Bluetooth.defaultAdapter?.discoverable ?? false
                 icon: root.smallDiscoverable ? "group_search" : ""
-                label: root.smallDiscoverable ? "" : qsTr("Discoverable")
+                label: root.smallDiscoverable ? "" : I18n.tr("Discoverable")
                 iconSize: Tokens.font.size.normal
                 horizontalPadding: Tokens.padding.normal
                 verticalPadding: Tokens.padding.smaller
-                tooltip: qsTr("Make discoverable")
+                tooltip: I18n.tr("Make discoverable")
 
                 onClicked: {
                     const adapter = Bluetooth.defaultAdapter;
@@ -79,11 +79,11 @@ DeviceList {
             ToggleButton {
                 toggled: Bluetooth.defaultAdapter?.pairable ?? false
                 icon: "missing_controller"
-                label: root.smallPairable ? "" : qsTr("Pairable")
+                label: root.smallPairable ? "" : I18n.tr("Pairable")
                 iconSize: Tokens.font.size.normal
                 horizontalPadding: Tokens.padding.normal
                 verticalPadding: Tokens.padding.smaller
-                tooltip: qsTr("Make pairable")
+                tooltip: I18n.tr("Make pairable")
 
                 onClicked: {
                     const adapter = Bluetooth.defaultAdapter;
@@ -99,7 +99,7 @@ DeviceList {
                 iconSize: Tokens.font.size.normal
                 horizontalPadding: Tokens.padding.normal
                 verticalPadding: Tokens.padding.smaller
-                tooltip: qsTr("Scan for devices")
+                tooltip: I18n.tr("Scan for devices")
 
                 onClicked: {
                     const adapter = Bluetooth.defaultAdapter;
@@ -115,7 +115,7 @@ DeviceList {
                 iconSize: Tokens.font.size.normal
                 horizontalPadding: Tokens.padding.normal
                 verticalPadding: Tokens.padding.smaller
-                tooltip: qsTr("Bluetooth settings")
+                tooltip: I18n.tr("Bluetooth settings")
 
                 onClicked: {
                     if (root.session.bt.active)
@@ -194,13 +194,13 @@ DeviceList {
 
                     StyledText {
                         Layout.fillWidth: true
-                        text: device.modelData ? device.modelData.name : qsTr("Unknown")
+                        text: device.modelData ? device.modelData.name : I18n.tr("Unknown")
                         elide: Text.ElideRight
                     }
 
                     StyledText {
                         Layout.fillWidth: true
-                        text: (device.modelData ? device.modelData.address : "") + (device.connected ? qsTr(" (Connected)") : (device.modelData && device.modelData.bonded) ? qsTr(" (Paired)") : "")
+                        text: (device.modelData ? device.modelData.address : "") + (device.connected ? I18n.tr(" (Connected)") : (device.modelData && device.modelData.bonded) ? I18n.tr(" (Paired)") : "")
                         color: Colours.palette.m3outline
                         font.pointSize: Tokens.font.size.small
                         elide: Text.ElideRight

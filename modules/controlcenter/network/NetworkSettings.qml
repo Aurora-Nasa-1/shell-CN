@@ -11,6 +11,7 @@ import qs.components.containers
 import qs.components.controls
 import qs.components.effects
 import qs.services
+import qs.utils
 
 ColumnLayout {
     id: root
@@ -21,39 +22,39 @@ ColumnLayout {
 
     SettingsHeader {
         icon: "router"
-        title: qsTr("Network Settings")
+        title: I18n.tr("Network Settings")
     }
 
     SectionHeader {
         Layout.topMargin: Tokens.spacing.large
-        title: qsTr("Ethernet")
-        description: qsTr("Ethernet device information")
+        title: I18n.tr("Ethernet")
+        description: I18n.tr("Ethernet device information")
     }
 
     SectionContainer {
         contentSpacing: Tokens.spacing.small / 2
 
         PropertyRow {
-            label: qsTr("Total devices")
-            value: qsTr("%1").arg(Nmcli.ethernetDevices.length)
+            label: I18n.tr("Total devices")
+            value: I18n.tr("%1").arg(Nmcli.ethernetDevices.length)
         }
 
         PropertyRow {
             showTopMargin: true
-            label: qsTr("Connected devices")
-            value: qsTr("%1").arg(Nmcli.ethernetDevices.filter(d => d.connected).length)
+            label: I18n.tr("Connected devices")
+            value: I18n.tr("%1").arg(Nmcli.ethernetDevices.filter(d => d.connected).length)
         }
     }
 
     SectionHeader {
         Layout.topMargin: Tokens.spacing.large
-        title: qsTr("Wireless")
-        description: qsTr("WiFi network settings")
+        title: I18n.tr("Wireless")
+        description: I18n.tr("WiFi network settings")
     }
 
     SectionContainer {
         ToggleRow {
-            label: qsTr("WiFi enabled")
+            label: I18n.tr("WiFi enabled")
             checked: Nmcli.wifiEnabled
             toggle.onToggled: {
                 Nmcli.enableWifi(checked);
@@ -63,8 +64,8 @@ ColumnLayout {
 
     SectionHeader {
         Layout.topMargin: Tokens.spacing.large
-        title: qsTr("VPN")
-        description: qsTr("VPN provider settings")
+        title: I18n.tr("VPN")
+        description: I18n.tr("VPN provider settings")
         visible: GlobalConfig.utilities.vpn.enabled || GlobalConfig.utilities.vpn.provider.length > 0
     }
 
@@ -72,7 +73,7 @@ ColumnLayout {
         visible: GlobalConfig.utilities.vpn.enabled || GlobalConfig.utilities.vpn.provider.length > 0
 
         ToggleRow {
-            label: qsTr("VPN enabled")
+            label: I18n.tr("VPN enabled")
             checked: GlobalConfig.utilities.vpn.enabled
             toggle.onToggled: {
                 GlobalConfig.utilities.vpn.enabled = checked;
@@ -81,15 +82,15 @@ ColumnLayout {
 
         PropertyRow {
             showTopMargin: true
-            label: qsTr("Providers")
-            value: qsTr("%1").arg(GlobalConfig.utilities.vpn.provider.length)
+            label: I18n.tr("Providers")
+            value: I18n.tr("%1").arg(GlobalConfig.utilities.vpn.provider.length)
         }
 
         TextButton {
             Layout.fillWidth: true
             Layout.topMargin: Tokens.spacing.normal
             Layout.minimumHeight: Tokens.font.size.normal + Tokens.padding.normal * 2
-            text: qsTr("⚙ Manage VPN Providers")
+            text: I18n.tr("⚙ Manage VPN Providers")
             inactiveColour: Colours.palette.m3secondaryContainer
             inactiveOnColour: Colours.palette.m3onSecondaryContainer
 
@@ -101,37 +102,37 @@ ColumnLayout {
 
     SectionHeader {
         Layout.topMargin: Tokens.spacing.large
-        title: qsTr("Current connection")
-        description: qsTr("Active network connection information")
+        title: I18n.tr("Current connection")
+        description: I18n.tr("Active network connection information")
     }
 
     SectionContainer {
         contentSpacing: Tokens.spacing.small / 2
 
         PropertyRow {
-            label: qsTr("Network")
-            value: Nmcli.active ? Nmcli.active.ssid : (Nmcli.activeEthernet ? Nmcli.activeEthernet.interface : qsTr("Not connected"))
+            label: I18n.tr("Network")
+            value: Nmcli.active ? Nmcli.active.ssid : (Nmcli.activeEthernet ? Nmcli.activeEthernet.interface : I18n.tr("Not connected"))
         }
 
         PropertyRow {
             showTopMargin: true
             visible: Nmcli.active !== null
-            label: qsTr("Signal strength")
-            value: Nmcli.active ? qsTr("%1%").arg(Nmcli.active.strength) : qsTr("N/A")
+            label: I18n.tr("Signal strength")
+            value: Nmcli.active ? I18n.tr("%1%").arg(Nmcli.active.strength) : I18n.tr("N/A")
         }
 
         PropertyRow {
             showTopMargin: true
             visible: Nmcli.active !== null
-            label: qsTr("Security")
-            value: Nmcli.active ? (Nmcli.active.isSecure ? qsTr("Secured") : qsTr("Open")) : qsTr("N/A")
+            label: I18n.tr("Security")
+            value: Nmcli.active ? (Nmcli.active.isSecure ? I18n.tr("Secured") : I18n.tr("Open")) : I18n.tr("N/A")
         }
 
         PropertyRow {
             showTopMargin: true
             visible: Nmcli.active !== null
-            label: qsTr("Frequency")
-            value: Nmcli.active ? qsTr("%1 MHz").arg(Nmcli.active.frequency) : qsTr("N/A")
+            label: I18n.tr("Frequency")
+            value: Nmcli.active ? I18n.tr("%1 MHz").arg(Nmcli.active.frequency) : I18n.tr("N/A")
         }
     }
 

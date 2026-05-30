@@ -50,7 +50,7 @@ Item {
                         spacing: Tokens.spacing.smaller
 
                         StyledText {
-                            text: qsTr("Network")
+                            text: I18n.tr("Network")
                             font.pointSize: Tokens.font.size.large
                             font.weight: 500
                         }
@@ -66,7 +66,7 @@ Item {
                             iconSize: Tokens.font.size.normal
                             horizontalPadding: Tokens.padding.normal
                             verticalPadding: Tokens.padding.smaller
-                            tooltip: qsTr("Toggle WiFi")
+                            tooltip: I18n.tr("Toggle WiFi")
 
                             onClicked: {
                                 Nmcli.toggleWifi(null);
@@ -80,7 +80,7 @@ Item {
                             iconSize: Tokens.font.size.normal
                             horizontalPadding: Tokens.padding.normal
                             verticalPadding: Tokens.padding.smaller
-                            tooltip: qsTr("Scan for networks")
+                            tooltip: I18n.tr("Scan for networks")
 
                             onClicked: {
                                 Nmcli.rescanWifi();
@@ -94,7 +94,7 @@ Item {
                             iconSize: Tokens.font.size.normal
                             horizontalPadding: Tokens.padding.normal
                             verticalPadding: Tokens.padding.smaller
-                            tooltip: qsTr("Network settings")
+                            tooltip: I18n.tr("Network settings")
 
                             onClicked: {
                                 if (root.session.ethernet.active || root.session.network.active) {
@@ -115,7 +115,7 @@ Item {
                         id: vpnListSection
 
                         Layout.fillWidth: true
-                        title: qsTr("VPN")
+                        title: I18n.tr("VPN")
                         expanded: true
 
                         Loader {
@@ -134,7 +134,7 @@ Item {
                         id: ethernetListSection
 
                         Layout.fillWidth: true
-                        title: qsTr("Ethernet")
+                        title: I18n.tr("Ethernet")
                         expanded: true
 
                         Loader {
@@ -153,7 +153,7 @@ Item {
                         id: wirelessListSection
 
                         Layout.fillWidth: true
-                        title: qsTr("Wireless")
+                        title: I18n.tr("Wireless")
                         expanded: true
 
                         Loader {

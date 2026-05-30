@@ -58,13 +58,13 @@ StyledFlickable {
 
                         StyledText {
                             Layout.topMargin: Tokens.spacing.large
-                            text: qsTr("Connection status")
+                            text: I18n.tr("Connection status")
                             font.pointSize: Tokens.font.size.larger
                             font.weight: 500
                         }
 
                         StyledText {
-                            text: qsTr("Connection settings for this device")
+                            text: I18n.tr("Connection settings for this device")
                             color: Colours.palette.m3outline
                         }
 
@@ -86,13 +86,13 @@ StyledFlickable {
                                 spacing: Tokens.spacing.larger
 
                                 Toggle {
-                                    label: qsTr("Connected")
+                                    label: I18n.tr("Connected")
                                     checked: root.device?.connected ?? false
                                     toggle.onToggled: root.device.connected = checked
                                 }
 
                                 Toggle {
-                                    label: qsTr("Paired")
+                                    label: I18n.tr("Paired")
                                     checked: root.device?.paired ?? false
                                     toggle.onToggled: {
                                         if (root.device.paired)
@@ -103,7 +103,7 @@ StyledFlickable {
                                 }
 
                                 Toggle {
-                                    label: qsTr("Blocked")
+                                    label: I18n.tr("Blocked")
                                     checked: root.device?.blocked ?? false
                                     toggle.onToggled: root.device.blocked = checked
                                 }
@@ -117,13 +117,13 @@ StyledFlickable {
 
                         StyledText {
                             Layout.topMargin: Tokens.spacing.large
-                            text: qsTr("Device properties")
+                            text: I18n.tr("Device properties")
                             font.pointSize: Tokens.font.size.larger
                             font.weight: 500
                         }
 
                         StyledText {
-                            text: qsTr("Additional settings")
+                            text: I18n.tr("Additional settings")
                             color: Colours.palette.m3outline
                         }
 
@@ -185,7 +185,7 @@ StyledFlickable {
 
                                             anchors.left: parent.left
 
-                                            text: qsTr("Device name")
+                                            text: I18n.tr("Device name")
                                             color: Colours.palette.m3outline
                                             font.pointSize: Tokens.font.size.small
                                         }
@@ -303,13 +303,13 @@ StyledFlickable {
                                 }
 
                                 Toggle {
-                                    label: qsTr("Trusted")
+                                    label: I18n.tr("Trusted")
                                     checked: root.device?.trusted ?? false
                                     toggle.onToggled: root.device.trusted = checked
                                 }
 
                                 Toggle {
-                                    label: qsTr("Wake allowed")
+                                    label: I18n.tr("Wake allowed")
                                     checked: root.device?.wakeAllowed ?? false
                                     toggle.onToggled: root.device.wakeAllowed = checked
                                 }
@@ -323,13 +323,13 @@ StyledFlickable {
 
                         StyledText {
                             Layout.topMargin: Tokens.spacing.large
-                            text: qsTr("Device information")
+                            text: I18n.tr("Device information")
                             font.pointSize: Tokens.font.size.larger
                             font.weight: 500
                         }
 
                         StyledText {
-                            text: qsTr("Information about this device")
+                            text: I18n.tr("Information about this device")
                             color: Colours.palette.m3outline
                         }
 
@@ -351,7 +351,7 @@ StyledFlickable {
                                 spacing: Tokens.spacing.small / 2
 
                                 StyledText {
-                                    text: root.device?.batteryAvailable ? qsTr("Device battery (%1%)").arg(root.device.battery * 100) : qsTr("Battery unavailable")
+                                    text: root.device?.batteryAvailable ? I18n.tr("Device battery (%1%)").arg(root.device.battery * 100) : I18n.tr("Battery unavailable")
                                 }
 
                                 RowLayout {
@@ -383,7 +383,7 @@ StyledFlickable {
 
                                 StyledText {
                                     Layout.topMargin: Tokens.spacing.normal
-                                    text: qsTr("Dbus path")
+                                    text: I18n.tr("Dbus path")
                                 }
 
                                 StyledText {
@@ -394,7 +394,7 @@ StyledFlickable {
 
                                 StyledText {
                                     Layout.topMargin: Tokens.spacing.normal
-                                    text: qsTr("MAC address")
+                                    text: I18n.tr("MAC address")
                                 }
 
                                 StyledText {
@@ -405,18 +405,18 @@ StyledFlickable {
 
                                 StyledText {
                                     Layout.topMargin: Tokens.spacing.normal
-                                    text: qsTr("Bonded")
+                                    text: I18n.tr("Bonded")
                                 }
 
                                 StyledText {
-                                    text: root.device?.bonded ? qsTr("Yes") : qsTr("No")
+                                    text: root.device?.bonded ? I18n.tr("Yes") : I18n.tr("No")
                                     color: Colours.palette.m3outline
                                     font.pointSize: Tokens.font.size.small
                                 }
 
                                 StyledText {
                                     Layout.topMargin: Tokens.spacing.normal
-                                    text: qsTr("System name")
+                                    text: I18n.tr("System name")
                                 }
 
                                 StyledText {

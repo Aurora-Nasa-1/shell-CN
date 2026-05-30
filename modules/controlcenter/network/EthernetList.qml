@@ -9,14 +9,15 @@ import qs.components
 import qs.components.containers
 import qs.components.controls
 import qs.services
+import qs.utils
 
 DeviceList {
     id: root
 
     required property Session session
 
-    title: qsTr("Devices (%1)").arg(Nmcli.ethernetDevices.length)
-    description: qsTr("All available ethernet devices")
+    title: I18n.tr("Devices (%1)").arg(Nmcli.ethernetDevices.length)
+    description: I18n.tr("All available ethernet devices")
     activeItem: session.ethernet.active
 
     model: Nmcli.ethernetDevices
@@ -26,7 +27,7 @@ DeviceList {
             spacing: Tokens.spacing.smaller
 
             StyledText {
-                text: qsTr("Settings")
+                text: I18n.tr("Settings")
                 font.pointSize: Tokens.font.size.large
                 font.weight: 500
             }
@@ -118,7 +119,7 @@ DeviceList {
 
                     StyledText {
                         Layout.fillWidth: true
-                        text: modelData.interface || qsTr("Unknown")
+                        text: modelData.interface || I18n.tr("Unknown")
                         elide: Text.ElideRight
                     }
 
@@ -128,7 +129,7 @@ DeviceList {
 
                         StyledText {
                             Layout.fillWidth: true
-                            text: modelData.connected ? qsTr("Connected") : qsTr("Disconnected")
+                            text: modelData.connected ? I18n.tr("Connected") : I18n.tr("Disconnected")
                             color: modelData.connected ? Colours.palette.m3primary : Colours.palette.m3outline
                             font.pointSize: Tokens.font.size.small
                             font.weight: modelData.connected ? 500 : 400

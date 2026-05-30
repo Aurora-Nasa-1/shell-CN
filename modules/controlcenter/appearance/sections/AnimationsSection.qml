@@ -9,13 +9,14 @@ import qs.components
 import qs.components.containers
 import qs.components.controls
 import qs.services
+import qs.utils
 
 CollapsibleSection {
     id: root
 
     required property var rootPane
 
-    title: qsTr("Animations")
+    title: I18n.tr("Animations")
     showBackground: true
 
     SectionContainer {
@@ -24,7 +25,7 @@ CollapsibleSection {
         SliderInput {
             Layout.fillWidth: true
 
-            label: qsTr("Animation duration scale")
+            label: I18n.tr("Animation duration scale")
             value: rootPane.animDurationsScale
             from: 0.1
             to: 5.0

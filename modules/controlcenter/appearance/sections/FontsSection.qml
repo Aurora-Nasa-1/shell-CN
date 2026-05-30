@@ -9,19 +9,20 @@ import qs.components
 import qs.components.containers
 import qs.components.controls
 import qs.services
+import qs.utils
 
 CollapsibleSection {
     id: root
 
     required property var rootPane
 
-    title: qsTr("Fonts")
+    title: I18n.tr("Fonts")
     showBackground: true
 
     CollapsibleSection {
         id: sansFontSection
 
-        title: qsTr("Sans-serif font family")
+        title: I18n.tr("Sans-serif font family")
         expanded: true
         showBackground: true
         nested: true
@@ -102,7 +103,7 @@ CollapsibleSection {
     CollapsibleSection {
         id: monoFontSection
 
-        title: qsTr("Monospace font family")
+        title: I18n.tr("Monospace font family")
         expanded: false
         showBackground: true
         nested: true
@@ -183,7 +184,7 @@ CollapsibleSection {
     CollapsibleSection {
         id: materialFontSection
 
-        title: qsTr("Material font family")
+        title: I18n.tr("Material font family")
         expanded: false
         showBackground: true
         nested: true
@@ -269,7 +270,7 @@ CollapsibleSection {
         SliderInput {
             Layout.fillWidth: true
 
-            label: qsTr("Font size scale")
+            label: I18n.tr("Font size scale")
             value: rootPane.fontSizeScale
             from: 0.7
             to: 1.5

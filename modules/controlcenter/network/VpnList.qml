@@ -10,6 +10,7 @@ import qs.components
 import qs.components.controls
 import qs.components.effects
 import qs.services
+import qs.utils
 
 ColumnLayout {
     id: root
@@ -60,7 +61,7 @@ ColumnLayout {
 
     TextButton {
         Layout.fillWidth: true
-        text: qsTr("+ Add VPN Provider")
+        text: I18n.tr("+ Add VPN Provider")
         inactiveColour: Colours.palette.m3primaryContainer
         inactiveOnColour: Colours.palette.m3onPrimaryContainer
 
@@ -154,7 +155,7 @@ ColumnLayout {
                             elide: Text.ElideRight
                             maximumLineCount: 1
 
-                            text: modelData.displayName || qsTr("Unknown")
+                            text: modelData.displayName || I18n.tr("Unknown")
                         }
 
                         RowLayout {
@@ -165,24 +166,24 @@ ColumnLayout {
                                 Layout.fillWidth: true
                                 text: {
                                     if (!modelData.enabled)
-                                        return qsTr("Disabled");
+                                        return I18n.tr("Disabled");
 
                                     if (VPN.connecting)
-                                        return qsTr("Connecting...");
+                                        return I18n.tr("Connecting...");
 
                                     switch (VPN.status.state) {
                                     case "connected":
-                                        return qsTr("Connected");
+                                        return I18n.tr("Connected");
                                     case "disconnected":
-                                        return qsTr("Enabled");
+                                        return I18n.tr("Enabled");
                                     case "connecting":
-                                        return qsTr("Connecting...");
+                                        return I18n.tr("Connecting...");
                                     case "needs-auth":
-                                        return qsTr("Auth required");
+                                        return I18n.tr("Auth required");
                                     case "error":
-                                        return qsTr("Error");
+                                        return I18n.tr("Error");
                                     default:
-                                        return qsTr("Enabled");
+                                        return I18n.tr("Enabled");
                                     }
                                 }
                                 color: {
@@ -456,14 +457,14 @@ ColumnLayout {
                 }
 
                 StyledText {
-                    text: qsTr("Add VPN Provider")
+                    text: I18n.tr("Add VPN Provider")
                     font.pointSize: Tokens.font.size.large
                     font.weight: 500
                 }
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: qsTr("Choose a provider to add")
+                    text: I18n.tr("Choose a provider to add")
                     wrapMode: Text.WordWrap
                     color: Colours.palette.m3outline
                     font.pointSize: Tokens.font.size.small
@@ -472,7 +473,7 @@ ColumnLayout {
                 TextButton {
                     Layout.topMargin: Tokens.spacing.normal
                     Layout.fillWidth: true
-                    text: qsTr("NetBird")
+                    text: I18n.tr("NetBird")
                     inactiveColour: Colours.tPalette.m3surfaceContainerHigh
                     inactiveOnColour: Colours.palette.m3onSurface
                     onClicked: {
@@ -492,7 +493,7 @@ ColumnLayout {
 
                 TextButton {
                     Layout.fillWidth: true
-                    text: qsTr("Tailscale")
+                    text: I18n.tr("Tailscale")
                     inactiveColour: Colours.tPalette.m3surfaceContainerHigh
                     inactiveOnColour: Colours.palette.m3onSurface
                     onClicked: {
@@ -512,7 +513,7 @@ ColumnLayout {
 
                 TextButton {
                     Layout.fillWidth: true
-                    text: qsTr("Cloudflare WARP")
+                    text: I18n.tr("Cloudflare WARP")
                     inactiveColour: Colours.tPalette.m3surfaceContainerHigh
                     inactiveOnColour: Colours.palette.m3onSurface
                     onClicked: {
@@ -532,7 +533,7 @@ ColumnLayout {
 
                 TextButton {
                     Layout.fillWidth: true
-                    text: qsTr("WireGuard")
+                    text: I18n.tr("WireGuard")
                     inactiveColour: Colours.tPalette.m3surfaceContainerHigh
                     inactiveOnColour: Colours.palette.m3onSurface
                     onClicked: {
@@ -542,7 +543,7 @@ ColumnLayout {
 
                 TextButton {
                     Layout.fillWidth: true
-                    text: qsTr("Custom")
+                    text: I18n.tr("Custom")
                     inactiveColour: Colours.tPalette.m3surfaceContainerHigh
                     inactiveOnColour: Colours.palette.m3onSurface
                     onClicked: {
@@ -553,7 +554,7 @@ ColumnLayout {
                 TextButton {
                     Layout.topMargin: Tokens.spacing.normal
                     Layout.fillWidth: true
-                    text: qsTr("Cancel")
+                    text: I18n.tr("Cancel")
                     inactiveColour: Colours.palette.m3secondaryContainer
                     inactiveOnColour: Colours.palette.m3onSecondaryContainer
                     onClicked: vpnDialog.closeWithAnimation()
@@ -575,7 +576,7 @@ ColumnLayout {
                 }
 
                 StyledText {
-                    text: vpnDialog.editIndex >= 0 ? qsTr("Edit VPN Provider") : qsTr("Add %1 VPN").arg(vpnDialog.displayName)
+                    text: vpnDialog.editIndex >= 0 ? I18n.tr("Edit VPN Provider") : I18n.tr("Add %1 VPN").arg(vpnDialog.displayName)
                     font.pointSize: Tokens.font.size.large
                     font.weight: 500
                 }
@@ -585,7 +586,7 @@ ColumnLayout {
                     spacing: Tokens.spacing.smaller / 2
 
                     StyledText {
-                        text: qsTr("Display Name")
+                        text: I18n.tr("Display Name")
                         font.pointSize: Tokens.font.size.small
                         color: Colours.palette.m3onSurfaceVariant
                     }
@@ -622,7 +623,7 @@ ColumnLayout {
                     spacing: Tokens.spacing.smaller / 2
 
                     StyledText {
-                        text: qsTr("Interface (e.g., wg0, torguard)")
+                        text: I18n.tr("Interface (e.g., wg0, torguard)")
                         font.pointSize: Tokens.font.size.small
                         color: Colours.palette.m3onSurfaceVariant
                     }
@@ -660,7 +661,7 @@ ColumnLayout {
                     visible: vpnDialog.editIndex >= 0 ? (vpnDialog.connectCmd.length > 0) : (vpnDialog.providerName === "custom")
 
                     StyledText {
-                        text: qsTr("Connect Command (e.g., wg-quick up wg0)")
+                        text: I18n.tr("Connect Command (e.g., wg-quick up wg0)")
                         font.pointSize: Tokens.font.size.small
                         color: Colours.palette.m3onSurfaceVariant
                     }
@@ -698,7 +699,7 @@ ColumnLayout {
                     visible: vpnDialog.editIndex >= 0 ? (vpnDialog.connectCmd.length > 0) : (vpnDialog.providerName === "custom")
 
                     StyledText {
-                        text: qsTr("Disconnect Command (e.g., wg-quick down wg0)")
+                        text: I18n.tr("Disconnect Command (e.g., wg-quick down wg0)")
                         font.pointSize: Tokens.font.size.small
                         color: Colours.palette.m3onSurfaceVariant
                     }
@@ -737,7 +738,7 @@ ColumnLayout {
 
                     TextButton {
                         Layout.fillWidth: true
-                        text: qsTr("Cancel")
+                        text: I18n.tr("Cancel")
                         inactiveColour: Colours.tPalette.m3surfaceContainerHigh
                         inactiveOnColour: Colours.palette.m3onSurface
                         onClicked: vpnDialog.closeWithAnimation()
@@ -745,7 +746,7 @@ ColumnLayout {
 
                     TextButton {
                         Layout.fillWidth: true
-                        text: qsTr("Save")
+                        text: I18n.tr("Save")
                         enabled: {
                             const hasCommands = vpnDialog.connectCmd.length > 0 || vpnDialog.disconnectCmd.length > 0;
                             if (hasCommands) {

@@ -25,14 +25,14 @@ DeviceList {
         }
     }
 
-    title: qsTr("Networks (%1)").arg(Nmcli.networks.length)
-    description: qsTr("All available WiFi networks")
+    title: I18n.tr("Networks (%1)").arg(Nmcli.networks.length)
+    description: I18n.tr("All available WiFi networks")
     activeItem: session.network.active
 
     titleSuffix: Component {
         StyledText {
             visible: Nmcli.scanning
-            text: qsTr("Scanning...")
+            text: I18n.tr("Scanning...")
             color: Colours.palette.m3primary
             font.pointSize: Tokens.font.size.small
         }
@@ -51,7 +51,7 @@ DeviceList {
             spacing: Tokens.spacing.smaller
 
             StyledText {
-                text: qsTr("Settings")
+                text: I18n.tr("Settings")
                 font.pointSize: Tokens.font.size.large
                 font.weight: 500
             }
@@ -162,7 +162,7 @@ DeviceList {
                         elide: Text.ElideRight
                         maximumLineCount: 1
 
-                        text: modelData.ssid || qsTr("Unknown")
+                        text: modelData.ssid || I18n.tr("Unknown")
                     }
 
                     RowLayout {
@@ -173,13 +173,13 @@ DeviceList {
                             Layout.fillWidth: true
                             text: {
                                 if (modelData.active)
-                                    return qsTr("Connected");
+                                    return I18n.tr("Connected");
                                 if (modelData.isSecure && modelData.security && modelData.security.length > 0) {
                                     return modelData.security;
                                 }
                                 if (modelData.isSecure)
-                                    return qsTr("Secured");
-                                return qsTr("Open");
+                                    return I18n.tr("Secured");
+                                return I18n.tr("Open");
                             }
                             color: modelData.active ? Colours.palette.m3primary : Colours.palette.m3outline
                             font.pointSize: Tokens.font.size.small

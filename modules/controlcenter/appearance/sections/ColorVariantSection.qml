@@ -10,10 +10,11 @@ import qs.components
 import qs.components.containers
 import qs.components.controls
 import qs.services
+import qs.utils
 
 CollapsibleSection {
-    title: qsTr("Color variant")
-    description: qsTr("Material theme variant")
+    title: I18n.tr("Color variant")
+    description: I18n.tr("Material theme variant")
     showBackground: true
 
     ColumnLayout {

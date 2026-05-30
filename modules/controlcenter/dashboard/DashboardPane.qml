@@ -118,7 +118,7 @@ Item {
                     spacing: Tokens.spacing.smaller
 
                     StyledText {
-                        text: qsTr("Dashboard")
+                        text: I18n.tr("Dashboard")
                         font.pointSize: Tokens.font.size.large
                         font.weight: 500
                     }
@@ -131,6 +131,11 @@ Item {
 
                 // Performance Resources Section
                 PerformanceSection {
+                    rootItem: root
+                }
+
+                // Weather Settings Section
+                WeatherSection {
                     rootItem: root
                 }
             }

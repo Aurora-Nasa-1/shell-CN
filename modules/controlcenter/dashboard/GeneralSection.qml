@@ -6,6 +6,7 @@ import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.services
+import qs.utils
 
 SectionContainer {
     id: root
@@ -16,12 +17,12 @@ SectionContainer {
     alignTop: true
 
     StyledText {
-        text: qsTr("General Settings")
+        text: I18n.tr("General Settings")
         font.pointSize: Tokens.font.size.normal
     }
 
     SwitchRow {
-        label: qsTr("Enabled")
+        label: I18n.tr("Enabled")
         checked: root.rootItem.enabled
         onToggled: checked => {
             root.rootItem.enabled = checked;
@@ -30,7 +31,7 @@ SectionContainer {
     }
 
     SwitchRow {
-        label: qsTr("Show on hover")
+        label: I18n.tr("Show on hover")
         checked: root.rootItem.showOnHover
         onToggled: checked => {
             root.rootItem.showOnHover = checked;
@@ -44,7 +45,7 @@ SectionContainer {
 
         SwitchRow {
             Layout.fillWidth: true
-            label: qsTr("Show Dashboard tab")
+            label: I18n.tr("Show Dashboard tab")
             checked: root.rootItem.showDashboard
             onToggled: checked => {
                 root.rootItem.showDashboard = checked;
@@ -54,7 +55,7 @@ SectionContainer {
 
         SwitchRow {
             Layout.fillWidth: true
-            label: qsTr("Show Media tab")
+            label: I18n.tr("Show Media tab")
             checked: root.rootItem.showMedia
             onToggled: checked => {
                 root.rootItem.showMedia = checked;
@@ -64,7 +65,7 @@ SectionContainer {
 
         SwitchRow {
             Layout.fillWidth: true
-            label: qsTr("Show Performance tab")
+            label: I18n.tr("Show Performance tab")
             checked: root.rootItem.showPerformance
             onToggled: checked => {
                 root.rootItem.showPerformance = checked;
@@ -74,7 +75,7 @@ SectionContainer {
 
         SwitchRow {
             Layout.fillWidth: true
-            label: qsTr("Show Weather tab")
+            label: I18n.tr("Show Weather tab")
             checked: root.rootItem.showWeather
             onToggled: checked => {
                 root.rootItem.showWeather = checked;
@@ -86,7 +87,7 @@ SectionContainer {
     SliderInput {
         Layout.fillWidth: true
 
-        label: qsTr("Media update interval")
+        label: I18n.tr("Media update interval")
         value: root.rootItem.mediaUpdateInterval
         from: 100
         to: 10000
@@ -108,7 +109,7 @@ SectionContainer {
     SliderInput {
         Layout.fillWidth: true
 
-        label: qsTr("Drag threshold")
+        label: I18n.tr("Drag threshold")
         value: root.rootItem.dragThreshold
         from: 0
         to: 100

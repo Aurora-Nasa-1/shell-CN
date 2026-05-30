@@ -7,6 +7,7 @@ import Caelestia.Config
 import qs.components
 import qs.services
 import qs.modules.controlcenter
+import qs.utils
 
 Item {
     id: root
@@ -90,7 +91,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.leftMargin: Tokens.spacing.normal
 
-                    text: qsTr("Float window")
+                    text: I18n.tr("Float window")
                     color: Colours.palette.m3onPrimaryContainer
                     opacity: root.session.navExpanded ? 1 : 0
 
@@ -124,6 +125,7 @@ Item {
                 Layout.topMargin: index === 0 ? Tokens.spacing.large * 2 : 0
                 icon: PaneRegistry.getByIndex(index).icon
                 label: PaneRegistry.getByIndex(index).label
+                displayText: PaneRegistry.getByIndex(index).displayLabel
             }
         }
     }
@@ -133,6 +135,7 @@ Item {
 
         required property string icon
         required property string label
+        property string displayText: label
         readonly property bool active: root.session.active === label
 
         implicitWidth: background.implicitWidth
@@ -209,7 +212,7 @@ Item {
                 anchors.leftMargin: Tokens.spacing.normal
 
                 opacity: 0
-                text: item.label
+                text: item.displayText
                 color: item.active ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
                 font.capitalization: Font.Capitalize
             }
@@ -221,7 +224,7 @@ Item {
                 anchors.top: icon.bottom
                 anchors.topMargin: Tokens.spacing.small / 2
 
-                text: item.label
+                text: item.displayText
                 font.pointSize: Tokens.font.size.small
                 font.capitalization: Font.Capitalize
             }

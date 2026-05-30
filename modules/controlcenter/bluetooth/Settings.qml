@@ -10,6 +10,7 @@ import qs.components
 import qs.components.controls
 import qs.components.effects
 import qs.services
+import qs.utils
 
 ColumnLayout {
     id: root
@@ -20,18 +21,18 @@ ColumnLayout {
 
     SettingsHeader {
         icon: "bluetooth"
-        title: qsTr("Bluetooth Settings")
+        title: I18n.tr("Bluetooth Settings")
     }
 
     StyledText {
         Layout.topMargin: Tokens.spacing.large
-        text: qsTr("Adapter status")
+        text: I18n.tr("Adapter status")
         font.pointSize: Tokens.font.size.larger
         font.weight: 500
     }
 
     StyledText {
-        text: qsTr("General adapter settings")
+        text: I18n.tr("General adapter settings")
         color: Colours.palette.m3outline
     }
 
@@ -53,7 +54,7 @@ ColumnLayout {
             spacing: Tokens.spacing.larger
 
             Toggle {
-                label: qsTr("Powered")
+                label: I18n.tr("Powered")
                 checked: Bluetooth.defaultAdapter?.enabled ?? false
                 toggle.onToggled: {
                     const adapter = Bluetooth.defaultAdapter;
@@ -63,7 +64,7 @@ ColumnLayout {
             }
 
             Toggle {
-                label: qsTr("Discoverable")
+                label: I18n.tr("Discoverable")
                 checked: Bluetooth.defaultAdapter?.discoverable ?? false
                 toggle.onToggled: {
                     const adapter = Bluetooth.defaultAdapter;
@@ -73,7 +74,7 @@ ColumnLayout {
             }
 
             Toggle {
-                label: qsTr("Pairable")
+                label: I18n.tr("Pairable")
                 checked: Bluetooth.defaultAdapter?.pairable ?? false
                 toggle.onToggled: {
                     const adapter = Bluetooth.defaultAdapter;
@@ -86,13 +87,13 @@ ColumnLayout {
 
     StyledText {
         Layout.topMargin: Tokens.spacing.large
-        text: qsTr("Adapter properties")
+        text: I18n.tr("Adapter properties")
         font.pointSize: Tokens.font.size.larger
         font.weight: 500
     }
 
     StyledText {
-        text: qsTr("Per-adapter settings")
+        text: I18n.tr("Per-adapter settings")
         color: Colours.palette.m3outline
     }
 
@@ -119,7 +120,7 @@ ColumnLayout {
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: qsTr("Current adapter")
+                    text: I18n.tr("Current adapter")
                 }
 
                 Item {
@@ -149,7 +150,7 @@ ColumnLayout {
 
                         StyledText {
                             Layout.leftMargin: Tokens.padding.small
-                            text: Bluetooth.defaultAdapter?.name ?? qsTr("None")
+                            text: Bluetooth.defaultAdapter?.name ?? I18n.tr("None")
                         }
 
                         MaterialIcon {
@@ -268,7 +269,7 @@ ColumnLayout {
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: qsTr("Discoverable timeout")
+                    text: I18n.tr("Discoverable timeout")
                 }
 
                 CustomSpinBox {
@@ -323,7 +324,7 @@ ColumnLayout {
 
                         anchors.left: parent.left
 
-                        text: qsTr("Rename adapter (currently does not work)")
+                        text: I18n.tr("Rename adapter (currently does not work)")
                         color: Colours.palette.m3outline
                         font.pointSize: Tokens.font.size.small
                     }
@@ -443,13 +444,13 @@ ColumnLayout {
 
     StyledText {
         Layout.topMargin: Tokens.spacing.large
-        text: qsTr("Adapter information")
+        text: I18n.tr("Adapter information")
         font.pointSize: Tokens.font.size.larger
         font.weight: 500
     }
 
     StyledText {
-        text: qsTr("Information about the default adapter")
+        text: I18n.tr("Information about the default adapter")
         color: Colours.palette.m3outline
     }
 
@@ -471,18 +472,18 @@ ColumnLayout {
             spacing: Tokens.spacing.small / 2
 
             StyledText {
-                text: qsTr("Adapter state")
+                text: I18n.tr("Adapter state")
             }
 
             StyledText {
-                text: Bluetooth.defaultAdapter ? BluetoothAdapterState.toString(Bluetooth.defaultAdapter.state) : qsTr("Unknown")
+                text: Bluetooth.defaultAdapter ? BluetoothAdapterState.toString(Bluetooth.defaultAdapter.state) : I18n.tr("Unknown")
                 color: Colours.palette.m3outline
                 font.pointSize: Tokens.font.size.small
             }
 
             StyledText {
                 Layout.topMargin: Tokens.spacing.normal
-                text: qsTr("Dbus path")
+                text: I18n.tr("Dbus path")
             }
 
             StyledText {
@@ -493,7 +494,7 @@ ColumnLayout {
 
             StyledText {
                 Layout.topMargin: Tokens.spacing.normal
-                text: qsTr("Adapter id")
+                text: I18n.tr("Adapter id")
             }
 
             StyledText {

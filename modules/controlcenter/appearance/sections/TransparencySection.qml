@@ -9,17 +9,18 @@ import qs.components
 import qs.components.containers
 import qs.components.controls
 import qs.services
+import qs.utils
 
 CollapsibleSection {
     id: root
 
     required property var rootPane
 
-    title: qsTr("Transparency")
+    title: I18n.tr("Transparency")
     showBackground: true
 
     SwitchRow {
-        label: qsTr("Transparency enabled")
+        label: I18n.tr("Transparency enabled")
         checked: rootPane.transparencyEnabled
         onToggled: checked => {
             rootPane.transparencyEnabled = checked;
@@ -33,7 +34,7 @@ CollapsibleSection {
         SliderInput {
             Layout.fillWidth: true
 
-            label: qsTr("Transparency base")
+            label: I18n.tr("Transparency base")
             value: rootPane.transparencyBase * 100
             from: 0
             to: 100
@@ -58,7 +59,7 @@ CollapsibleSection {
         SliderInput {
             Layout.fillWidth: true
 
-            label: qsTr("Transparency layers")
+            label: I18n.tr("Transparency layers")
             value: rootPane.transparencyLayers * 100
             from: 0
             to: 100

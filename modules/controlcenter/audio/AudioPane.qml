@@ -11,6 +11,7 @@ import qs.components.containers
 import qs.components.controls
 import qs.components.effects
 import qs.services
+import qs.utils
 
 Item {
     id: root
@@ -45,7 +46,7 @@ Item {
                         spacing: Tokens.spacing.smaller
 
                         StyledText {
-                            text: qsTr("Audio")
+                            text: I18n.tr("Audio")
                             font.pointSize: Tokens.font.size.large
                             font.weight: 500
                         }
@@ -59,7 +60,7 @@ Item {
                         id: outputDevicesSection
 
                         Layout.fillWidth: true
-                        title: qsTr("Output devices")
+                        title: I18n.tr("Output devices")
                         expanded: true
 
                         ColumnLayout {
@@ -71,7 +72,7 @@ Item {
                                 spacing: Tokens.spacing.small
 
                                 StyledText {
-                                    text: qsTr("Devices (%1)").arg(Audio.sinks.length)
+                                    text: I18n.tr("Devices (%1)").arg(Audio.sinks.length)
                                     font.pointSize: Tokens.font.size.normal
                                     font.weight: 500
                                 }
@@ -79,7 +80,7 @@ Item {
 
                             StyledText {
                                 Layout.fillWidth: true
-                                text: qsTr("All available output devices")
+                                text: I18n.tr("All available output devices")
                                 color: Colours.palette.m3outline
                             }
 
@@ -123,7 +124,7 @@ Item {
                                             elide: Text.ElideRight
                                             maximumLineCount: 1
 
-                                            text: modelData.description || qsTr("Unknown")
+                                            text: modelData.description || I18n.tr("Unknown")
                                             font.weight: Audio.sink?.id === modelData.id ? 500 : 400
                                         }
                                     }
@@ -136,7 +137,7 @@ Item {
                         id: inputDevicesSection
 
                         Layout.fillWidth: true
-                        title: qsTr("Input devices")
+                        title: I18n.tr("Input devices")
                         expanded: true
 
                         ColumnLayout {
@@ -148,7 +149,7 @@ Item {
                                 spacing: Tokens.spacing.small
 
                                 StyledText {
-                                    text: qsTr("Devices (%1)").arg(Audio.sources.length)
+                                    text: I18n.tr("Devices (%1)").arg(Audio.sources.length)
                                     font.pointSize: Tokens.font.size.normal
                                     font.weight: 500
                                 }
@@ -156,7 +157,7 @@ Item {
 
                             StyledText {
                                 Layout.fillWidth: true
-                                text: qsTr("All available input devices")
+                                text: I18n.tr("All available input devices")
                                 color: Colours.palette.m3outline
                             }
 
@@ -200,7 +201,7 @@ Item {
                                             elide: Text.ElideRight
                                             maximumLineCount: 1
 
-                                            text: modelData.description || qsTr("Unknown")
+                                            text: modelData.description || I18n.tr("Unknown")
                                             font.weight: Audio.source?.id === modelData.id ? 500 : 400
                                         }
                                     }
@@ -233,12 +234,12 @@ Item {
 
                     SettingsHeader {
                         icon: "volume_up"
-                        title: qsTr("Audio Settings")
+                        title: I18n.tr("Audio Settings")
                     }
 
                     SectionHeader {
-                        title: qsTr("Output volume")
-                        description: qsTr("Control the volume of your output device")
+                        title: I18n.tr("Output volume")
+                        description: I18n.tr("Control the volume of your output device")
                     }
 
                     SectionContainer {
@@ -253,7 +254,7 @@ Item {
                                 spacing: Tokens.spacing.normal
 
                                 StyledText {
-                                    text: qsTr("Volume")
+                                    text: I18n.tr("Volume")
                                     font.pointSize: Tokens.font.size.normal
                                     font.weight: 500
                                 }
@@ -355,8 +356,8 @@ Item {
                     }
 
                     SectionHeader {
-                        title: qsTr("Input volume")
-                        description: qsTr("Control the volume of your input device")
+                        title: I18n.tr("Input volume")
+                        description: I18n.tr("Control the volume of your input device")
                     }
 
                     SectionContainer {
@@ -371,7 +372,7 @@ Item {
                                 spacing: Tokens.spacing.normal
 
                                 StyledText {
-                                    text: qsTr("Volume")
+                                    text: I18n.tr("Volume")
                                     font.pointSize: Tokens.font.size.normal
                                     font.weight: 500
                                 }
@@ -473,8 +474,8 @@ Item {
                     }
 
                     SectionHeader {
-                        title: qsTr("Applications")
-                        description: qsTr("Control volume for individual applications")
+                        title: I18n.tr("Applications")
+                        description: I18n.tr("Control volume for individual applications")
                     }
 
                     SectionContainer {
@@ -615,7 +616,7 @@ Item {
                             StyledText {
                                 Layout.fillWidth: true
                                 visible: Audio.streams.length === 0
-                                text: qsTr("No applications currently playing audio")
+                                text: I18n.tr("No applications currently playing audio")
                                 color: Colours.palette.m3outline
                                 font.pointSize: Tokens.font.size.small
                                 horizontalAlignment: Text.AlignHCenter

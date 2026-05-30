@@ -7,6 +7,7 @@ import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.services
+import qs.utils
 
 SectionContainer {
     id: root
@@ -21,7 +22,7 @@ SectionContainer {
     alignTop: true
 
     StyledText {
-        text: qsTr("Performance Resources")
+        text: I18n.tr("Performance Resources")
         font.pointSize: Tokens.font.size.normal
     }
 
@@ -31,7 +32,7 @@ SectionContainer {
             let opts = [];
             if (root.batteryAvailable)
                 opts.push({
-                    "label": qsTr("Battery"),
+                    "label": I18n.tr("Battery"),
                     "propertyName": "showBattery",
                     "onToggled": function (checked) {
                         root.rootItem.showBattery = checked;
@@ -41,7 +42,7 @@ SectionContainer {
 
             if (root.gpuAvailable)
                 opts.push({
-                    "label": qsTr("GPU"),
+                    "label": I18n.tr("GPU"),
                     "propertyName": "showGpu",
                     "onToggled": function (checked) {
                         root.rootItem.showGpu = checked;
@@ -50,28 +51,28 @@ SectionContainer {
                 });
 
             opts.push({
-                "label": qsTr("CPU"),
+                "label": I18n.tr("CPU"),
                 "propertyName": "showCpu",
                 "onToggled": function (checked) {
                     root.rootItem.showCpu = checked;
                     root.rootItem.saveConfig();
                 }
             }, {
-                "label": qsTr("Memory"),
+                "label": I18n.tr("Memory"),
                 "propertyName": "showMemory",
                 "onToggled": function (checked) {
                     root.rootItem.showMemory = checked;
                     root.rootItem.saveConfig();
                 }
             }, {
-                "label": qsTr("Storage"),
+                "label": I18n.tr("Storage"),
                 "propertyName": "showStorage",
                 "onToggled": function (checked) {
                     root.rootItem.showStorage = checked;
                     root.rootItem.saveConfig();
                 }
             }, {
-                "label": qsTr("Network"),
+                "label": I18n.tr("Network"),
                 "propertyName": "showNetwork",
                 "onToggled": function (checked) {
                     root.rootItem.showNetwork = checked;
@@ -85,7 +86,7 @@ SectionContainer {
     SliderInput {
         Layout.fillWidth: true
 
-        label: qsTr("Resource update interval")
+        label: I18n.tr("Resource update interval")
         value: root.rootItem.resourceUpdateInterval
         from: 100
         to: 10000

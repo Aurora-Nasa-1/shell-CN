@@ -178,7 +178,7 @@ Item {
                     spacing: Tokens.spacing.smaller
 
                     StyledText {
-                        text: qsTr("Taskbar")
+                        text: I18n.tr("Taskbar")
                         font.pointSize: Tokens.font.size.large
                         font.weight: 500
                     }
@@ -189,7 +189,7 @@ Item {
                     alignTop: true
 
                     StyledText {
-                        text: qsTr("Status Icons")
+                        text: I18n.tr("Status Icons")
                         font.pointSize: Tokens.font.size.normal
                     }
 
@@ -198,7 +198,7 @@ Item {
 
                         options: [
                             {
-                                label: qsTr("Speakers"),
+                                label: I18n.tr("Speakers"),
                                 propertyName: "showAudio",
                                 onToggled: function (checked) {
                                     root.showAudio = checked;
@@ -206,7 +206,7 @@ Item {
                                 }
                             },
                             {
-                                label: qsTr("Microphone"),
+                                label: I18n.tr("Microphone"),
                                 propertyName: "showMicrophone",
                                 onToggled: function (checked) {
                                     root.showMicrophone = checked;
@@ -214,7 +214,7 @@ Item {
                                 }
                             },
                             {
-                                label: qsTr("Keyboard"),
+                                label: I18n.tr("Keyboard"),
                                 propertyName: "showKbLayout",
                                 onToggled: function (checked) {
                                     root.showKbLayout = checked;
@@ -222,7 +222,7 @@ Item {
                                 }
                             },
                             {
-                                label: qsTr("Network"),
+                                label: I18n.tr("Network"),
                                 propertyName: "showNetwork",
                                 onToggled: function (checked) {
                                     root.showNetwork = checked;
@@ -230,7 +230,7 @@ Item {
                                 }
                             },
                             {
-                                label: qsTr("Wifi"),
+                                label: I18n.tr("Wifi"),
                                 propertyName: "showWifi",
                                 onToggled: function (checked) {
                                     root.showWifi = checked;
@@ -238,7 +238,7 @@ Item {
                                 }
                             },
                             {
-                                label: qsTr("Bluetooth"),
+                                label: I18n.tr("Bluetooth"),
                                 propertyName: "showBluetooth",
                                 onToggled: function (checked) {
                                     root.showBluetooth = checked;
@@ -246,7 +246,7 @@ Item {
                                 }
                             },
                             {
-                                label: qsTr("Battery"),
+                                label: I18n.tr("Battery"),
                                 propertyName: "showBattery",
                                 onToggled: function (checked) {
                                     root.showBattery = checked;
@@ -254,7 +254,7 @@ Item {
                                 }
                             },
                             {
-                                label: qsTr("Capslock"),
+                                label: I18n.tr("Capslock"),
                                 propertyName: "showLockStatus",
                                 onToggled: function (checked) {
                                     root.showLockStatus = checked;
@@ -283,7 +283,7 @@ Item {
                             alignTop: true
 
                             StyledText {
-                                text: qsTr("Workspaces")
+                                text: I18n.tr("Workspaces")
                                 font.pointSize: Tokens.font.size.normal
                             }
 
@@ -308,7 +308,7 @@ Item {
 
                                     StyledText {
                                         Layout.fillWidth: true
-                                        text: qsTr("Shown")
+                                        text: I18n.tr("Shown")
                                     }
 
                                     CustomSpinBox {
@@ -344,7 +344,7 @@ Item {
 
                                     StyledText {
                                         Layout.fillWidth: true
-                                        text: qsTr("Active indicator")
+                                        text: I18n.tr("Active indicator")
                                     }
 
                                     StyledSwitch {
@@ -378,7 +378,7 @@ Item {
 
                                     StyledText {
                                         Layout.fillWidth: true
-                                        text: qsTr("Occupied background")
+                                        text: I18n.tr("Occupied background")
                                     }
 
                                     StyledSwitch {
@@ -412,7 +412,7 @@ Item {
 
                                     StyledText {
                                         Layout.fillWidth: true
-                                        text: qsTr("Show windows")
+                                        text: I18n.tr("Show windows")
                                     }
 
                                     StyledSwitch {
@@ -446,7 +446,7 @@ Item {
 
                                     StyledText {
                                         Layout.fillWidth: true
-                                        text: qsTr("Max window icons")
+                                        text: I18n.tr("Max window icons")
                                     }
 
                                     CustomSpinBox {
@@ -482,7 +482,7 @@ Item {
 
                                     StyledText {
                                         Layout.fillWidth: true
-                                        text: qsTr("Per monitor workspaces")
+                                        text: I18n.tr("Per monitor workspaces")
                                     }
 
                                     StyledSwitch {
@@ -501,7 +501,7 @@ Item {
                             alignTop: true
 
                             StyledText {
-                                text: qsTr("Scroll Actions")
+                                text: I18n.tr("Scroll Actions")
                                 font.pointSize: Tokens.font.size.normal
                             }
 
@@ -510,7 +510,7 @@ Item {
 
                                 options: [
                                     {
-                                        label: qsTr("Workspaces"),
+                                        label: I18n.tr("Workspaces"),
                                         propertyName: "scrollWorkspaces",
                                         onToggled: function (checked) {
                                             root.scrollWorkspaces = checked;
@@ -518,7 +518,7 @@ Item {
                                         }
                                     },
                                     {
-                                        label: qsTr("Volume"),
+                                        label: I18n.tr("Volume"),
                                         propertyName: "scrollVolume",
                                         onToggled: function (checked) {
                                             root.scrollVolume = checked;
@@ -526,7 +526,7 @@ Item {
                                         }
                                     },
                                     {
-                                        label: qsTr("Brightness"),
+                                        label: I18n.tr("Brightness"),
                                         propertyName: "scrollBrightness",
                                         onToggled: function (checked) {
                                             root.scrollBrightness = checked;
@@ -550,12 +550,12 @@ Item {
                             alignTop: true
 
                             StyledText {
-                                text: qsTr("Clock")
+                                text: I18n.tr("Clock")
                                 font.pointSize: Tokens.font.size.normal
                             }
 
                             SwitchRow {
-                                label: qsTr("Background")
+                                label: I18n.tr("Background")
                                 checked: root.clockBackground
                                 onToggled: checked => {
                                     root.clockBackground = checked;
@@ -564,7 +564,7 @@ Item {
                             }
 
                             SwitchRow {
-                                label: qsTr("Show date")
+                                label: I18n.tr("Show date")
                                 checked: root.clockShowDate
                                 onToggled: checked => {
                                     root.clockShowDate = checked;
@@ -573,7 +573,7 @@ Item {
                             }
 
                             SwitchRow {
-                                label: qsTr("Show clock icon")
+                                label: I18n.tr("Show clock icon")
                                 checked: root.clockShowIcon
                                 onToggled: checked => {
                                     root.clockShowIcon = checked;
@@ -587,12 +587,12 @@ Item {
                             alignTop: true
 
                             StyledText {
-                                text: qsTr("Bar Behavior")
+                                text: I18n.tr("Bar Behavior")
                                 font.pointSize: Tokens.font.size.normal
                             }
 
                             SwitchRow {
-                                label: qsTr("Persistent")
+                                label: I18n.tr("Persistent")
                                 checked: root.persistent
                                 onToggled: checked => {
                                     root.persistent = checked;
@@ -601,7 +601,7 @@ Item {
                             }
 
                             SwitchRow {
-                                label: qsTr("Show on hover")
+                                label: I18n.tr("Show on hover")
                                 checked: root.showOnHover
                                 onToggled: checked => {
                                     root.showOnHover = checked;
@@ -615,7 +615,7 @@ Item {
                                 SliderInput {
                                     Layout.fillWidth: true
 
-                                    label: qsTr("Drag threshold")
+                                    label: I18n.tr("Drag threshold")
                                     value: root.dragThreshold
                                     from: 0
                                     to: 100
@@ -640,12 +640,12 @@ Item {
                             alignTop: true
 
                             StyledText {
-                                text: qsTr("Active window")
+                                text: I18n.tr("Active window")
                                 font.pointSize: Tokens.font.size.normal
                             }
 
                             SwitchRow {
-                                label: qsTr("Compact")
+                                label: I18n.tr("Compact")
                                 checked: root.activeWindowCompact
                                 onToggled: checked => {
                                     root.activeWindowCompact = checked;
@@ -654,7 +654,7 @@ Item {
                             }
 
                             SwitchRow {
-                                label: qsTr("Inverted")
+                                label: I18n.tr("Inverted")
                                 checked: root.activeWindowInverted
                                 onToggled: checked => {
                                     root.activeWindowInverted = checked;
@@ -676,12 +676,12 @@ Item {
                             alignTop: true
 
                             StyledText {
-                                text: qsTr("Popouts")
+                                text: I18n.tr("Popouts")
                                 font.pointSize: Tokens.font.size.normal
                             }
 
                             SwitchRow {
-                                label: qsTr("Active window")
+                                label: I18n.tr("Active window")
                                 checked: root.popoutActiveWindow
                                 onToggled: checked => {
                                     root.popoutActiveWindow = checked;
@@ -690,7 +690,7 @@ Item {
                             }
 
                             SwitchRow {
-                                label: qsTr("Tray")
+                                label: I18n.tr("Tray")
                                 checked: root.popoutTray
                                 onToggled: checked => {
                                     root.popoutTray = checked;
@@ -699,7 +699,7 @@ Item {
                             }
 
                             SwitchRow {
-                                label: qsTr("Status icons")
+                                label: I18n.tr("Status icons")
                                 checked: root.popoutStatusIcons
                                 onToggled: checked => {
                                     root.popoutStatusIcons = checked;
@@ -713,7 +713,7 @@ Item {
                             alignTop: true
 
                             StyledText {
-                                text: qsTr("Tray Settings")
+                                text: I18n.tr("Tray Settings")
                                 font.pointSize: Tokens.font.size.normal
                             }
 
@@ -722,7 +722,7 @@ Item {
 
                                 options: [
                                     {
-                                        label: qsTr("Background"),
+                                        label: I18n.tr("Background"),
                                         propertyName: "trayBackground",
                                         onToggled: function (checked) {
                                             root.trayBackground = checked;
@@ -730,7 +730,7 @@ Item {
                                         }
                                     },
                                     {
-                                        label: qsTr("Compact"),
+                                        label: I18n.tr("Compact"),
                                         propertyName: "trayCompact",
                                         onToggled: function (checked) {
                                             root.trayCompact = checked;
@@ -738,7 +738,7 @@ Item {
                                         }
                                     },
                                     {
-                                        label: qsTr("Recolour"),
+                                        label: I18n.tr("Recolour"),
                                         propertyName: "trayRecolour",
                                         onToggled: function (checked) {
                                             root.trayRecolour = checked;
@@ -754,7 +754,7 @@ Item {
                             alignTop: true
 
                             StyledText {
-                                text: qsTr("Monitors")
+                                text: I18n.tr("Monitors")
                                 font.pointSize: Tokens.font.size.normal
                             }
 
@@ -764,7 +764,7 @@ Item {
                                 rows: Math.ceil(root.monitorNames.length / 3)
 
                                 options: root.monitorNames.map(e => ({
-                                            label: qsTr(e),
+                                            label: I18n.tr(e),
                                             propertyName: `monitor${e}`,
                                             onToggled: function (_) {
                                                 // if the given monitor is in the excluded list, it should be added back

@@ -57,7 +57,7 @@ DeviceDetails {
     headerComponent: Component {
         ConnectionHeader {
             icon: root.network?.isSecure ? "lock" : "wifi"
-            title: root.network?.ssid ?? qsTr("Unknown")
+            title: root.network?.ssid ?? I18n.tr("Unknown")
         }
     }
 
@@ -67,13 +67,13 @@ DeviceDetails {
                 spacing: Tokens.spacing.normal
 
                 SectionHeader {
-                    title: qsTr("Connection status")
-                    description: qsTr("Connection settings for this network")
+                    title: I18n.tr("Connection status")
+                    description: I18n.tr("Connection settings for this network")
                 }
 
                 SectionContainer {
                     ToggleRow {
-                        label: qsTr("Connected")
+                        label: I18n.tr("Connected")
                         checked: root.network?.active ?? false
                         toggle.onToggled: {
                             if (checked) {
@@ -96,7 +96,7 @@ DeviceDetails {
                         }
                         inactiveColour: Colours.palette.m3secondaryContainer
                         inactiveOnColour: Colours.palette.m3onSecondaryContainer
-                        text: qsTr("Forget Network")
+                        text: I18n.tr("Forget Network")
 
                         onClicked: {
                             if (root.network && root.network.ssid) {
@@ -115,40 +115,40 @@ DeviceDetails {
                 spacing: Tokens.spacing.normal
 
                 SectionHeader {
-                    title: qsTr("Network properties")
-                    description: qsTr("Additional information")
+                    title: I18n.tr("Network properties")
+                    description: I18n.tr("Additional information")
                 }
 
                 SectionContainer {
                     contentSpacing: Tokens.spacing.small / 2
 
                     PropertyRow {
-                        label: qsTr("SSID")
-                        value: root.network?.ssid ?? qsTr("Unknown")
+                        label: I18n.tr("SSID")
+                        value: root.network?.ssid ?? I18n.tr("Unknown")
                     }
 
                     PropertyRow {
                         showTopMargin: true
-                        label: qsTr("BSSID")
-                        value: root.network?.bssid ?? qsTr("Unknown")
+                        label: I18n.tr("BSSID")
+                        value: root.network?.bssid ?? I18n.tr("Unknown")
                     }
 
                     PropertyRow {
                         showTopMargin: true
-                        label: qsTr("Signal strength")
-                        value: root.network ? qsTr("%1%").arg(root.network.strength) : qsTr("N/A")
+                        label: I18n.tr("Signal strength")
+                        value: root.network ? I18n.tr("%1%").arg(root.network.strength) : I18n.tr("N/A")
                     }
 
                     PropertyRow {
                         showTopMargin: true
-                        label: qsTr("Frequency")
-                        value: root.network ? qsTr("%1 MHz").arg(root.network.frequency) : qsTr("N/A")
+                        label: I18n.tr("Frequency")
+                        value: root.network ? I18n.tr("%1 MHz").arg(root.network.frequency) : I18n.tr("N/A")
                     }
 
                     PropertyRow {
                         showTopMargin: true
-                        label: qsTr("Security")
-                        value: root.network ? (root.network.isSecure ? root.network.security : qsTr("Open")) : qsTr("N/A")
+                        label: I18n.tr("Security")
+                        value: root.network ? (root.network.isSecure ? root.network.security : I18n.tr("Open")) : I18n.tr("N/A")
                     }
                 }
             }
@@ -158,8 +158,8 @@ DeviceDetails {
                 spacing: Tokens.spacing.normal
 
                 SectionHeader {
-                    title: qsTr("Connection information")
-                    description: qsTr("Network connection details")
+                    title: I18n.tr("Connection information")
+                    description: I18n.tr("Network connection details")
                 }
 
                 SectionContainer {

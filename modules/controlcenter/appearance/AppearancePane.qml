@@ -38,11 +38,15 @@ Item {
     property real borderThickness: Config.border.thickness ?? 1
     property color borderColour: Config.border.colour
     property color sidebarColour: Config.sidebar.colour
-    property real lyricsFontSize: GlobalConfig.services.lyricsFontSize ?? 12
-    property int lyricsUpdateInterval: GlobalConfig.services.lyricsUpdateInterval ?? 500
-    property string lyricsFontFamily: GlobalConfig.services.lyricsFontFamily ?? ""
-    property string lyricsAnimType: GlobalConfig.services.lyricsAnimType ?? "fade"
-    property int lyricsAnimDuration: GlobalConfig.services.lyricsAnimDuration ?? 300
+
+    property real lyricsFontSize: LyricsService.fontSize
+    property int lyricsUpdateInterval: LyricsService.updateInterval
+    property string lyricsFontFamily: LyricsService.fontFamily
+    property string lyricsAnimType: LyricsService.animType
+    property int lyricsAnimDuration: LyricsService.animDuration
+    property string lyricsAnimExitType: LyricsService.animExitType
+    property int lyricsAnimExitDuration: LyricsService.animExitDuration
+    property bool lyricsShowTranslation: LyricsService.showTranslation
 
     property bool desktopClockEnabled: Config.background.desktopClock.enabled ?? false
     property real desktopClockScale: Config.background.desktopClock.scale ?? 1
@@ -101,11 +105,15 @@ Item {
         GlobalConfig.border.colour = root.borderColour;
         GlobalConfig.sidebar.colour = root.sidebarColour;
 
-        GlobalConfig.services.lyricsFontSize = root.lyricsFontSize;
-        GlobalConfig.services.lyricsUpdateInterval = root.lyricsUpdateInterval;
-        GlobalConfig.services.lyricsFontFamily = root.lyricsFontFamily;
-        GlobalConfig.services.lyricsAnimType = root.lyricsAnimType;
-        GlobalConfig.services.lyricsAnimDuration = root.lyricsAnimDuration;
+        LyricsService.fontSize = root.lyricsFontSize;
+        LyricsService.updateInterval = root.lyricsUpdateInterval;
+        LyricsService.fontFamily = root.lyricsFontFamily;
+        LyricsService.animType = root.lyricsAnimType;
+        LyricsService.animDuration = root.lyricsAnimDuration;
+        LyricsService.animExitType = root.lyricsAnimExitType;
+        LyricsService.animExitDuration = root.lyricsAnimExitDuration;
+        LyricsService.showTranslation = root.lyricsShowTranslation;
+        LyricsService.saveSettings();
     }
 
     anchors.fill: parent
@@ -125,7 +133,7 @@ Item {
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.bottomMargin: Tokens.spacing.normal
-                    text: qsTr("Wallpaper")
+                    text: I18n.tr("Wallpaper")
                     font.pointSize: Tokens.font.size.extraLarge
                     font.weight: 600
                 }
@@ -181,7 +189,7 @@ Item {
                     id: sidebarLayout
 
                     readonly property var rootPane: sidebarFlickable.rootPane
-                    readonly property bool allSectionsExpanded: themeModeSection.expanded && colorVariantSection.expanded && colorSchemeSection.expanded && animationsSection.expanded && fontsSection.expanded && scalesSection.expanded && transparencySection.expanded && borderSection.expanded && backgroundSection.expanded
+                    readonly property bool allSectionsExpanded: themeModeSection.expanded && colorVariantSection.expanded && colorSchemeSection.expanded && animationsSection.expanded && fontsSection.expanded && scalesSection.expanded && transparencySection.expanded && borderSection.expanded && backgroundSection.expanded && lyricsSection.expanded
 
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -191,7 +199,7 @@ Item {
                         spacing: Tokens.spacing.smaller
 
                         StyledText {
-                            text: qsTr("Appearance")
+                            text: I18n.tr("Appearance")
                             font.pointSize: Tokens.font.size.large
                             font.weight: 500
                         }
@@ -215,6 +223,7 @@ Item {
                                 transparencySection.expanded = shouldExpand;
                                 borderSection.expanded = shouldExpand;
                                 backgroundSection.expanded = shouldExpand;
+                                lyricsSection.expanded = shouldExpand;
                             }
                         }
                     }
@@ -263,6 +272,12 @@ Item {
 
                     BackgroundSection {
                         id: backgroundSection
+
+                        rootPane: sidebarFlickable.rootPane
+                    }
+
+                    LyricsSection {
+                        id: lyricsSection
 
                         rootPane: sidebarFlickable.rootPane
                     }

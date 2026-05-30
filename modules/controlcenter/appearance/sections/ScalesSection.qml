@@ -9,13 +9,14 @@ import qs.components
 import qs.components.containers
 import qs.components.controls
 import qs.services
+import qs.utils
 
 CollapsibleSection {
     id: root
 
     required property var rootPane
 
-    title: qsTr("Scales")
+    title: I18n.tr("Scales")
     showBackground: true
 
     SectionContainer {
@@ -24,7 +25,7 @@ CollapsibleSection {
         SliderInput {
             Layout.fillWidth: true
 
-            label: qsTr("Padding scale")
+            label: I18n.tr("Padding scale")
             value: rootPane.paddingScale
             from: 0.5
             to: 2.0
@@ -48,7 +49,7 @@ CollapsibleSection {
         SliderInput {
             Layout.fillWidth: true
 
-            label: qsTr("Rounding scale")
+            label: I18n.tr("Rounding scale")
             value: rootPane.roundingScale
             from: 0.1
             to: 5.0
@@ -72,7 +73,7 @@ CollapsibleSection {
         SliderInput {
             Layout.fillWidth: true
 
-            label: qsTr("Spacing scale")
+            label: I18n.tr("Spacing scale")
             value: rootPane.spacingScale
             from: 0.1
             to: 2.0

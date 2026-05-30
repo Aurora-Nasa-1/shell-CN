@@ -10,6 +10,7 @@ import qs.components.containers
 import qs.components.controls
 import qs.components.effects
 import qs.services
+import qs.utils
 
 DeviceDetails {
     id: root
@@ -36,7 +37,7 @@ DeviceDetails {
     headerComponent: Component {
         ConnectionHeader {
             icon: "cable"
-            title: root.ethernetDevice?.interface ?? qsTr("Unknown")
+            title: root.ethernetDevice?.interface ?? I18n.tr("Unknown")
         }
     }
 
@@ -46,13 +47,13 @@ DeviceDetails {
                 spacing: Tokens.spacing.normal
 
                 SectionHeader {
-                    title: qsTr("Connection status")
-                    description: qsTr("Connection settings for this device")
+                    title: I18n.tr("Connection status")
+                    description: I18n.tr("Connection settings for this device")
                 }
 
                 SectionContainer {
                     ToggleRow {
-                        label: qsTr("Connected")
+                        label: I18n.tr("Connected")
                         checked: root.ethernetDevice?.connected ?? false
                         toggle.onToggled: {
                             if (checked) {
@@ -72,28 +73,28 @@ DeviceDetails {
                 spacing: Tokens.spacing.normal
 
                 SectionHeader {
-                    title: qsTr("Device properties")
-                    description: qsTr("Additional information")
+                    title: I18n.tr("Device properties")
+                    description: I18n.tr("Additional information")
                 }
 
                 SectionContainer {
                     contentSpacing: Tokens.spacing.small / 2
 
                     PropertyRow {
-                        label: qsTr("Interface")
-                        value: root.ethernetDevice?.interface ?? qsTr("Unknown")
+                        label: I18n.tr("Interface")
+                        value: root.ethernetDevice?.interface ?? I18n.tr("Unknown")
                     }
 
                     PropertyRow {
                         showTopMargin: true
-                        label: qsTr("Connection")
-                        value: root.ethernetDevice?.connection || qsTr("Not connected")
+                        label: I18n.tr("Connection")
+                        value: root.ethernetDevice?.connection || I18n.tr("Not connected")
                     }
 
                     PropertyRow {
                         showTopMargin: true
-                        label: qsTr("State")
-                        value: root.ethernetDevice?.state ?? qsTr("Unknown")
+                        label: I18n.tr("State")
+                        value: root.ethernetDevice?.state ?? I18n.tr("Unknown")
                     }
                 }
             }
@@ -103,8 +104,8 @@ DeviceDetails {
                 spacing: Tokens.spacing.normal
 
                 SectionHeader {
-                    title: qsTr("Connection information")
-                    description: qsTr("Network connection details")
+                    title: I18n.tr("Connection information")
+                    description: I18n.tr("Network connection details")
                 }
 
                 SectionContainer {
