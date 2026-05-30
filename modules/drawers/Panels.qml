@@ -35,6 +35,7 @@ Item {
     readonly property alias utilities: utilities
     readonly property alias toasts: toasts
     readonly property alias sidebar: sidebar
+    readonly property alias lyricsHoverArea: lyricsHoverArea
 
     anchors.fill: parent
     anchors.margins: borderThickness
@@ -123,7 +124,17 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
 
-        forceRetract: dashboard.offsetScale < 1
+        forceRetract: dashboard.offsetScale < 1 || lyricsHoverArea.containsMouse
+    }
+
+    MouseArea {
+        id: lyricsHoverArea
+        anchors.horizontalCenter: lyrics.horizontalCenter
+        anchors.top: parent.top
+        width: lyrics.implicitWidth
+        height: lyrics.implicitHeight
+        hoverEnabled: true
+        // Doesn't move when lyrics Wrapper moves up, so hover remains stable!
     }
 
     BarPopouts.ClipWrapper {

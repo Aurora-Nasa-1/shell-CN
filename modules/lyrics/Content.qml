@@ -102,6 +102,11 @@ Item {
         exitScale.to = root.scale;
         exitTw.to = root.twWidth;
 
+        if (cfgExitAnim === "none" || cfgExitAnimDur <= 0) {
+            doSwapAndEnter();
+            return;
+        }
+
         if (cfgExitAnim === "fade") {
             exitFade.duration = cfgExitAnimDur;
             exitFade.to = 0.0;
@@ -120,11 +125,7 @@ Item {
             exitTw.to = 0;
         }
         
-        if (cfgExitAnim === "none" || cfgExitAnimDur <= 0) {
-            doSwapAndEnter();
-        } else {
-            exitAnimGroup.start();
-        }
+        exitAnimGroup.start();
     }
 
     function doSwapAndEnter() {
@@ -146,6 +147,11 @@ Item {
         enterSlide.to = slideTr.y;
         enterScale.to = root.scale;
         enterTw.to = root.twWidth;
+
+        if (cfgAnim === "none" || cfgAnimDur <= 0) {
+            root.isTransitioning = false;
+            return;
+        }
 
         if (cfgAnim === "fade") {
             animTarget.opacity = 0.0;
@@ -169,11 +175,7 @@ Item {
             enterTw.to = dummyText.implicitWidth;
         }
         
-        if (cfgAnim === "none" || cfgAnimDur <= 0) {
-            root.isTransitioning = false;
-        } else {
-            enterAnimGroup.start();
-        }
+        enterAnimGroup.start();
     }
 
     ParallelAnimation {

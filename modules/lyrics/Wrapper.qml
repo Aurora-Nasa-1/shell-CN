@@ -42,7 +42,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
 
-        active: root.shouldBeActive || root.visible
+        active: root.hasPlayer
 
         sourceComponent: Content {}
     }
