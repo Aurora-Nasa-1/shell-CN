@@ -32,6 +32,13 @@ StyledWindow {
         return monitor?.activeWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen > 1) ?? false;
     }
 
+    readonly property color effectiveBorderColour: {
+        var c = contentItem.Config.border.colour;
+        if (c === undefined || c === null)
+            return Colours.palette.m3surface;
+        return c.a > 0 ? c : Colours.palette.m3surface;
+    }
+
     property real fsTransitionProg: hasFullscreen ? 1 : 0
     readonly property real sdfBorderOffset: 2 * fsTransitionProg // SDFs joins are not exact, so offset by 2px to ensure nothing shows
     readonly property real borderThickness: contentItem.Config.border.thickness * (1 - fsTransitionProg)
@@ -138,7 +145,7 @@ StyledWindow {
         BlobGroup {
             id: blobGroup
 
-            color: Colours.palette.m3surface
+            color: root.effectiveBorderColour
             smoothing: root.contentItem.Config.border.smoothing
 
             Behavior on color {
@@ -161,6 +168,13 @@ StyledWindow {
             id: dashBg
 
             panel: panels.dashboard
+            deformAmount: 0.1
+        }
+
+        PanelBg {
+            id: lyricsBg
+
+            panel: panels.lyrics
             deformAmount: 0.1
         }
 
