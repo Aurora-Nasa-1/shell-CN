@@ -16,11 +16,13 @@ Singleton {
     property list<var> hourlyForecast
 
     readonly property string icon: cc ? Icons.getWeatherIcon(cc.weatherCode) : "cloud_alert"
-    readonly property string description: cc?.weatherDesc ?? qsTr("No weather")
+    readonly property string description: cc?.weatherDesc ?? I18n.tr("无天气信息")
     readonly property string temp: GlobalConfig.services.useFahrenheit ? `${cc?.tempF ?? 0}°F` : `${cc?.tempC ?? 0}°C`
     readonly property string feelsLike: GlobalConfig.services.useFahrenheit ? `${cc?.feelsLikeF ?? 0}°F` : `${cc?.feelsLikeC ?? 0}°C`
     readonly property int humidity: cc?.humidity ?? 0
     readonly property real windSpeed: cc?.windSpeed ?? 0
+    readonly property string windLevelLabel: cc ? getWindLevel(cc.windSpeed) : "--"
+    readonly property string windDirection: cc?.windDirection ?? ""
     readonly property string sunrise: cc ? Qt.formatDateTime(new Date(cc.sunrise), GlobalConfig.services.useTwelveHourClock ? "h:mm A" : "h:mm") : "--:--"
     readonly property string sunset: cc ? Qt.formatDateTime(new Date(cc.sunset), GlobalConfig.services.useTwelveHourClock ? "h:mm A" : "h:mm") : "--:--"
 
@@ -57,7 +59,7 @@ Singleton {
         const [lat, lon] = coords.split(",").map(s => s.trim());
 
         const fallbackToBigDataCloud = () => {
-            const fallbackUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`;
+            const fallbackUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=zh`;
             Requests.get(fallbackUrl, text => {
                 const geo = JSON.parse(text);
                 const geoCity = geo.city || geo.locality;
@@ -65,12 +67,12 @@ Singleton {
                     city = geoCity;
                     cachedCities.set(coords, geoCity);
                 } else {
-                    city = "Unknown City";
+                    city = "未知城市";
                 }
             });
         };
 
-        const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=geocodejson`;
+        const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=geocodejson&accept-language=zh`;
         Requests.get(nominatimUrl, text => {
             const geo = JSON.parse(text).features?.[0]?.properties.geocoding;
             if (geo) {
@@ -86,7 +88,7 @@ Singleton {
     }
 
     function fetchCoordsFromCity(cityName: string): void {
-        const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`;
+        const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=zh&format=json`;
 
         Requests.get(url, text => {
             const json = JSON.parse(text);
@@ -120,6 +122,7 @@ Singleton {
                 feelsLikeF: Math.round(toFahrenheit(json.current.apparent_temperature)),
                 humidity: json.current.relative_humidity_2m,
                 windSpeed: json.current.wind_speed_10m,
+                windDirection: getWindDirection(json.current.wind_direction_10m ?? 0),
                 isDay: json.current.is_day,
                 sunrise: json.daily.sunrise[0].replace("T", " "),
                 sunset: json.daily.sunset[0].replace("T", " ")
@@ -134,6 +137,7 @@ Singleton {
                     minTempC: Math.round(json.daily.temperature_2m_min[i]),
                     minTempF: Math.round(toFahrenheit(json.daily.temperature_2m_min[i])),
                     weatherCode: json.daily.weather_code[i],
+                    weatherDesc: getWeatherCondition(json.daily.weather_code[i]),
                     icon: Icons.getWeatherIcon(json.daily.weather_code[i])
                 });
             forecast = forecastList;
@@ -169,44 +173,80 @@ Singleton {
 
         const [lat, lon] = loc.split(",").map(s => s.trim());
         const baseUrl = "https://api.open-meteo.com/v1/forecast";
-        const params = ["latitude=" + lat, "longitude=" + lon, "hourly=weather_code,temperature_2m", "daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset", "current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m", "timezone=auto", "forecast_days=7"];
+        const params = [
+            "latitude=" + lat,
+            "longitude=" + lon,
+            "hourly=weather_code,temperature_2m",
+            "daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset",
+            "current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m,wind_direction_10m",
+            "timezone=auto",
+            "forecast_days=7"
+        ];
 
         return baseUrl + "?" + params.join("&");
     }
 
     function getWeatherCondition(code: string): string {
         const conditions = {
-            "0": "Clear",
-            "1": "Clear",
-            "2": "Partly cloudy",
-            "3": "Overcast",
-            "45": "Fog",
-            "48": "Fog",
-            "51": "Drizzle",
-            "53": "Drizzle",
-            "55": "Drizzle",
-            "56": "Freezing drizzle",
-            "57": "Freezing drizzle",
-            "61": "Light rain",
-            "63": "Rain",
-            "65": "Heavy rain",
-            "66": "Light rain",
-            "67": "Heavy rain",
-            "71": "Light snow",
-            "73": "Snow",
-            "75": "Heavy snow",
-            "77": "Snow",
-            "80": "Light rain",
-            "81": "Rain",
-            "82": "Heavy rain",
-            "85": "Light snow showers",
-            "86": "Heavy snow showers",
-            "95": "Thunderstorm",
-            "96": "Thunderstorm with hail",
-            "99": "Thunderstorm with hail"
+            "0": "晴",
+            "1": "晴",
+            "2": "多云",
+            "3": "阴",
+            "45": "雾",
+            "48": "雾",
+            "51": "小毛毛雨",
+            "53": "毛毛雨",
+            "55": "大毛毛雨",
+            "56": "冻毛毛雨",
+            "57": "冻毛毛雨",
+            "61": "小雨",
+            "63": "中雨",
+            "65": "大雨",
+            "66": "冻雨",
+            "67": "冻雨",
+            "71": "小雪",
+            "73": "中雪",
+            "75": "大雪",
+            "77": "雪粒",
+            "80": "阵雨",
+            "81": "中阵雨",
+            "82": "大阵雨",
+            "85": "小阵雪",
+            "86": "大阵雪",
+            "95": "雷暴",
+            "96": "雷暴伴冰雹",
+            "99": "雷暴伴冰雹"
         };
-        return conditions[code] || "Unknown";
+        return conditions[code] || "未知";
     }
+
+    function getWindLevel(speed: real): string {
+        // 中国风力等级标准（蒲福风级 0-12级）
+        if (speed < 0.3) return "无风 (0级)";
+        if (speed < 1.6) return "软风 (1级)";
+        if (speed < 3.4) return "轻风 (2级)";
+        if (speed < 5.5) return "微风 (3级)";
+        if (speed < 8.0) return "和风 (4级)";
+        if (speed < 10.8) return "清风 (5级)";
+        if (speed < 13.9) return "强风 (6级)";
+        if (speed < 17.2) return "疾风 (7级)";
+        if (speed < 20.8) return "大风 (8级)";
+        if (speed < 24.5) return "烈风 (9级)";
+        if (speed < 28.5) return "狂风 (10级)";
+        if (speed < 32.7) return "暴风 (11级)";
+        return "飓风 (12级)";
+    }
+
+    function getWindDirection(degrees: real): string {
+        const directions = ["北风", "北东北风", "东北风", "东东北风",
+                           "东风", "东东南风", "东南风", "南东南风",
+                           "南风", "南西南风", "西南风", "西西南风",
+                           "西风", "西西北风", "西北风", "北西北风"];
+        const index = Math.round(degrees / 22.5) % 16;
+        return directions[index];
+    }
+
+    Component.onCompleted: Qt.callLater(reload)
 
     onLocChanged: fetchWeatherData()
 
@@ -216,6 +256,15 @@ Singleton {
         }
 
         target: GlobalConfig.services
+    }
+
+    // Retry when the config file finishes loading (in case weatherLocation was set after Component.onCompleted)
+    Connections {
+        function onLoaded(): void {
+            root.reload();
+        }
+
+        target: GlobalConfig
     }
 
     Timer {
