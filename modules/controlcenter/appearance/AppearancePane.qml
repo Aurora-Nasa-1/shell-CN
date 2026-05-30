@@ -36,6 +36,11 @@ Item {
     property real transparencyLayers: GlobalConfig.appearance.transparency.layers ?? 0.4
     property real borderRounding: Config.border.rounding ?? 1
     property real borderThickness: Config.border.thickness ?? 1
+    property color borderColour: Config.border.colour
+    property color sidebarColour: Config.sidebar.colour
+    property real lyricsFontSize: GlobalConfig.services.lyricsFontSize ?? 12
+    property int lyricsUpdateInterval: GlobalConfig.services.lyricsUpdateInterval ?? 500
+    property string lyricsFontFamily: GlobalConfig.services.lyricsFontFamily ?? ""
 
     property bool desktopClockEnabled: Config.background.desktopClock.enabled ?? false
     property real desktopClockScale: Config.background.desktopClock.scale ?? 1
@@ -91,6 +96,12 @@ Item {
 
         GlobalConfig.border.rounding = root.borderRounding;
         GlobalConfig.border.thickness = root.borderThickness;
+        GlobalConfig.border.colour = root.borderColour;
+        GlobalConfig.sidebar.colour = root.sidebarColour;
+
+        GlobalConfig.services.lyricsFontSize = root.lyricsFontSize;
+        GlobalConfig.services.lyricsUpdateInterval = root.lyricsUpdateInterval;
+        GlobalConfig.services.lyricsFontFamily = root.lyricsFontFamily;
     }
 
     anchors.fill: parent
