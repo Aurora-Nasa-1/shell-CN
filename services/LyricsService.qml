@@ -18,13 +18,40 @@ Singleton {
     property bool lyricsVisible: GlobalConfig.services.showLyrics
     property string backend: "Local"
     property string preferredBackend: GlobalConfig.services.lyricsBackend
+    property bool showTranslation: GlobalConfig.services.lyricsShowTranslation ?? false
     property real currentSongId: 0
     property string loadedLocalFile: ""
     property real offset
     property int currentRequestId: 0
     property var lyricsMap: ({})
+    // Stores parsed translation lyrics for NetEase source (used when showTranslation is enabled)
+    property var _translationLyrics: []
+
+    property real fontSize: 12.0
+    property int updateInterval: 500
+    property string fontFamily: ""
+    property string animType: "fade"
+    property int animDuration: 300
+    property string animExitType: "fade"
+    property int animExitDuration: 200
 
     readonly property string lyricsDir: Paths.absolutePath(GlobalConfig.paths.lyricsDir)
+    readonly property string settingsFile: lyricsDir + "/settings.json"
+
+    function saveSettings() {
+        let obj = {
+            fontSize: root.fontSize,
+            updateInterval: root.updateInterval,
+            fontFamily: root.fontFamily,
+            animType: root.animType,
+            animDuration: root.animDuration,
+            animExitType: root.animExitType,
+            animExitDuration: root.animExitDuration,
+            showTranslation: root.showTranslation
+        };
+        saveSettingsProc.command = ["sh", "-c", `mkdir -p "${root.lyricsDir}" && echo '${JSON.stringify(obj)}' > "${root.settingsFile}"`];
+        saveSettingsProc.running = true;
+    }
     readonly property string lyricsMapFile: lyricsDir + "/lyrics_map.json"
     readonly property alias model: lyricsModel
     readonly property alias candidatesModel: fetchedCandidatesModel
@@ -32,6 +59,30 @@ Singleton {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0",
             "Referer": "https://music.163.com/"
         })
+
+    function _refreshTranslationDisplay() {
+        // When showTranslation toggles and we have cached translation data,
+        // swap the model content without re-fetching
+        if (root.backend !== "NetEase" || lyricsModel.count === 0)
+            return;
+
+        const meta = getMetadata();
+        if (!meta) return;
+
+        if (root.showTranslation && root._translationLyrics.length > 0) {
+            // Switch to translation
+            updateModel(root._translationLyrics);
+        } else if (!root.showTranslation) {
+            // Switch back to original - re-fetch to get original lyrics
+            let key = _metaKey(meta);
+            let saved = root.lyricsMap[key];
+            if (saved?.neteaseId) {
+                fetchNetEaseLyrics(saved.neteaseId, root.currentRequestId);
+            } else {
+                loadLyrics();
+            }
+        }
+    }
 
     function getMetadata() {
         if (!player || !player.metadata)
@@ -94,6 +145,20 @@ Singleton {
         let key = _metaKey(meta);
         let saved = root.lyricsMap[key];
         root.offset = saved?.offset ?? 0.0;
+
+        // Try to get lyrics directly from MPRIS metadata if supported by the player
+        if (player && player.metadata) {
+            let mprisLyrics = player.metadata["xesam:lyrics"] || player.metadata["lyric"] || player.metadata["lyrics"];
+            if (mprisLyrics && typeof mprisLyrics === "string" && mprisLyrics.trim().length > 0) {
+                root.backend = "MPRIS";
+                let parsed = Lrc.parseLrc(mprisLyrics);
+                if (parsed.length > 0) {
+                    updateModel(parsed);
+                    loading = false;
+                    return;
+                }
+            }
+        }
 
         if (root.preferredBackend === "NetEase") {
             root.backend = "NetEase";
@@ -214,13 +279,33 @@ Singleton {
     }
 
     function fetchNetEaseLyrics(id, reqId) {
-        const url = `https://music.163.com/api/song/lyric?id=${id}&lv=1&kv=1&tv=-1`;
+        // Always fetch translation (tv=1) so we have it available when toggled
+        const url = `https://music.163.com/api/song/lyric?id=${id}&lv=1&kv=1&tv=1`;
         Requests.get(url, text => {
             if (reqId !== root.currentRequestId)
                 return;
             const res = JSON.parse(text);
-            if (res.lrc?.lyric) {
-                updateModel(Lrc.parseLrc(res.lrc.lyric));
+
+            // Parse original lyrics
+            const originalLyrics = res.lrc?.lyric ? Lrc.parseLrc(res.lrc.lyric) : [];
+
+            // Parse translated lyrics if available
+            root._translationLyrics = res.tlyric?.lyric ? Lrc.parseLrc(res.tlyric.lyric) : [];
+
+            if (originalLyrics.length > 0) {
+                if (root.showTranslation && root._translationLyrics.length > 0) {
+                    // Show translation only
+                    updateModel(root._translationLyrics);
+                } else {
+                    // Show original lyrics
+                    updateModel(originalLyrics);
+                }
+                loading = false;
+            } else if (root._translationLyrics.length > 0) {
+                // No original but has translation - use translation
+                updateModel(root._translationLyrics);
+                loading = false;
+            } else {
                 loading = false;
             }
         });
@@ -276,6 +361,10 @@ Singleton {
         }
     }
 
+    onShowTranslationChanged: {
+        _refreshTranslationDisplay();
+    }
+
     ListModel {
         id: lyricsModel
     }
@@ -310,6 +399,28 @@ Singleton {
         interval: 50
         onTriggered: root._doLoadLyrics()
     }
+
+    FileView {
+        id: settingsFileView
+
+        path: root.settingsFile
+        printErrors: false
+        onLoaded: {
+            try {
+                let obj = JSON.parse(text());
+                if (obj.fontSize !== undefined) root.fontSize = obj.fontSize;
+                if (obj.updateInterval !== undefined) root.updateInterval = obj.updateInterval;
+                if (obj.fontFamily !== undefined) root.fontFamily = obj.fontFamily;
+                if (obj.animType !== undefined) root.animType = obj.animType;
+                if (obj.animDuration !== undefined) root.animDuration = obj.animDuration;
+                if (obj.animExitType !== undefined) root.animExitType = obj.animExitType;
+                if (obj.animExitDuration !== undefined) root.animExitDuration = obj.animExitDuration;
+                if (obj.showTranslation !== undefined) root.showTranslation = obj.showTranslation;
+            } catch (e) {}
+        }
+    }
+
+
 
     FileView {
         id: lyricsMapFileView
@@ -366,8 +477,11 @@ Singleton {
 
     Process {
         id: saveLyricsMap
-
         command: ["sh", "-c", `mkdir -p "${root.lyricsDir}" && echo '${JSON.stringify(root.lyricsMap)}' > "${root.lyricsMapFile}"`]
+    }
+
+    Process {
+        id: saveSettingsProc
     }
 
     Process {
