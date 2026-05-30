@@ -9,13 +9,14 @@ import qs.components
 import qs.components.containers
 import qs.components.controls
 import qs.services
+import qs.utils
 
 CollapsibleSection {
     id: root
 
     required property var rootPane
 
-    title: qsTr("Border")
+    title: I18n.tr("Border")
     showBackground: true
 
     SectionContainer {
@@ -24,7 +25,7 @@ CollapsibleSection {
         SliderInput {
             Layout.fillWidth: true
 
-            label: qsTr("Border rounding")
+            label: I18n.tr("Border rounding")
             value: rootPane.borderRounding
             from: 0.1
             to: 100
@@ -48,7 +49,7 @@ CollapsibleSection {
         SliderInput {
             Layout.fillWidth: true
 
-            label: qsTr("Border thickness")
+            label: I18n.tr("Border thickness")
             value: rootPane.borderThickness
             from: 0
             to: 100
@@ -74,7 +75,7 @@ CollapsibleSection {
             spacing: Tokens.spacing.small
 
             StyledText {
-                text: qsTr("Border decoration colour")
+                text: I18n.tr("Border decoration colour")
                 font.pointSize: Tokens.font.size.normal
             }
 
@@ -148,7 +149,7 @@ CollapsibleSection {
             }
 
             StyledText {
-                text: qsTr("Leave empty to use the theme colour")
+                text: I18n.tr("Leave empty to use the theme colour")
                 color: Colours.palette.m3outline
                 font.pointSize: Tokens.font.size.small
                 opacity: 0.7
@@ -164,7 +165,7 @@ CollapsibleSection {
             spacing: Tokens.spacing.small
 
             StyledText {
-                text: qsTr("Sidebar background colour")
+                text: I18n.tr("Sidebar background colour")
                 font.pointSize: Tokens.font.size.normal
             }
 
@@ -238,185 +239,10 @@ CollapsibleSection {
             }
 
             StyledText {
-                text: qsTr("Leave empty to use the theme colour")
+                text: I18n.tr("Leave empty to use the theme colour")
                 color: Colours.palette.m3outline
                 font.pointSize: Tokens.font.size.small
                 opacity: 0.7
-            }
-        }
-    }
-
-    // ── Lyrics bar settings ──────────────────────────────
-    CollapsibleSection {
-        title: qsTr("Top lyrics bar")
-        expanded: true
-        nested: true
-        showBackground: true
-
-        SectionContainer {
-            contentSpacing: Tokens.spacing.normal
-
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: Tokens.spacing.small
-
-                SliderInput {
-                    Layout.fillWidth: true
-
-                    label: qsTr("Font size")
-                    value: rootPane.lyricsFontSize
-                    from: 8
-                    to: 24
-                    decimals: 0
-                    suffix: "px"
-
-                    onValueModified: newValue => {
-                        rootPane.lyricsFontSize = newValue;
-                        rootPane.saveConfig();
-                    }
-                }
-
-                SliderInput {
-                    Layout.fillWidth: true
-
-                    label: qsTr("Update interval")
-                    value: rootPane.lyricsUpdateInterval
-                    from: 100
-                    to: 2000
-                    stepSize: 100
-                    decimals: 0
-                    suffix: "ms"
-
-                    onValueModified: newValue => {
-                        rootPane.lyricsUpdateInterval = newValue;
-                        rootPane.saveConfig();
-                    }
-                }
-
-                StyledText {
-                    text: qsTr("Animation")
-                    font.pointSize: Tokens.font.size.normal
-                    font.weight: Font.Medium
-                }
-
-                Flow {
-                    Layout.fillWidth: true
-                    spacing: Tokens.spacing.small
-
-                    Repeater {
-                        model: ["fade", "slideUp", "scale", "typewriter"]
-
-                        delegate: TextButton {
-                            required property string modelData
-
-                            text: modelData
-                            checked: rootPane.lyricsAnimType === modelData
-                            accent: "Primary"
-                            Layout.preferredWidth: implicitWidth
-
-                            onClicked: {
-                                rootPane.lyricsAnimType = modelData;
-                                rootPane.saveConfig();
-                            }
-                        }
-                    }
-                }
-
-                SliderInput {
-                    Layout.fillWidth: true
-
-                    label: qsTr("Animation duration")
-                    value: rootPane.lyricsAnimDuration
-                    from: 50
-                    to: 1000
-                    stepSize: 50
-                    decimals: 0
-                    suffix: "ms"
-
-                    onValueModified: newValue => {
-                        rootPane.lyricsAnimDuration = newValue;
-                        rootPane.saveConfig();
-                    }
-                }
-            }
-        }
-
-        // Font family picker — same style as FontsSection
-        CollapsibleSection {
-            title: qsTr("Font family")
-            expanded: false
-            nested: true
-            showBackground: true
-
-            Loader {
-                Layout.fillWidth: true
-                Layout.preferredHeight: item ? Math.min(item.contentHeight, 300) : 0
-                asynchronous: true
-                active: expanded
-
-                sourceComponent: StyledListView {
-                    id: lyricsFontList
-
-                    property alias contentHeight: lyricsFontList.contentHeight
-
-                    clip: true
-                    spacing: Tokens.spacing.small / 2
-                    model: Qt.fontFamilies()
-
-                    StyledScrollBar.vertical: StyledScrollBar {
-                        flickable: lyricsFontList
-                    }
-
-                    delegate: StyledRect {
-                        required property string modelData
-                        required property int index
-                        readonly property bool isCurrent: modelData === rootPane.lyricsFontFamily
-
-                        width: ListView.view.width
-                        color: Qt.alpha(Colours.tPalette.m3surfaceContainer, isCurrent ? Colours.tPalette.m3surfaceContainer.a : 0)
-                        radius: Tokens.rounding.normal
-                        border.width: isCurrent ? 1 : 0
-                        border.color: Colours.palette.m3primary
-                        implicitHeight: row.implicitHeight + Tokens.padding.normal * 2
-
-                        StateLayer {
-                            onClicked: {
-                                rootPane.lyricsFontFamily = modelData;
-                                rootPane.saveConfig();
-                            }
-                        }
-
-                        RowLayout {
-                            id: row
-
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.margins: Tokens.padding.normal
-
-                            spacing: Tokens.spacing.normal
-
-                            StyledText {
-                                text: modelData
-                                font.pointSize: Tokens.font.size.normal
-                            }
-
-                            Item {
-                                Layout.fillWidth: true
-                            }
-
-                            Loader {
-                                asynchronous: true
-                                active: isCurrent
-
-                                sourceComponent: MaterialIcon {
-                                    text: "check"
-                                    color: Colours.palette.m3primary
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }
