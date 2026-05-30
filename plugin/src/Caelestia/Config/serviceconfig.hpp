@@ -34,6 +34,9 @@ class ServiceConfig : public ConfigObject {
         { vmap({ { u"from"_s, u"com.github.th_ch.youtube_music"_s }, { u"to"_s, u"YT Music"_s } }) })
     CONFIG_GLOBAL_PROPERTY(bool, showLyrics, false)
     CONFIG_GLOBAL_PROPERTY(QString, lyricsBackend, u"Auto"_s)
+    CONFIG_GLOBAL_PROPERTY(qreal, lyricsFontSize, 12.0)
+    CONFIG_GLOBAL_PROPERTY(int, lyricsUpdateInterval, 500)
+    CONFIG_GLOBAL_PROPERTY(QString, lyricsFontFamily, u""_s)
 
 public:
     explicit ServiceConfig(QObject* parent = nullptr)

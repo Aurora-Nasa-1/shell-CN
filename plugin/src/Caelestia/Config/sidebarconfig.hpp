@@ -2,6 +2,8 @@
 
 #include "configobject.hpp"
 
+#include <QColor>
+
 namespace caelestia::config {
 
 class SidebarConfig : public ConfigObject {
@@ -10,6 +12,7 @@ class SidebarConfig : public ConfigObject {
 
     CONFIG_PROPERTY(bool, enabled, true)
     CONFIG_PROPERTY(int, dragThreshold, 80)
+    CONFIG_PROPERTY(QColor, colour, QColor())
 
 public:
     explicit SidebarConfig(QObject* parent = nullptr)
