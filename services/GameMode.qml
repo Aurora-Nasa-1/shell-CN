@@ -6,6 +6,7 @@ import Quickshell.Io
 import Caelestia
 import Caelestia.Config
 import qs.services
+import qs.utils
 
 Singleton {
     id: root
@@ -29,11 +30,11 @@ Singleton {
         if (enabled) {
             setDynamicConfs();
             if (GlobalConfig.utilities.toasts.gameModeChanged)
-                Toaster.toast(qsTr("Game mode enabled"), qsTr("Disabled Hyprland animations, blur, gaps and shadows"), "gamepad");
+                Toaster.toast(I18n.tr("Game mode enabled"), I18n.tr("Disabled Hyprland animations, blur, gaps and shadows"), "gamepad");
         } else {
             Hypr.extras.message("reload");
             if (GlobalConfig.utilities.toasts.gameModeChanged)
-                Toaster.toast(qsTr("Game mode disabled"), qsTr("Hyprland settings restored"), "gamepad");
+                Toaster.toast(I18n.tr("Game mode disabled"), I18n.tr("Hyprland settings restored"), "gamepad");
         }
     }
 

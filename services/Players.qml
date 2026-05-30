@@ -7,6 +7,7 @@ import Quickshell.Services.Mpris
 import Caelestia
 import Caelestia.Config
 import qs.components.misc
+import qs.utils
 
 Singleton {
     id: root
@@ -41,7 +42,7 @@ Singleton {
                 return;
             }
             if (root.active.trackArtist != "" && root.active.trackTitle != "") {
-                Toaster.toast(qsTr("Now Playing"), qsTr("%1 - %2").arg(root.active.trackArtist).arg(root.active.trackTitle), "music_note");
+                Toaster.toast(I18n.tr("Now Playing"), I18n.tr("%1 - %2").arg(root.active.trackArtist).arg(root.active.trackTitle), "music_note");
             }
         }
 
