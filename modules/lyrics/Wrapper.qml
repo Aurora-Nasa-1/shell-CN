@@ -22,8 +22,15 @@ Item {
     width: implicitWidth
     height: implicitHeight
     opacity: 1 - offsetScale
+    clip: true
 
     Behavior on offsetScale {
+        Anim {
+            type: Anim.DefaultSpatial
+        }
+    }
+
+    Behavior on implicitWidth {
         Anim {
             type: Anim.DefaultSpatial
         }

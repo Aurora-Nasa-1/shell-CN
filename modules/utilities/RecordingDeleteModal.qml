@@ -9,6 +9,7 @@ import qs.components
 import qs.components.controls
 import qs.components.effects
 import qs.services
+import qs.utils
 
 Loader {
     id: root
@@ -167,13 +168,13 @@ Loader {
                 spacing: Tokens.spacing.normal
 
                 StyledText {
-                    text: qsTr("Delete recording?")
+                    text: I18n.tr("Delete recording?")
                     font.pointSize: Tokens.font.size.large
                 }
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: qsTr("Recording '%1' will be permanently deleted.").arg(deleteConfirmation.path)
+                    text: I18n.tr("Recording '%1' will be permanently deleted.").arg(deleteConfirmation.path)
                     color: Colours.palette.m3onSurfaceVariant
                     font.pointSize: Tokens.font.size.small
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
@@ -185,13 +186,13 @@ Loader {
                     spacing: Tokens.spacing.normal
 
                     TextButton {
-                        text: qsTr("Cancel")
+                        text: I18n.tr("Cancel")
                         type: TextButton.Text
                         onClicked: root.props.recordingConfirmDelete = ""
                     }
 
                     TextButton {
-                        text: qsTr("Delete")
+                        text: I18n.tr("Delete")
                         type: TextButton.Text
                         onClicked: {
                             CUtils.deleteFile(Qt.resolvedUrl(root.props.recordingConfirmDelete));

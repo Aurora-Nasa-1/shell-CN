@@ -6,6 +6,7 @@ import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.services
+import qs.utils
 
 StyledRect {
     id: root
@@ -58,14 +59,14 @@ StyledRect {
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: qsTr("Screen Recorder")
+                    text: I18n.tr("Screen Recorder")
                     font.pointSize: Tokens.font.size.normal
                     elide: Text.ElideRight
                 }
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: Recorder.paused ? qsTr("Recording paused") : Recorder.running ? qsTr("Recording running") : qsTr("Recording off")
+                    text: Recorder.paused ? I18n.tr("Recording paused") : Recorder.running ? I18n.tr("Recording running") : I18n.tr("Recording off")
                     color: Colours.palette.m3onSurfaceVariant
                     font.pointSize: Tokens.font.size.small
                     elide: Text.ElideRight
@@ -80,26 +81,26 @@ StyledRect {
                 menuItems: [
                     MenuItem {
                         icon: "fullscreen"
-                        text: qsTr("Record fullscreen")
-                        activeText: qsTr("Fullscreen")
+                        text: I18n.tr("Record fullscreen")
+                        activeText: I18n.tr("Fullscreen")
                         onClicked: Recorder.start()
                     },
                     MenuItem {
                         icon: "screenshot_region"
-                        text: qsTr("Record region")
-                        activeText: qsTr("Region")
+                        text: I18n.tr("Record region")
+                        activeText: I18n.tr("Region")
                         onClicked: Recorder.start(["-r"])
                     },
                     MenuItem {
                         icon: "select_to_speak"
-                        text: qsTr("Record fullscreen with sound")
-                        activeText: qsTr("Fullscreen")
+                        text: I18n.tr("Record fullscreen with sound")
+                        activeText: I18n.tr("Fullscreen")
                         onClicked: Recorder.start(["-s"])
                     },
                     MenuItem {
                         icon: "volume_up"
-                        text: qsTr("Record region with sound")
-                        activeText: qsTr("Region")
+                        text: I18n.tr("Record region with sound")
+                        activeText: I18n.tr("Region")
                         onClicked: Recorder.start(["-sr"])
                     }
                 ]
@@ -244,7 +245,7 @@ StyledRect {
                     else
                         time = `${mins}:${secs}`;
 
-                    return qsTr("Recording for %1").arg(time);
+                    return I18n.tr("Recording for %1").arg(time);
                 }
                 font.pointSize: Tokens.font.size.normal
             }

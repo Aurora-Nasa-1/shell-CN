@@ -8,6 +8,7 @@ import Quickshell.Wayland
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.utils
 
 Item {
     id: root
@@ -49,7 +50,7 @@ Item {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: qsTr("No active client")
+                    text: I18n.tr("No active client")
                     color: Colours.palette.m3outline
                     font.pointSize: Tokens.font.size.extraLarge
                     font.weight: 500
@@ -57,7 +58,7 @@ Item {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: qsTr("Try switching to a window")
+                    text: I18n.tr("Try switching to a window")
                     color: Colours.palette.m3outline
                     font.pointSize: Tokens.font.size.large
                 }
@@ -88,10 +89,10 @@ Item {
         text: {
             const client = root.client;
             if (!client)
-                return qsTr("No active client");
+                return I18n.tr("No active client");
 
             const mon = client.monitor;
-            return qsTr("%1 on monitor %2 at %3, %4").arg(client.title).arg(mon.name).arg(client.lastIpcObject.at[0]).arg(client.lastIpcObject.at[1]);
+            return I18n.tr("%1 on monitor %2 at %3, %4").arg(client.title).arg(mon.name).arg(client.lastIpcObject.at[0]).arg(client.lastIpcObject.at[1]);
         }
     }
 }

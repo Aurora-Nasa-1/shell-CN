@@ -8,6 +8,7 @@ import qs.components
 import qs.components.controls
 import qs.services
 import qs.modules.bar.popouts as BarPopouts
+import qs.utils
 
 StyledRect {
     id: root
@@ -51,7 +52,7 @@ StyledRect {
         spacing: Tokens.spacing.normal
 
         StyledText {
-            text: qsTr("Quick Toggles")
+            text: I18n.tr("Quick Toggles")
             font.pointSize: Tokens.font.size.normal
         }
 

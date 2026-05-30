@@ -65,7 +65,7 @@ Item {
             anchors.right: parent.right
             anchors.leftMargin: Tokens.spacing.small
 
-            text: root.notifCount > 0 ? qsTr("notification%1").arg(root.notifCount === 1 ? "" : "s") : qsTr("Notifications")
+            text: root.notifCount > 0 ? I18n.tr("notification%1").arg(root.notifCount === 1 ? "" : "s") : I18n.tr("Notifications")
             color: Colours.palette.m3outline
             font.pointSize: Tokens.font.size.normal
             font.family: Tokens.font.family.mono
@@ -110,7 +110,7 @@ Item {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: qsTr("No Notifications")
+                    text: I18n.tr("No Notifications")
                     color: Colours.palette.m3outlineVariant
                     font.pointSize: Tokens.font.size.large
                     font.family: Tokens.font.family.mono

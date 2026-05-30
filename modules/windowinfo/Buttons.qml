@@ -6,6 +6,7 @@ import Quickshell.Widgets
 import Caelestia.Config
 import qs.components
 import qs.services
+import qs.utils
 
 ColumnLayout {
     id: root
@@ -25,7 +26,7 @@ ColumnLayout {
 
         StyledText {
             Layout.fillWidth: true
-            text: qsTr("Move to workspace")
+            text: I18n.tr("Move to workspace")
             elide: Text.ElideRight
         }
 
@@ -108,7 +109,7 @@ ColumnLayout {
         Button {
             color: Colours.palette.m3secondaryContainer
             onColor: Colours.palette.m3onSecondaryContainer
-            text: root.client?.lastIpcObject.floating ? qsTr("Tile") : qsTr("Float")
+            text: root.client?.lastIpcObject.floating ? I18n.tr("Tile") : I18n.tr("Float")
             onClicked: Hypr.dispatch(`togglefloating address:0x${root.client?.address}`)
         }
 
@@ -122,7 +123,7 @@ ColumnLayout {
             sourceComponent: Button {
                 color: Colours.palette.m3secondaryContainer
                 onColor: Colours.palette.m3onSecondaryContainer
-                text: root.client?.lastIpcObject.pinned ? qsTr("Unpin") : qsTr("Pin")
+                text: root.client?.lastIpcObject.pinned ? I18n.tr("Unpin") : I18n.tr("Pin")
                 onClicked: Hypr.dispatch(`pin address:0x${root.client?.address}`)
             }
         }
@@ -130,7 +131,7 @@ ColumnLayout {
         Button {
             color: Colours.palette.m3errorContainer
             onColor: Colours.palette.m3onErrorContainer
-            text: qsTr("Kill")
+            text: I18n.tr("Kill")
             onClicked: Hypr.dispatch(`killwindow address:0x${root.client?.address}`)
         }
     }

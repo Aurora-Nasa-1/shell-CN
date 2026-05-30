@@ -453,7 +453,7 @@ StyledRect {
 
                 Action {
                     modelData: QtObject {
-                        readonly property string text: qsTr("Close")
+                        readonly property string text: I18n.tr("Close")
 
                         function invoke(): void {
                             root.modelData.close();

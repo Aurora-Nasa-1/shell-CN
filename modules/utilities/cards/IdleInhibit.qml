@@ -4,6 +4,7 @@ import Caelestia.Config
 import qs.components
 import qs.components.controls
 import qs.services
+import qs.utils
 
 StyledRect {
     id: root
@@ -47,14 +48,14 @@ StyledRect {
 
             StyledText {
                 Layout.fillWidth: true
-                text: qsTr("Keep Awake")
+                text: I18n.tr("Keep Awake")
                 font.pointSize: Tokens.font.size.normal
                 elide: Text.ElideRight
             }
 
             StyledText {
                 Layout.fillWidth: true
-                text: IdleInhibitor.enabled ? qsTr("Preventing sleep mode") : qsTr("Normal power management")
+                text: IdleInhibitor.enabled ? I18n.tr("Preventing sleep mode") : I18n.tr("Normal power management")
                 color: Colours.palette.m3onSurfaceVariant
                 font.pointSize: Tokens.font.size.small
                 elide: Text.ElideRight
@@ -93,7 +94,7 @@ StyledRect {
                 id: activeText
 
                 anchors.centerIn: parent
-                text: qsTr("Active since %1").arg(Qt.formatTime(IdleInhibitor.enabledSince, GlobalConfig.services.useTwelveHourClock ? "hh:mm a" : "hh:mm"))
+                text: I18n.tr("Active since %1").arg(Qt.formatTime(IdleInhibitor.enabledSince, GlobalConfig.services.useTwelveHourClock ? "hh:mm a" : "hh:mm"))
                 color: Colours.palette.m3onPrimary
                 font.pointSize: Math.round(Tokens.font.size.small * 0.9)
             }
