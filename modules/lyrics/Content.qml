@@ -75,11 +75,13 @@ Item {
         }
     }
 
-    // Slide: translate the row vertically
+    // Slide: translate the row vertically (animated via explicit NumberAnimation)
     transform: Translate { id: slideTr }
-    Behavior on slideTr.y {
-        enabled: root.animSlide
-        NumberAnimation { duration: root.cfgAnimDur; easing: Tokens.anim.standardDecel }
+    NumberAnimation {
+        id: slideAnim
+        target: slideTr; property: "y"
+        duration: root.cfgAnimDur
+        easing: Tokens.anim.standardDecel
     }
 
     // Scale: scale the whole item
@@ -97,7 +99,7 @@ Item {
     onLabelChanged: {
         if (animSlide) {
             slideTr.y = root.implicitHeight * 0.3;
-            Qt.callLater(() => slideTr.y = 0);
+            slideAnim.start();
         } else if (animScale) {
             root.scale = 0.5;
             Qt.callLater(() => root.scale = 1);
