@@ -11,6 +11,7 @@ ColumnLayout {
 
     required property PopoutState popouts
 
+    width: 300
     spacing: Tokens.spacing.small
 
     StyledText {
@@ -35,7 +36,7 @@ ColumnLayout {
 
     IconTextButton {
         Layout.fillWidth: true
-        Layout.topMargin: Tokens.spacing.small
+        Layout.topMargin: Tokens.spacing.normal
         inactiveColour: Colours.palette.m3primaryContainer
         inactiveOnColour: Colours.palette.m3onPrimaryContainer
         verticalPadding: Tokens.padding.small
