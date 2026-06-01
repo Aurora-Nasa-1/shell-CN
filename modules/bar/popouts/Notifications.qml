@@ -17,14 +17,7 @@ ColumnLayout {
     StyledText {
         Layout.topMargin: Tokens.padding.normal
         Layout.rightMargin: Tokens.padding.small
-        text: {
-            if (Notifs.dnd)
-                return qsTr("Notifications off");
-            const count = Notifs.notClosed.length;
-            if (count === 0)
-                return qsTr("No notifications");
-            return qsTr("%1 unread").arg(count);
-        }
+        text: qsTr("Notifications")
         font.weight: 500
     }
 
@@ -32,6 +25,14 @@ ColumnLayout {
         label: qsTr("Do not disturb")
         checked: Notifs.dnd
         toggle.onToggled: Notifs.dnd = checked
+    }
+
+    StyledText {
+        Layout.topMargin: Tokens.spacing.small
+        Layout.rightMargin: Tokens.padding.small
+        text: Notifs.dnd ? qsTr("Notifications off") : qsTr("%1 unread").arg(Notifs.notClosed.length)
+        color: Colours.palette.m3onSurfaceVariant
+        font.pointSize: Tokens.font.size.small
     }
 
     IconTextButton {
