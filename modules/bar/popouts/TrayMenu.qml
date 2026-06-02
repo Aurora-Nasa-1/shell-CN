@@ -45,8 +45,8 @@ StackView {
         property bool isSubMenu
         property bool shown
 
-        padding: Tokens.padding.smaller
-        spacing: Tokens.spacing.small
+        padding: Tokens.padding.normal
+        spacing: Tokens.padding.normal
 
         opacity: shown ? 1 : 0
         scale: shown ? 1 : 0.8
