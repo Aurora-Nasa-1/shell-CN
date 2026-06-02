@@ -14,7 +14,7 @@ ColumnLayout {
         kb.refresh();
     }
 
-    spacing: Tokens.spacing.small
+    spacing: Tokens.spacing.normal
     width: Tokens.sizes.bar.kbLayoutWidth
 
     Component.onCompleted: kb.start()

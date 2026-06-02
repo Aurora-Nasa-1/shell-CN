@@ -19,7 +19,7 @@ ColumnLayout {
     property var passwordNetwork: null
     property bool showPasswordDialog: false
 
-    spacing: Tokens.spacing.small
+    spacing: Tokens.spacing.normal
     width: Tokens.sizes.bar.networkWidth
     implicitWidth: Tokens.sizes.bar.networkWidth
 

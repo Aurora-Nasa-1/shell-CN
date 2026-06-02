@@ -14,7 +14,7 @@ ColumnLayout {
 
     width: 300
     implicitWidth: 300
-    spacing: Tokens.spacing.small
+    spacing: Tokens.spacing.normal
 
     StyledText {
         Layout.topMargin: Tokens.padding.normal
@@ -55,7 +55,6 @@ ColumnLayout {
 
     IconTextButton {
         Layout.fillWidth: true
-        Layout.topMargin: Tokens.spacing.normal
         inactiveColour: Colours.palette.m3primaryContainer
         inactiveOnColour: Colours.palette.m3onPrimaryContainer
         verticalPadding: Tokens.padding.small
