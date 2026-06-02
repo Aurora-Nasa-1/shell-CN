@@ -51,7 +51,10 @@ StackView {
         opacity: shown ? 1 : 0
         scale: shown ? 1 : 0.8
 
-        Component.onCompleted: shown = true
+        Component.onCompleted: {
+            shown = true;
+            updateGroups();
+        }
         StackView.onActivating: shown = true
         StackView.onDeactivating: shown = false
         StackView.onRemoved: destroy()
@@ -70,19 +73,22 @@ StackView {
             menu: menu.handle
         }
 
-        Repeater {
-            id: childrenTracker
-            model: menuOpener.children
-            delegate: QtObject {}
-        }
+        property var entryGroups: []
 
-        readonly property var entryGroups: {
-            const count = childrenTracker.count;
-            if (!menuOpener.children) return [];
+        function updateGroups(): void {
+            if (!menuOpener.children) {
+                entryGroups = [];
+                return;
+            }
             let groups = [];
             let currentGroup = [];
-            for (let i = 0; i < count; i++) {
-                let child = menuOpener.children.get(i);
+            for (let i = 0; i < childrenTracker.count; i++) {
+                let trackerItem = childrenTracker.itemAt(i);
+                if (!trackerItem) {
+                    Qt.callLater(updateGroups);
+                    return;
+                }
+                let child = trackerItem.modelData;
                 if (!child) continue;
                 if (child.isSeparator) {
                     if (currentGroup.length > 0) {
@@ -96,7 +102,23 @@ StackView {
             if (currentGroup.length > 0) {
                 groups.push(currentGroup);
             }
-            return groups;
+            entryGroups = groups;
+        }
+
+        Connections {
+            target: menuOpener
+            ignoreUnknownSignals: true
+            function onChildrenChanged() { menu.updateGroups() }
+        }
+
+        Repeater {
+            id: childrenTracker
+            model: menuOpener.children
+            delegate: Item {
+                required property var modelData
+                Component.onCompleted: menu.updateGroups()
+                Component.onDestruction: menu.updateGroups()
+            }
         }
 
         Repeater {
