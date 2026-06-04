@@ -256,12 +256,11 @@ CustomMouseArea {
                 visibilities.dashboard = false;
         }
 
-        // Show popouts on hover
+// Show popouts on hover
         if (inBarArea(x, y)) {
             bar.checkPopout(isBarHorizontal ? x : y);
-        } else if (popouts.currentName === "dockcontext") {
-            // Keep dock context menu open - only close when clicking actions inside it
-            // The menu will be closed by its own click handlers or clicking outside
+        } else if (popouts.currentName === "dockcontext" || popouts.currentName === "dockhover") {
+            // Keep dock popouts open - they are controlled by hover on the dock items themselves
         } else if ((!popouts.currentName.startsWith("traymenu") || ((popouts.current as StackView)?.depth ?? 0) <= 1) && !inLeftPanel(panels.popoutsWrapper, x, y)) {
             popouts.hasCurrent = false;
             bar.closeTray();

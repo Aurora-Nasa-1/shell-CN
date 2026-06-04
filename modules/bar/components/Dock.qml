@@ -176,15 +176,15 @@ Item {
     }
 
     function handleHover(relPos: real, isHorizontal: bool): void {
-        // [FIX]: Halt hover evaluation entirely if the right-click menu is open.
-        // This prevents the 'else' block below from turning off the menu when the mouse shifts.
+        // Don't close dock context menu
         if (bar.popouts.hasCurrent && bar.popouts.currentName === "dockcontext") return;
 
         const itemSize = Tokens.sizes.bar.innerWidth * 0.8;
         const itemWidthWithSpacing = itemSize + spacing;
         const adjustedPos = isHorizontal ? relPos - container.x - padding : relPos - container.y - padding;
         
-        if (adjustedPos < 0) {
+        // Only close if cursor is completely outside dock bounds
+        if (adjustedPos < 0 || adjustedPos >= modelDataArray.length * itemWidthWithSpacing) {
             bar.popouts.hasCurrent = false;
             return;
         }
@@ -197,8 +197,6 @@ Item {
             bar.popouts.currentCenter = isHorizontal ? item.mapToItem(null, item.implicitWidth / 2, 0).x : (item.mapToItem(null, 0, item.implicitHeight / 2).y ?? 0);
             bar.popouts.dockModel = modelDataArray[index];
             bar.popouts.hasCurrent = true;
-        } else {
-            bar.popouts.hasCurrent = false;
         }
     }
 
