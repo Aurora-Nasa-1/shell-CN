@@ -8,6 +8,7 @@ import Quickshell.Io
 import Quickshell.Widgets
 import Caelestia.Config
 import qs.components
+import qs.components.controls
 import qs.services
 import qs.utils
 
@@ -16,6 +17,7 @@ Item {
 
     required property var bar
     property int modelUpdateTrigger: 0
+    property var launchingApps: ({})
 
     readonly property int padding: Tokens.padding.normal
     readonly property int spacing: Tokens.spacing.small
@@ -138,11 +140,66 @@ Item {
                     Drag.hotSpot.x: width / 2
                     Drag.hotSpot.y: height / 2
 
+                    StateLayer {
+                        id: stateLayer
+                        anchors.fill: parent
+                        radius: Tokens.rounding.normal
+                        
+                        color: delegateItem.isActive ? Colours.palette.m3onSurface : "transparent"
+                        opacity: delegateItem.isActive ? 0.1 : 0
+                        
+                        acceptedButtons: Qt.NoButton
+                        
+                        onEntered: {
+                            if (bar.popouts.hasCurrent && bar.popouts.currentName === "dockcontext") return;
+                            bar.popouts.currentName = "dockhover";
+                            bar.popouts.currentCenter = bar.isHorizontal ? delegateItem.mapToItem(null, delegateItem.width / 2, 0).x : (delegateItem.mapToItem(null, 0, delegateItem.height / 2).y ?? 0);
+                            bar.popouts.dockModel = modelData;
+                            bar.popouts.hasCurrent = true;
+                        }
+                    }
+
                     MouseArea {
                         id: dragArea
                         anchors.fill: parent
                         drag.target: delegateItem
                         drag.axis: bar.isHorizontal ? Drag.XAxis : Drag.YAxis
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+                        cursorShape: Qt.PointingHandCursor
+                        
+                        onPressed: mouse => {
+                            stateLayer.press(mouse.x, mouse.y);
+                        }
+                        
+                        onClicked: mouse => {
+                            if (mouse.button === Qt.LeftButton) {
+                                if (modelData.toplevels.length > 0) {
+                                    Hypr.dispatch(`focuswindow address:${modelData.toplevels[0].address}`);
+                                } else if (modelData.entry) {
+                                    // Mark as launching
+                                    let newLaunching = Object.assign({}, root.launchingApps);
+                                    newLaunching[modelData.appClass || modelData.id] = true;
+                                    root.launchingApps = newLaunching;
+                                    
+                                    if (modelData.entry.runInTerminal) {
+                                        Quickshell.execDetached({
+                                            command: ["app2unit", "--", ...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...modelData.entry.command],
+                                            workingDirectory: modelData.entry.workingDirectory
+                                        });
+                                    } else {
+                                        Quickshell.execDetached({
+                                            command: ["app2unit", "--", ...modelData.entry.command],
+                                            workingDirectory: modelData.entry.workingDirectory
+                                        });
+                                    }
+                                }
+                            } else if (mouse.button === Qt.RightButton) {
+                                bar.popouts.currentName = "dockcontext";
+                                bar.popouts.currentCenter = bar.isHorizontal ? delegateItem.mapToItem(null, delegateItem.width / 2, 0).x : (delegateItem.mapToItem(null, 0, delegateItem.height / 2).y ?? 0);
+                                bar.popouts.dockModel = modelData;
+                                bar.popouts.hasCurrent = true;
+                            }
+                        }
                         
                         onReleased: {
                             delegateItem.parent = delegateContainer;
@@ -197,48 +254,7 @@ Item {
                         return modelData.toplevels.length > 0;
                     }
 
-                    StateLayer {
-                        anchors.fill: parent
-                        radius: Tokens.rounding.normal
-                        
-                        color: delegateItem.isActive ? Colours.palette.m3onSurface : "transparent"
-                        opacity: delegateItem.isActive ? 0.1 : 0
-                        
-                        acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-                        onClicked: mouse => {
-                            if (mouse.button === Qt.LeftButton) {
-                                if (modelData.toplevels.length > 0) {
-                                    Hypr.dispatch(`focuswindow address:${modelData.toplevels[0].address}`);
-                                } else if (modelData.entry) {
-                                    if (modelData.entry.runInTerminal) {
-                                        Quickshell.execDetached({
-                                            command: ["app2unit", "--", ...GlobalConfig.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...modelData.entry.command],
-                                            workingDirectory: modelData.entry.workingDirectory
-                                        });
-                                    } else {
-                                        Quickshell.execDetached({
-                                            command: ["app2unit", "--", ...modelData.entry.command],
-                                            workingDirectory: modelData.entry.workingDirectory
-                                        });
-                                    }
-                                }
-                            } else if (mouse.button === Qt.RightButton) {
-                                bar.popouts.currentName = "dockcontext";
-                                bar.popouts.currentCenter = bar.isHorizontal ? delegateItem.mapToItem(null, delegateItem.width / 2, 0).x : (delegateItem.mapToItem(null, 0, delegateItem.height / 2).y ?? 0);
-                                bar.popouts.dockModel = modelData;
-                                bar.popouts.hasCurrent = true;
-                            }
-                        }
-                        
-                        onEntered: {
-                            if (bar.popouts.hasCurrent && bar.popouts.currentName === "dockcontext") return;
-                            bar.popouts.currentName = "dockhover";
-                            bar.popouts.currentCenter = bar.isHorizontal ? delegateItem.mapToItem(null, delegateItem.width / 2, 0).x : (delegateItem.mapToItem(null, 0, delegateItem.height / 2).y ?? 0);
-                            bar.popouts.dockModel = modelData;
-                            bar.popouts.hasCurrent = true;
-                        }
-                    }
 
                     IconImage {
                         id: icon
@@ -246,6 +262,16 @@ Item {
                         implicitSize: Math.round(((delegateItem.width || 0) * 0.7) / 2) * 2 || 0
                         source: Icons.getAppIcon(modelData.iconName, "image-missing")
                         asynchronous: true
+                    }
+
+                    Loader {
+                        anchors.fill: icon
+                        anchors.margins: -Tokens.padding.small
+                        active: root.launchingApps[modelData.appClass || modelData.id] || false
+                        sourceComponent: CircularIndicator {
+                            running: true
+                            strokeWidth: 2
+                        }
                     }
 
                     Row {
@@ -367,6 +393,26 @@ Item {
             }
         }
         
+        let newLaunching = Object.assign({}, root.launchingApps);
+        let launchingChanged = false;
+
+        for (const app of apps) {
+            if (app.toplevels.length > 0) {
+                if (newLaunching[app.appClass]) {
+                    delete newLaunching[app.appClass];
+                    launchingChanged = true;
+                }
+                if (newLaunching[app.id]) {
+                    delete newLaunching[app.id];
+                    launchingChanged = true;
+                }
+            }
+        }
+        
+        if (launchingChanged) {
+            root.launchingApps = newLaunching;
+        }
+
         let changed = apps.length !== root.modelDataArray.length;
         if (!changed) {
             for (let i = 0; i < apps.length; i++) {
@@ -386,10 +432,6 @@ Item {
         
         if (changed) {
             root.modelDataArray = apps;
-            repeaterHoriz.model = null;
-            repeaterVert.model = null;
-            repeaterHoriz.model = bar.isHorizontal ? apps : null;
-            repeaterVert.model = !bar.isHorizontal ? apps : null;
         }
         
         root.modelUpdateTrigger += 1;
