@@ -8,6 +8,7 @@ import Quickshell.Io
 import Quickshell.Widgets
 import Caelestia.Config
 import qs.components
+import qs.components.effects
 import qs.components.controls
 import qs.services
 import qs.utils
@@ -15,9 +16,34 @@ import qs.utils
 Item {
     id: root
 
+    implicitWidth: container.implicitWidth
+    implicitHeight: container.implicitHeight
+
     required property var bar
     property int modelUpdateTrigger: 0
     property var launchingApps: ({})
+
+    ListModel { id: dockModel }
+
+    function saveNewOrder(): void {
+        const newArr = [];
+        const newFavs = [];
+        
+        for (let i = 0; i < root.currentOrder.length; ++i) {
+            const mData = root.currentOrder[i];
+            if (!mData) continue;
+            
+            if (!mData.isPinned) {
+                mData.isPinned = true;
+            }
+            
+            newArr.push(mData);
+            newFavs.push(mData.id);
+        }
+        
+        GlobalConfig.launcher.favouriteApps = newFavs;
+        root.modelDataArray = newArr;
+    }
 
     readonly property int padding: Tokens.padding.normal
     readonly property int spacing: Tokens.spacing.small
@@ -33,8 +59,13 @@ Item {
         implicitWidth: bar.isHorizontal ? layout.implicitWidth + padding * 2 : Tokens.sizes.bar.innerWidth
         implicitHeight: bar.isHorizontal ? Tokens.sizes.bar.innerWidth : layout.implicitHeight + padding * 2
 
-        x: bar.width / 2 - width / 2 - (root.parent ? root.parent.x : 0)
-        y: bar.height / 2 - height / 2 - (root.parent ? root.parent.y : 0)
+        property bool monitorCenter: Config.bar.dock.monitorCenter ?? true
+        property real preferredX: bar.isHorizontal ? (bar.width / 2 - width / 2 - (root.parent ? root.parent.x : 0)) : (root.width / 2 - width / 2)
+        property real preferredY: bar.isHorizontal ? (root.height / 2 - height / 2) : (bar.height / 2 - height / 2 - (root.parent ? root.parent.y : 0))
+        
+        // Clamp only if root is larger than container, otherwise just center it
+        x: monitorCenter ? (root.width > width ? Math.max(0, Math.min(preferredX, root.width - width)) : root.width / 2 - width / 2) : root.width / 2 - width / 2
+        y: monitorCenter ? (root.height > height ? Math.max(0, Math.min(preferredY, root.height - height)) : root.height / 2 - height / 2) : root.height / 2 - height / 2
 
         property var _appsValues: DesktopEntries.applications.values
         on_AppsValuesChanged: root.rebuildModel()
@@ -64,6 +95,13 @@ Item {
                 spacing: root.spacing
                 interactive: false
 
+                add: Transition {
+                    NumberAnimation { property: "scale"; from: 0; to: 1; duration: 250; easing.type: Easing.OutBack }
+                }
+                remove: Transition {
+                    NumberAnimation { property: "scale"; from: 1; to: 0; duration: 250; easing.type: Easing.InBack }
+                }
+
                 move: Transition {
                     NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }
                 }
@@ -73,30 +111,10 @@ Item {
                 
                 model: DelegateModel {
                     id: visualModel
-                    model: root.modelDataArray
+                    model: dockModel
                     delegate: dockDelegate
                 }
             }
-        }
-
-        function saveNewOrder(): void {
-            const newArr = [];
-            const newFavs = [];
-            
-            for (let i = 0; i < root.currentOrder.length; ++i) {
-                const mData = root.currentOrder[i];
-                if (!mData) continue;
-                
-                if (!mData.isPinned) {
-                    mData.isPinned = true;
-                }
-                
-                newArr.push(mData);
-                newFavs.push(mData.id);
-            }
-            
-            GlobalConfig.launcher.favouriteApps = newFavs;
-            root.modelDataArray = newArr;
         }
 
         Component {
@@ -109,11 +127,12 @@ Item {
                 implicitWidth: width
                 implicitHeight: height
 
-                required property var modelData
+                property var modelData: root.modelDataArray[index]
                 required property int index
 
                 DropArea {
                     anchors.fill: parent
+                    anchors.margins: Tokens.padding.small
                     onEntered: drag => {
                         const from = drag.source.delegateIndex;
                         const to = delegateContainer.index;
@@ -135,7 +154,7 @@ Item {
                     
                     property int delegateIndex: delegateContainer.index
 
-                    Drag.active: dragArea.drag.active
+                    Drag.active: dragArea.held
                     Drag.source: delegateItem
                     Drag.hotSpot.x: width / 2
                     Drag.hotSpot.y: height / 2
@@ -161,18 +180,24 @@ Item {
 
                     MouseArea {
                         id: dragArea
+                        property bool held: false
                         anchors.fill: parent
-                        drag.target: delegateItem
+                        drag.target: held ? delegateItem : null
                         drag.axis: bar.isHorizontal ? Drag.XAxis : Drag.YAxis
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
                         cursorShape: Qt.PointingHandCursor
                         
                         onPressed: mouse => {
+                            held = true;
                             stateLayer.press(mouse.x, mouse.y);
                         }
                         
                         onClicked: mouse => {
                             if (mouse.button === Qt.LeftButton) {
+                                if (modelData.isPinned) {
+                                    bounceAnim.start();
+                                }
+                                
                                 if (modelData.toplevels.length > 0) {
                                     Hypr.dispatch(`focuswindow address:${modelData.toplevels[0].address}`);
                                 } else if (modelData.entry) {
@@ -202,26 +227,19 @@ Item {
                         }
                         
                         onReleased: {
-                            delegateItem.parent = delegateContainer;
+                            held = false;
                             delegateItem.x = 0;
                             delegateItem.y = 0;
-                            delegateItem.z = 0;
-                            delegateItem.opacity = 1;
                             root.saveNewOrder();
                         }
                     }
 
                     states: [
                         State {
-                            when: dragArea.drag.active
+                            when: dragArea.held
                             ParentChange {
                                 target: delegateItem
                                 parent: listView
-                            }
-                            AnchorChanges {
-                                target: delegateItem
-                                anchors.horizontalCenter: undefined
-                                anchors.verticalCenter: undefined
                             }
                             PropertyChanges {
                                 target: delegateItem
@@ -262,6 +280,21 @@ Item {
                         implicitSize: Math.round(((delegateItem.width || 0) * 0.7) / 2) * 2 || 0
                         source: Icons.getAppIcon(modelData.iconName, "image-missing")
                         asynchronous: true
+                        visible: !(Config.bar.dock.recolourIcons ?? false)
+                        
+                        SequentialAnimation {
+                            id: bounceAnim
+                            NumberAnimation { target: icon; property: "scale"; to: 0.7; duration: 100; easing.type: Easing.OutQuad }
+                            NumberAnimation { target: icon; property: "scale"; to: 1.0; duration: 400; easing.type: Easing.OutElastic }
+                        }
+                    }
+
+                    ColouredIcon {
+                        anchors.fill: icon
+                        source: icon.source
+                        colour: Colours.palette.m3secondary
+                        layer.enabled: true
+                        visible: Config.bar.dock.recolourIcons ?? false
                     }
 
                     Loader {
@@ -274,20 +307,36 @@ Item {
                         }
                     }
 
-                    Row {
+                    ListView {
                         anchors.bottom: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottomMargin: 0
                         spacing: 2
-                        visible: delegateItem.hasWindows
+                        orientation: ListView.Horizontal
+                        interactive: false
                         
-                        Repeater {
-                            model: {
-                                const dummy = root.modelUpdateTrigger;
-                                return Math.min(2, modelData.toplevels.length);
-                            }
-                            
-                            delegate: Rectangle {
+                        height: 2
+                        width: contentWidth
+                        
+                        add: Transition {
+                            NumberAnimation { property: "scale"; from: 0; to: 1; duration: 250; easing.type: Easing.OutBack }
+                        }
+                        remove: Transition {
+                            NumberAnimation { property: "scale"; from: 1; to: 0; duration: 250; easing.type: Easing.InBack }
+                        }
+                        addDisplaced: Transition {
+                            NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }
+                        }
+                        removeDisplaced: Transition {
+                            NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }
+                        }
+                        
+                        model: {
+                            const dummy = root.modelUpdateTrigger;
+                            return Math.min(2, modelData.toplevels.length);
+                        }
+                        
+                        delegate: Rectangle {
                                 required property int index
                                 width: (index === 0 && delegateItem.isActive) ? 16 : 2
     
@@ -302,7 +351,6 @@ Item {
                                 Behavior on color { ColorAnimation { duration: 250 } }
                             }
                         }
-                    }
                 }
             }
         }
@@ -413,25 +461,47 @@ Item {
             root.launchingApps = newLaunching;
         }
 
-        let changed = apps.length !== root.modelDataArray.length;
-        if (!changed) {
+        let changed = false;
+        if (apps.length !== dockModel.count) {
+            changed = true;
+        } else {
             for (let i = 0; i < apps.length; i++) {
-                if (apps[i].id !== root.modelDataArray[i].id || apps[i].toplevels.length !== root.modelDataArray[i].toplevels.length) {
+                if (apps[i].id !== dockModel.get(i).appId) {
                     changed = true;
                     break;
                 }
-                for (let j = 0; j < apps[i].toplevels.length; j++) {
-                    if (apps[i].toplevels[j].address !== root.modelDataArray[i].toplevels[j].address) {
-                        changed = true;
-                        break;
-                    }
-                }
-                if (changed) break;
             }
         }
         
+        root.modelDataArray = apps;
+        
         if (changed) {
-            root.modelDataArray = apps;
+            for (let i = dockModel.count - 1; i >= 0; i--) {
+                let found = false;
+                for (let j = 0; j < apps.length; j++) {
+                    if (apps[j].id === dockModel.get(i).appId) { found = true; break; }
+                }
+                if (!found) dockModel.remove(i);
+            }
+            
+            for (let i = 0; i < apps.length; i++) {
+                let found = false;
+                for (let j = 0; j < dockModel.count; j++) {
+                    if (dockModel.get(j).appId === apps[i].id) { found = true; break; }
+                }
+                if (!found) dockModel.append({ appId: apps[i].id });
+            }
+            
+            for (let i = 0; i < apps.length; i++) {
+                let currentId = apps[i].id;
+                if (dockModel.get(i).appId !== currentId) {
+                    let foundIdx = -1;
+                    for (let j = i + 1; j < dockModel.count; j++) {
+                        if (dockModel.get(j).appId === currentId) { foundIdx = j; break; }
+                    }
+                    if (foundIdx !== -1) dockModel.move(foundIdx, i, 1);
+                }
+            }
         }
         
         root.modelUpdateTrigger += 1;

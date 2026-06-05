@@ -112,12 +112,25 @@ Item {
     Component.onCompleted: {
         if (Config.bar.entries) {
             entriesModel.clear();
+            let activeWindowIdx = -1;
+            let dockIdx = -1;
             for (let i = 0; i < Config.bar.entries.length; i++) {
                 const entry = Config.bar.entries[i];
+                if (entry.id === "activeWindow") activeWindowIdx = i;
+                if (entry.id === "dock") dockIdx = i;
                 entriesModel.append({
                     id: entry.id,
                     enabled: entry.enabled !== false
                 });
+            }
+            
+            if (activeWindowIdx === -1 && dockIdx !== -1) {
+                entriesModel.insert(dockIdx, { id: "activeWindow", enabled: false });
+            } else if (dockIdx === -1 && activeWindowIdx !== -1) {
+                entriesModel.insert(activeWindowIdx + 1, { id: "dock", enabled: false });
+            } else if (activeWindowIdx === -1 && dockIdx === -1) {
+                entriesModel.append({ id: "activeWindow", enabled: true });
+                entriesModel.append({ id: "dock", enabled: false });
             }
         }
     }
@@ -589,6 +602,116 @@ Item {
                             alignTop: true
 
                             StyledText {
+                                text: qsTr("Active window")
+                                font.pointSize: Tokens.font.size.normal
+                            }
+                            
+                            SwitchRow {
+                                id: activeWindowSwitch
+                                label: qsTr("Enable")
+                                checked: {
+                                    for (let i = 0; i < entriesModel.count; i++) {
+                                        if (entriesModel.get(i).id === "activeWindow") return entriesModel.get(i).enabled;
+                                    }
+                                    return false;
+                                }
+                                onToggled: checked => {
+                                    let activeWindowIdx = -1;
+                                    let dockIdx = -1;
+                                    for (let i = 0; i < entriesModel.count; i++) {
+                                        if (entriesModel.get(i).id === "activeWindow") activeWindowIdx = i;
+                                        if (entriesModel.get(i).id === "dock") dockIdx = i;
+                                    }
+                                    
+                                    if (activeWindowIdx !== -1) {
+                                        entriesModel.setProperty(activeWindowIdx, "enabled", checked);
+                                    }
+                                    if (checked && dockIdx !== -1) {
+                                        entriesModel.setProperty(dockIdx, "enabled", false);
+                                        dockSwitch.checked = false;
+                                    }
+                                    root.saveConfig();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: qsTr("Compact")
+                                checked: root.activeWindowCompact
+                                onToggled: checked => {
+                                    root.activeWindowCompact = checked;
+                                    root.saveConfig();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: qsTr("Inverted")
+                                checked: root.activeWindowInverted
+                                onToggled: checked => {
+                                    root.activeWindowInverted = checked;
+                                    root.saveConfig();
+                                }
+                            }
+                        }
+
+                        SectionContainer {
+                            Layout.fillWidth: true
+                            alignTop: true
+
+                            StyledText {
+                                text: qsTr("Dock")
+                                font.pointSize: Tokens.font.size.normal
+                            }
+                            
+                            SwitchRow {
+                                id: dockSwitch
+                                label: qsTr("Enable")
+                                checked: {
+                                    for (let i = 0; i < entriesModel.count; i++) {
+                                        if (entriesModel.get(i).id === "dock") return entriesModel.get(i).enabled;
+                                    }
+                                    return false;
+                                }
+                                onToggled: checked => {
+                                    let activeWindowIdx = -1;
+                                    let dockIdx = -1;
+                                    for (let i = 0; i < entriesModel.count; i++) {
+                                        if (entriesModel.get(i).id === "activeWindow") activeWindowIdx = i;
+                                        if (entriesModel.get(i).id === "dock") dockIdx = i;
+                                    }
+                                    
+                                    if (dockIdx !== -1) {
+                                        entriesModel.setProperty(dockIdx, "enabled", checked);
+                                    }
+                                    if (checked && activeWindowIdx !== -1) {
+                                        entriesModel.setProperty(activeWindowIdx, "enabled", false);
+                                        activeWindowSwitch.checked = false;
+                                    }
+                                    root.saveConfig();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: qsTr("Monitor center")
+                                checked: Config.bar.dock.monitorCenter ?? true
+                                onToggled: checked => {
+                                    GlobalConfig.bar.dock.monitorCenter = checked;
+                                }
+                            }
+
+                            SwitchRow {
+                                label: qsTr("Recolour icons")
+                                checked: Config.bar.dock.recolourIcons ?? false
+                                onToggled: checked => {
+                                    GlobalConfig.bar.dock.recolourIcons = checked;
+                                }
+                            }
+                        }
+
+                        SectionContainer {
+                            Layout.fillWidth: true
+                            alignTop: true
+
+                            StyledText {
                                 text: qsTr("Clock")
                                 font.pointSize: Tokens.font.size.normal
                             }
@@ -757,33 +880,7 @@ Item {
                             }
                         }
 
-                        SectionContainer {
-                            Layout.fillWidth: true
-                            alignTop: true
 
-                            StyledText {
-                                text: qsTr("Active window")
-                                font.pointSize: Tokens.font.size.normal
-                            }
-
-                            SwitchRow {
-                                label: qsTr("Compact")
-                                checked: root.activeWindowCompact
-                                onToggled: checked => {
-                                    root.activeWindowCompact = checked;
-                                    root.saveConfig();
-                                }
-                            }
-
-                            SwitchRow {
-                                label: qsTr("Inverted")
-                                checked: root.activeWindowInverted
-                                onToggled: checked => {
-                                    root.activeWindowInverted = checked;
-                                    root.saveConfig();
-                                }
-                            }
-                        }
                     }
 
                     ColumnLayout {

@@ -126,6 +126,18 @@ public:
         : ConfigObject(parent) {}
 };
 
+class BarDock : public ConfigObject {
+    Q_OBJECT
+    QML_ANONYMOUS
+
+    CONFIG_PROPERTY(bool, monitorCenter, true)
+    CONFIG_PROPERTY(bool, recolourIcons, false)
+
+public:
+    explicit BarDock(QObject* parent = nullptr)
+        : ConfigObject(parent) {}
+};
+
 class BarConfig : public ConfigObject {
     Q_OBJECT
     QML_ANONYMOUS
@@ -141,6 +153,7 @@ class BarConfig : public ConfigObject {
     CONFIG_SUBOBJECT(BarTray, tray)
     CONFIG_SUBOBJECT(BarStatus, status)
     CONFIG_SUBOBJECT(BarClock, clock)
+    CONFIG_SUBOBJECT(BarDock, dock)
     CONFIG_PROPERTY(QVariantList, entries,
         {
             vmap({ { u"id"_s, u"logo"_s }, { u"enabled"_s, true } }),
@@ -164,7 +177,8 @@ public:
         , m_activeWindow(new BarActiveWindow(this))
         , m_tray(new BarTray(this))
         , m_status(new BarStatus(this))
-        , m_clock(new BarClock(this)) {}
+        , m_clock(new BarClock(this))
+        , m_dock(new BarDock(this)) {}
 };
 
 } // namespace caelestia::config

@@ -41,6 +41,11 @@ GridLayout {
     }
 
     function checkPopout(pos: real): void {
+        if (isHorizontal && Config.bar.position === "bottom" && visibilities.launcher) {
+            popouts.hasCurrent = false;
+            return;
+        }
+
         // Don't close dock popouts
         if (popouts.hasCurrent && (popouts.currentName === "dockcontext" || popouts.currentName === "dockhover")) return;
         
@@ -138,6 +143,15 @@ GridLayout {
                 monitor.setBrightness(monitor.brightness + GlobalConfig.services.brightnessIncrement);
             else if (angleDelta.y < 0)
                 monitor.setBrightness(monitor.brightness - GlobalConfig.services.brightnessIncrement);
+        }
+    }
+
+    Connections {
+        target: visibilities
+        function onLauncherChanged() {
+            if (visibilities.launcher && isHorizontal && Config.bar.position === "bottom") {
+                popouts.hasCurrent = false;
+            }
         }
     }
 
