@@ -50,61 +50,143 @@ Item {
             id: layout
             
             anchors.centerIn: parent
-            implicitWidth: bar.isHorizontal ? rowLayout.implicitWidth : colLayout.implicitWidth
-            implicitHeight: bar.isHorizontal ? rowLayout.implicitHeight : colLayout.implicitHeight
+            implicitWidth: listView.width
+            implicitHeight: listView.height
 
-            Row {
-                id: rowLayout
-                visible: bar.isHorizontal
+            ListView {
+                id: listView
                 anchors.centerIn: parent
+                width: bar.isHorizontal ? contentWidth : Tokens.sizes.bar.innerWidth * 0.8
+                height: bar.isHorizontal ? Tokens.sizes.bar.innerWidth * 0.8 : contentHeight
+                orientation: bar.isHorizontal ? ListView.Horizontal : ListView.Vertical
                 spacing: root.spacing
+                interactive: false
 
-                Repeater {
-                    id: repeaterHoriz
-                    model: bar.isHorizontal ? root.modelDataArray : null
+                move: Transition {
+                    NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }
+                }
+                moveDisplaced: Transition {
+                    NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }
+                }
+                
+                model: DelegateModel {
+                    id: visualModel
+                    model: root.modelDataArray
                     delegate: dockDelegate
                 }
             }
+        }
 
-            Column {
-                id: colLayout
-                visible: !bar.isHorizontal
-                anchors.centerIn: parent
-                spacing: root.spacing
-
-                Repeater {
-                    id: repeaterVert
-                    model: !bar.isHorizontal ? root.modelDataArray : null
-                    delegate: dockDelegate
+        function saveNewOrder(): void {
+            const newArr = [];
+            const newFavs = [];
+            
+            for (let i = 0; i < root.currentOrder.length; ++i) {
+                const mData = root.currentOrder[i];
+                if (!mData) continue;
+                
+                if (!mData.isPinned) {
+                    mData.isPinned = true;
                 }
+                
+                newArr.push(mData);
+                newFavs.push(mData.id);
             }
+            
+            GlobalConfig.launcher.favouriteApps = newFavs;
+            root.modelDataArray = newArr;
         }
 
         Component {
             id: dockDelegate
 
             Item {
-                id: delegateItem
-                    width: Tokens.sizes.bar.innerWidth * 0.8
-                    height: Tokens.sizes.bar.innerWidth * 0.8
-                    implicitWidth: width
-                    implicitHeight: height
+                id: delegateContainer
+                width: Tokens.sizes.bar.innerWidth * 0.8
+                height: Tokens.sizes.bar.innerWidth * 0.8
+                implicitWidth: width
+                implicitHeight: height
 
-                    required property var modelData
+                required property var modelData
+                required property int index
+
+                DropArea {
+                    anchors.fill: parent
+                    onEntered: drag => {
+                        const from = drag.source.delegateIndex;
+                        const to = delegateContainer.index;
+                        if (from !== undefined && to !== undefined && from !== to) {
+                            visualModel.items.move(from, to);
+                            const movedItem = root.currentOrder.splice(from, 1)[0];
+                            root.currentOrder.splice(to, 0, movedItem);
+                        }
+                    }
+                    onDropped: drag => {
+                        root.saveNewOrder();
+                    }
+                }
+
+                Item {
+                    id: delegateItem
+                    width: delegateContainer.width
+                    height: delegateContainer.height
+                    
+                    property int delegateIndex: delegateContainer.index
+
+                    Drag.active: dragArea.drag.active
+                    Drag.source: delegateItem
+                    Drag.hotSpot.x: width / 2
+                    Drag.hotSpot.y: height / 2
+
+                    MouseArea {
+                        id: dragArea
+                        anchors.fill: parent
+                        drag.target: delegateItem
+                        drag.axis: bar.isHorizontal ? Drag.XAxis : Drag.YAxis
+                        
+                        onReleased: {
+                            delegateItem.parent = delegateContainer;
+                            delegateItem.x = 0;
+                            delegateItem.y = 0;
+                            delegateItem.z = 0;
+                            delegateItem.opacity = 1;
+                            root.saveNewOrder();
+                        }
+                    }
+
+                    states: [
+                        State {
+                            when: dragArea.drag.active
+                            ParentChange {
+                                target: delegateItem
+                                parent: listView
+                            }
+                            AnchorChanges {
+                                target: delegateItem
+                                anchors.horizontalCenter: undefined
+                                anchors.verticalCenter: undefined
+                            }
+                            PropertyChanges {
+                                target: delegateItem
+                                opacity: 0.8
+                                z: 999
+                            }
+                        }
+                    ]
 
                     property bool isActive: {
                         const activeTop = Hyprland.activeToplevel;
                         if (!activeTop) return false;
                         
-                        if (activeTop.lastIpcObject && delegateItem.modelData.appClass) {
+                        if (activeTop.lastIpcObject && modelData.appClass) {
                             const activeClass = (activeTop.lastIpcObject.class || activeTop.lastIpcObject.initialClass || "").toLowerCase();
-                            const appId = delegateItem.modelData.appClass.toLowerCase();
+                            const appId = modelData.appClass.toLowerCase();
                             if (activeClass && (activeClass === appId || activeClass.includes(appId) || appId.includes(activeClass))) {
                                 return true;
                             }
                         }
                         
-                        for (const top of delegateItem.modelData.toplevels) {
+                        for (const top of modelData.toplevels) {
                             if (top.address && top.address === activeTop.address) return true;
                         }
                         return false;
@@ -112,7 +194,7 @@ Item {
 
                     property bool hasWindows: {
                         const dummy = root.modelUpdateTrigger;
-                        return delegateItem.modelData.toplevels.length > 0;
+                        return modelData.toplevels.length > 0;
                     }
 
                     StateLayer {
@@ -176,7 +258,7 @@ Item {
                         Repeater {
                             model: {
                                 const dummy = root.modelUpdateTrigger;
-                                return Math.min(2, delegateItem.modelData.toplevels.length);
+                                return Math.min(2, modelData.toplevels.length);
                             }
                             
                             delegate: Rectangle {
@@ -198,6 +280,7 @@ Item {
                 }
             }
         }
+    }
 
     function handleHover(relPos: real, isHorizontal: bool): void {
         // Don't close dock context menu
@@ -214,34 +297,43 @@ Item {
         }
         
         const index = Math.floor(adjustedPos / itemWidthWithSpacing);
-        const activeRepeater = isHorizontal ? repeaterHoriz : repeaterVert;
-        const item = activeRepeater.itemAt(index);
         
-        if (item) {
+        if (index >= 0 && index < modelDataArray.length) {
             bar.popouts.currentName = "dockhover";
-            bar.popouts.currentCenter = isHorizontal ? item.mapToItem(null, item.implicitWidth / 2, 0).x : (item.mapToItem(null, 0, item.implicitHeight / 2).y ?? 0);
+            const centerOffset = index * itemWidthWithSpacing + itemSize / 2;
+            const absoluteCenter = isHorizontal 
+                ? container.mapToItem(null, padding + centerOffset, 0).x 
+                : container.mapToItem(null, 0, padding + centerOffset).y;
+            
+            bar.popouts.currentCenter = absoluteCenter;
             bar.popouts.dockModel = modelDataArray[index];
             bar.popouts.hasCurrent = true;
         }
     }
 
     property var modelDataArray: []
+    property var currentOrder: []
+    onModelDataArrayChanged: currentOrder = [...modelDataArray]
 
     function rebuildModel(): void {
         const apps = [];
 
         const pinnedIds = GlobalConfig.launcher.favouriteApps || [];
         
-        for (const entry of DesktopEntries.applications.values) {
-            if (Strings.testRegexList(pinnedIds, entry.id)) {
-                apps.push({
-                    id: entry.id,
-                    isPinned: true,
-                    entry: entry,
-                    toplevels: [],
-                    appClass: entry.id.replace(".desktop", ""),
-                    iconName: entry.id
-                });
+        for (const pid of pinnedIds) {
+            for (const entry of DesktopEntries.applications.values) {
+                if (Strings.testRegexList([pid], entry.id)) {
+                    if (!apps.some(a => a.id === entry.id)) {
+                        apps.push({
+                            id: entry.id,
+                            isPinned: true,
+                            entry: entry,
+                            toplevels: [],
+                            appClass: entry.id.replace(".desktop", ""),
+                            iconName: entry.id
+                        });
+                    }
+                }
             }
         }
         
