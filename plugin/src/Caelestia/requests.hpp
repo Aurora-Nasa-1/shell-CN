@@ -16,6 +16,8 @@ public:
 
     Q_INVOKABLE void get(
         const QUrl& url, QJSValue callback, QJSValue onError = QJSValue(), QJSValue headers = QJSValue()) const;
+    Q_INVOKABLE void postStream(
+        const QString& url, const QString& body, QJSValue onChunk, QJSValue onError = QJSValue(), QJSValue headers = QJSValue(), QJSValue onFinished = QJSValue()) const;
     Q_INVOKABLE void resetCookies() const;
 
 private:

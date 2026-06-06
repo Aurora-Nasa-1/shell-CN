@@ -51,6 +51,47 @@ void Requests::get(const QUrl& url, QJSValue onSuccess, QJSValue onError, QJSVal
     });
 }
 
+void Requests::postStream(const QString& url, const QString& body, QJSValue onChunk, QJSValue onError, QJSValue headers, QJSValue onFinished) const {
+    if (!onChunk.isCallable()) {
+        qCWarning(lcRequests) << "postStream: onChunk is not callable";
+        return;
+    }
+
+    QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
+    request.setRawHeader("Content-Type", "application/json");
+
+    if (headers.isObject()) {
+        QJSValueIterator it(headers);
+        while (it.hasNext()) {
+            it.next();
+            request.setRawHeader(it.name().toUtf8(), it.value().toString().toUtf8());
+        }
+    }
+
+    auto reply = m_manager->post(request, body.toUtf8());
+
+    QObject::connect(reply, &QNetworkReply::readyRead, [reply, onChunk]() mutable {
+        QByteArray data = reply->readAll();
+        onChunk.call({ QString::fromUtf8(data) });
+    });
+
+    QObject::connect(reply, &QNetworkReply::finished, [reply, onError, onFinished]() {
+        if (reply->error() != QNetworkReply::NoError) {
+            if (onError.isCallable()) {
+                onError.call({ reply->errorString() });
+            } else {
+                qCWarning(lcRequests) << "postStream: request failed with error" << reply->errorString();
+            }
+        } else {
+            if (onFinished.isCallable()) {
+                onFinished.call();
+            }
+        }
+        reply->deleteLater();
+    });
+}
+
 void Requests::resetCookies() const {
     m_manager->setCookieJar(new QNetworkCookieJar(m_manager));
 }

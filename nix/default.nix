@@ -19,6 +19,8 @@
   rubik,
   nerd-fonts,
   qt6,
+  qt6Packages ? null,
+  kdePackages ? null,
   quickshell,
   aubio,
   libcava,
@@ -111,7 +113,9 @@ in
     src = ./..;
 
     nativeBuildInputs = [cmake ninja makeWrapper qt6.wrapQtAppsHook];
-    buildInputs = [quickshell extras plugin xkeyboard-config qt6.qtbase];
+    buildInputs = [
+      quickshell extras plugin xkeyboard-config qt6.qtbase qt6.qtwayland
+    ] ++ (if kdePackages != null && kdePackages ? fcitx5-qt then [kdePackages.fcitx5-qt] else if qt6Packages != null && qt6Packages ? fcitx5-qt then [qt6Packages.fcitx5-qt] else []);
     propagatedBuildInputs = runtimeDeps;
 
     cmakeFlags =
@@ -134,6 +138,8 @@ in
       	--set FONTCONFIG_FILE "${fontconfig}" \
       	--set CAELESTIA_LIB_DIR ${extras}/lib \
         --set CAELESTIA_XKB_RULES_PATH ${xkeyboard-config}/share/xkeyboard-config-2/rules/base.lst \
+        --set QT_IM_MODULE fcitx \
+        --set XMODIFIERS @im=fcitx \
       	--add-flags "-p $out/share/caelestia-shell"
 
       mkdir -p $out/lib

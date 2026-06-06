@@ -50,6 +50,11 @@ Region {
     }
 
     R {
+        id: aiRegion
+        panel: root.panels.aiWrapper
+    }
+
+    R {
         panel: root.panels.osdWrapper
         x: root.win.width - width
         width: panel.width * (1 - root.panels.osd.offsetScale) + root.borderThickness + sessionRegion.width

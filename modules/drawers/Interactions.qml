@@ -22,6 +22,7 @@ CustomMouseArea {
     property bool dashboardShortcutActive
     property bool osdShortcutActive
     property bool utilitiesShortcutActive
+    property bool aiShortcutActive
 
     function withinPanelHeight(panel: Item, x: real, y: real): bool {
         const panelY = root.borderThickness + panel.y;
@@ -77,6 +78,9 @@ CustomMouseArea {
 
             if (!utilitiesShortcutActive)
                 visibilities.utilities = false;
+
+            if (!aiShortcutActive)
+                visibilities.ai = false;
 
             if (!popouts.currentName.startsWith("traymenu") || ((popouts.current as StackView)?.depth ?? 0) <= 1) {
                 popouts.hasCurrent = false;
@@ -281,6 +285,14 @@ CustomMouseArea {
             } else {
                 // Utilities hidden, clear shortcut flag
                 root.utilitiesShortcutActive = false;
+            }
+        }
+
+        function onAiChanged() {
+            if (root.visibilities.ai) {
+                root.aiShortcutActive = true;
+            } else {
+                root.aiShortcutActive = false;
             }
         }
 

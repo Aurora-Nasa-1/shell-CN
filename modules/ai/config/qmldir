@@ -1,0 +1,2 @@
+module qs.modules.ai.config
+singleton AIState 1.0 AIState.qml

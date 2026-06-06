@@ -1,0 +1,5 @@
+module qs.modules.ai.services
+AIProvider 1.0 AIProvider.qml
+OpenAIProvider 1.0 OpenAIProvider.qml
+AnthropicProvider 1.0 AnthropicProvider.qml
+GoogleProvider 1.0 GoogleProvider.qml

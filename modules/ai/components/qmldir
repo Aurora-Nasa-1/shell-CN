@@ -1,0 +1,5 @@
+module qs.modules.ai.components
+AutoResizeInput 1.0 AutoResizeInput.qml
+ChatBubble 1.0 ChatBubble.qml
+SuggestionChips 1.0 SuggestionChips.qml
+SettingsDialog 1.0 SettingsDialog.qml

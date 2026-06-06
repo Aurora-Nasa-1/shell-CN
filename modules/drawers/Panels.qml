@@ -11,6 +11,7 @@ import qs.modules.osd as Osd
 import qs.modules.session as Session
 import qs.modules.sidebar as Sidebar
 import qs.modules.utilities as Utilities
+import qs.modules.ai as Ai
 import qs.modules.bar.popouts as BarPopouts
 import qs.modules.utilities.toasts as Toasts
 
@@ -35,11 +36,34 @@ Item {
     readonly property alias utilities: utilities
     readonly property alias toasts: toasts
     readonly property alias sidebar: sidebar
+    readonly property alias ai: ai
+    readonly property alias aiWrapper: aiWrapper
     readonly property alias lyricsHoverArea: lyricsHoverArea
 
     anchors.fill: parent
     anchors.margins: borderThickness
     anchors.leftMargin: bar.implicitWidth
+
+    Item {
+        id: aiWrapper
+
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        anchors.rightMargin: sidebar.width * (1 - sidebar.offsetScale) + sessionWrapper.anchors.rightMargin + session.width * (1 - session.offsetScale)
+        clip: sidebar.visible || session.visible || osdWrapper.visible
+
+        implicitWidth: ai.implicitWidth * (1 - ai.offsetScale)
+        implicitHeight: ai.implicitHeight
+
+        Ai.Wrapper {
+            id: ai
+
+            visibilities: root.visibilities
+
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+        }
+    }
 
     Item {
         id: osdWrapper
