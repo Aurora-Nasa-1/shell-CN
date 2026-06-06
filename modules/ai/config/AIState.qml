@@ -67,6 +67,9 @@ QtObject {
     property string currentChatId: ""
     property var currentMessages: []
     
+    // Persisted scroll position for message list
+    property real scrollPosition: 0
+    
     function _updateCurrentMessages() {
         for (var i = 0; i < chats.length; i++) {
             if (chats[i].id === currentChatId) {
@@ -149,6 +152,7 @@ QtObject {
     }
     
     function createNewChat() {
+        root.scrollPosition = 0;
         var newId = "chat_" + Date.now();
         var newChat = { "id": newId, "title": "New Chat", "messages": [] };
         var c = chats.slice();
@@ -158,6 +162,7 @@ QtObject {
     }
     
     function switchChat(chatId) {
+        root.scrollPosition = 0;
         currentChatId = chatId;
     }
     

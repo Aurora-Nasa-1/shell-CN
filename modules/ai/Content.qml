@@ -26,14 +26,20 @@ Item {
     implicitWidth: Tokens.sizes.sidebar.width + (showHistory ? (250 + layout.spacing) : 0)
     implicitHeight: Math.min(((QsWindow.window as QsWindow)?.screen?.height ?? 1080) * 0.7, 750)
 
-    readonly property color aiSidebarColour: {
-        var c = Config.sidebar.colour;
-        if (c === undefined || c === null)
-            return Colours.tPalette.m3surfaceContainerLow;
-        return c.a > 0 ? c : Colours.tPalette.m3surfaceContainerLow;
-    }
-
     property bool showHistory: false
+
+    // PageDown/PageUp keyboard support for scrolling message list
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_PageDown) {
+            event.accepted = true;
+            var pageDownTarget = messageList.contentY + messageList.height * 0.9;
+            var maxPageDown = Math.max(0, messageList.contentHeight - messageList.height);
+            messageList.contentY = Math.min(pageDownTarget, maxPageDown);
+        } else if (event.key === Qt.Key_PageUp) {
+            event.accepted = true;
+            messageList.contentY = Math.max(messageList.contentY - messageList.height * 0.9, 0);
+        }
+    }
 
     RowLayout {
         id: layout
@@ -42,12 +48,10 @@ Item {
         spacing: Tokens.spacing.normal
 
         // History Panel
-        StyledRect {
+        Item {
             Layout.fillHeight: true
             Layout.preferredWidth: 250
             visible: root.showHistory
-            color: root.aiSidebarColour
-            radius: Tokens.rounding.normal
 
             ColumnLayout {
                 anchors.fill: parent
@@ -119,240 +123,261 @@ Item {
             }
         }
 
-        StyledRect {
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            radius: Tokens.rounding.normal
-            color: root.aiSidebarColour
-
-            Item {
+            ColumnLayout {
+                id: mainLayout
                 anchors.fill: parent
                 anchors.margins: Tokens.padding.large
-
-                ColumnLayout {
-                    id: mainLayout
-                    anchors.fill: parent
-                    spacing: Tokens.spacing.normal
+                spacing: Tokens.spacing.normal
+                
+                // Header Card
+                StyledRect {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 60
                     
-                    // Header Card
-                    StyledRect {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 60
+                    radius: Tokens.rounding.large
+                    color: Colours.tPalette.m3surfaceContainer
+                    
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: Tokens.padding.normal
                         
-                        radius: Tokens.rounding.large
-                        color: Colours.tPalette.m3surfaceContainer
-                        
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: Tokens.padding.normal
-                            
-                            IconButton {
-                                icon: "menu"
-                                type: 2
-                                onClicked: root.showHistory = !root.showHistory
-                            }
+                        IconButton {
+                            icon: "menu"
+                            type: 2
+                            onClicked: root.showHistory = !root.showHistory
+                        }
 
-                            MaterialIcon {
-                                text: "smart_toy"
-                                color: Colours.palette.m3primary
-                                font.pointSize: Tokens.font.size.large
-                            }
-                            
-                            StyledText {
-                                Layout.fillWidth: true
-                                text: "AI Assistant"
-                                font.weight: Font.DemiBold
-                                font.pointSize: Tokens.font.size.large
-                                color: Colours.palette.m3onSurface
-                            }
-                            
-                            IconButton {
-                                icon: "delete_sweep"
-                                type: 2
-                                onClicked: AIState.clearHistory()
-                            }
-                            
-                            IconButton {
-                                icon: "settings"
-                                type: IconButton.Tonal
-                                onClicked: settingsDialog.isOpen = !settingsDialog.isOpen
-                            }
+                        MaterialIcon {
+                            text: "smart_toy"
+                            color: Colours.palette.m3primary
+                            font.pointSize: Tokens.font.size.large
+                        }
+                        
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: "AI Assistant"
+                            font.weight: Font.DemiBold
+                            font.pointSize: Tokens.font.size.large
+                            color: Colours.palette.m3onSurface
+                        }
+                        
+                        IconButton {
+                            icon: "delete_sweep"
+                            type: 2
+                            onClicked: AIState.clearHistory()
+                        }
+                        
+                        IconButton {
+                            icon: "settings"
+                            type: IconButton.Tonal
+                            onClicked: settingsDialog.isOpen = !settingsDialog.isOpen
                         }
                     }
-                    
-                    // Main Chat Area
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                }
+                
+                // Main Chat Area
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
-                        StyledListView {
-                            id: messageList
-                            anchors.fill: parent
-                            
-                            clip: true
-                            spacing: Tokens.spacing.normal
-                            
-                            model: AIState.currentMessages
-                            
-                            delegate: ChatBubble {
-                                required property var modelData
-                                required property int index
+                    StyledListView {
+                        id: messageList
+                        anchors.fill: parent
+                        
+                        clip: true
+                        spacing: Tokens.spacing.normal
+                        
+                        model: AIState.currentMessages
+                        
+                        delegate: ChatBubble {
+                            required property var modelData
+                            required property int index
 
-                                role: modelData.role || ""
-                                text: {
-                                    if (modelData.role === "tool") return "🔧 Tool Output (" + (modelData.name || "") + "):\n" + (modelData.text || "");
-                                    if (modelData.tool_calls && modelData.tool_calls.length > 0) return "⚙️ Executing tools...\n" + (modelData.text || "");
-                                    return modelData.text || "";
+                            role: modelData.role || ""
+                            text: {
+                                if (modelData.role === "tool") return "🔧 Tool Output (" + (modelData.name || "") + "):\n" + (modelData.text || "");
+                                if (modelData.tool_calls && modelData.tool_calls.length > 0) return "⚙️ Executing tools...\n" + (modelData.text || "");
+                                return modelData.text || "";
+                            }
+                            imagePath: modelData.imagePath || ""
+                            width: messageList.width
+                            itemIndex: index
+                            
+                            onRegenerateRequested: function(idx) {
+                                var messages = AIState.currentMessages;
+                                while (messages.length > 0 && messages[messages.length - 1].role !== "user") {
+                                    AIState.popLastMessage();
+                                    messages = AIState.currentMessages;
                                 }
-                                imagePath: modelData.imagePath || ""
-                                width: messageList.width
-                                itemIndex: index
-                                
-                                onRegenerateRequested: function(idx) {
-                                    var messages = AIState.currentMessages;
-                                    while (messages.length > 0 && messages[messages.length - 1].role !== "user") {
-                                        AIState.popLastMessage();
-                                        messages = AIState.currentMessages;
-                                    }
-                                    if (messages.length > 0 && messages[messages.length - 1].role === "user") {
-                                        var lastUserText = messages[messages.length - 1].text;
-                                        AIState.popLastMessage(); // Pop User message
-                                        sendPrompt(lastUserText);
-                                    }
+                                if (messages.length > 0 && messages[messages.length - 1].role === "user") {
+                                    var lastUserText = messages[messages.length - 1].text;
+                                    AIState.popLastMessage(); // Pop User message
+                                    sendPrompt(lastUserText);
                                 }
                             }
-                            
-                            onCountChanged: {
+                        }
+                        
+                        // Auto-scroll to bottom when new messages arrive
+                        onCountChanged: {
+                            Qt.callLater(() => {
+                                if (count > 0) {
+                                    positionViewAtEnd();
+                                }
+                            });
+                        }
+                        
+                        // Auto-scroll during AI streaming
+                        Connections {
+                            target: AIState
+                            function onCurrentStreamTextChanged() {
                                 Qt.callLater(() => {
-                                    if (count > 0 && atYEnd) {
-                                        positionViewAtEnd();
-                                    }
+                                    messageList.positionViewAtEnd();
                                 });
                             }
                         }
-
-                        // Suggestion Chips (Empty State)
-                        SuggestionChips {
-                            anchors.centerIn: parent
-                            visible: AIState.currentMessages.length === 0
-                            onChipClicked: function(text) { sendPrompt(text); }
-                        }
-
-                        // Streaming Status Bubble
-                        ChatBubble {
-                            id: streamBubble
-                            anchors.bottom: parent.bottom
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            visible: AIState.currentStatus === AIState.Generating
-                            role: "assistant"
-                            text: AIState.currentStreamText.length > 0 ? AIState.currentStreamText : "Thinking..."
+                        
+                        // Save scroll position before destruction (close panel)
+                        Component.onDestruction: {
+                            AIState.scrollPosition = messageList.contentY;
                         }
                         
-                        // Error Status Bubble
-                        ChatBubble {
-                            id: errorBubble
-                            anchors.bottom: parent.bottom
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            visible: AIState.currentStatus === AIState.Error
-                            role: "assistant"
-                            text: "⚠️ Error: " + AIState.currentErrorText
+                        // Restore scroll position after recreation (reopen panel)
+                        Component.onCompleted: {
+                            Qt.callLater(() => {
+                                if (AIState.scrollPosition > 0 && messageList.count > 0) {
+                                    var maxPos = Math.max(0, messageList.contentHeight - messageList.height);
+                                    messageList.contentY = Math.min(AIState.scrollPosition, maxPos);
+                                } else if (messageList.count > 0) {
+                                    messageList.positionViewAtEnd();
+                                }
+                            });
                         }
+                    }
 
-                        // Tool Execution Confirmation
-                        StyledRect {
-                            anchors.bottom: parent.bottom
-                            anchors.left: parent.left
-                            anchors.right: parent.right
+                    // Suggestion Chips (Empty State)
+                    SuggestionChips {
+                        anchors.centerIn: parent
+                        visible: AIState.currentMessages.length === 0
+                        onChipClicked: function(text) { sendPrompt(text); }
+                    }
+
+                    // Streaming Status Bubble
+                    ChatBubble {
+                        id: streamBubble
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        visible: AIState.currentStatus === AIState.Generating
+                        role: "assistant"
+                        text: AIState.currentStreamText.length > 0 ? AIState.currentStreamText : "Thinking..."
+                    }
+                    
+                    // Error Status Bubble
+                    ChatBubble {
+                        id: errorBubble
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        visible: AIState.currentStatus === AIState.Error
+                        role: "assistant"
+                        text: "⚠️ Error: " + AIState.currentErrorText
+                    }
+
+                    // Tool Execution Confirmation
+                    StyledRect {
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.margins: Tokens.padding.normal
+                        visible: root.waitingForToolApproval
+                        color: Colours.tPalette.m3surfaceContainerHigh
+                        radius: Tokens.rounding.normal
+                        border.color: Colours.palette.m3primary
+                        border.width: 1
+                        
+                        implicitHeight: toolLayout.implicitHeight + Tokens.padding.normal * 2
+
+                        ColumnLayout {
+                            id: toolLayout
+                            anchors.fill: parent
                             anchors.margins: Tokens.padding.normal
-                            visible: root.waitingForToolApproval
-                            color: Colours.tPalette.m3surfaceContainerHigh
-                            radius: Tokens.rounding.normal
-                            border.color: Colours.palette.m3primary
-                            border.width: 1
-                            
-                            implicitHeight: toolLayout.implicitHeight + Tokens.padding.normal * 2
+                            spacing: Tokens.spacing.small
 
-                            ColumnLayout {
-                                id: toolLayout
-                                anchors.fill: parent
-                                anchors.margins: Tokens.padding.normal
-                                spacing: Tokens.spacing.small
+                            StyledText {
+                                text: "Assistant wants to execute command(s):"
+                                font.weight: Font.DemiBold
+                                color: Colours.palette.m3onSurface
+                            }
 
+                            StyledText {
+                                text: root.getPendingToolDescriptions()
+                                wrapMode: Text.Wrap
+                                color: Colours.palette.m3onSurfaceVariant
+                                font.family: Tokens.font.family.mono
+                                font.pointSize: Tokens.font.size.small
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Item { Layout.fillWidth: true } // spacer
+                                
                                 StyledText {
-                                    text: "Assistant wants to execute command(s):"
-                                    font.weight: Font.DemiBold
-                                    color: Colours.palette.m3onSurface
-                                }
-
-                                StyledText {
-                                    text: root.getPendingToolDescriptions()
-                                    wrapMode: Text.Wrap
+                                    visible: AIState.autoExecuteTools && root.toolExecutionCountdown > 0
+                                    text: "Auto executing in " + root.toolExecutionCountdown + "s..."
                                     color: Colours.palette.m3onSurfaceVariant
-                                    font.family: Tokens.font.family.mono
-                                    font.pointSize: Tokens.font.size.small
                                 }
 
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    Item { Layout.fillWidth: true } // spacer
-                                    
-                                    StyledText {
-                                        visible: AIState.autoExecuteTools && root.toolExecutionCountdown > 0
-                                        text: "Auto executing in " + root.toolExecutionCountdown + "s..."
-                                        color: Colours.palette.m3onSurfaceVariant
-                                    }
+                                TextButton {
+                                    text: "Deny"
+                                    onClicked: root.denyToolExecution()
+                                }
 
-                                    TextButton {
-                                        text: "Deny"
-                                        onClicked: root.denyToolExecution()
-                                    }
-
-                                    TextButton {
-                                        text: "Approve"
-                                        onClicked: root.approveToolExecution()
-                                    }
+                                TextButton {
+                                    text: "Approve"
+                                    onClicked: root.approveToolExecution()
                                 }
                             }
                         }
-
-                        // Scroll to bottom FAB
-                        IconButton {
-                            anchors.bottom: parent.bottom
-                            anchors.right: parent.right
-                            anchors.margins: Tokens.padding.normal
-                            visible: messageList.contentHeight > messageList.height && !messageList.atYEnd
-                            icon: "arrow_downward"
-                            type: IconButton.Filled
-                            onClicked: messageList.positionViewAtEnd()
-                        }
                     }
+
+                    // Scroll to bottom FAB
+                    IconButton {
+                        anchors.bottom: parent.bottom
+                        anchors.right: parent.right
+                        anchors.margins: Tokens.padding.normal
+                        visible: messageList.contentHeight > messageList.height && !messageList.atYEnd
+                        icon: "arrow_downward"
+                        type: IconButton.Filled
+                        onClicked: messageList.positionViewAtEnd()
+                    }
+                }
+                
+                // Input Area
+                AutoResizeInput {
+                    Layout.fillWidth: true
                     
-                    // Input Area
-                    AutoResizeInput {
-                        Layout.fillWidth: true
-                        
-                        onSendRequested: function(text) { sendPrompt(text); }
-                        onStopRequested: {
-                            // Interrupt generation by setting state
-                            AIState.currentStatus = AIState.Idle; 
-                        }
-                        onCloseRequested: {
-                            root.visibilities.ai = false;
-                        }
+                    onSendRequested: function(text) { sendPrompt(text); }
+                    onStopRequested: {
+                        // Interrupt generation by setting state
+                        AIState.currentStatus = AIState.Idle;
+                    }
+                    onCloseRequested: {
+                        root.visibilities.ai = false;
                     }
                 }
+            }
 
-                // Overlay Settings Dialog
-                SettingsDialog {
-                    id: settingsDialog
-                    anchors.centerIn: parent
-                    width: parent.width * 0.9
-                    // z-index to appear above everything
-                    z: 100
-                }
+            // Overlay Settings Dialog
+            SettingsDialog {
+                id: settingsDialog
+                anchors.centerIn: parent
+                width: parent.width * 0.9
+                // z-index to appear above everything
+                z: 100
             }
         }
     }

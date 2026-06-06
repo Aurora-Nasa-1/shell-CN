@@ -59,6 +59,7 @@ target_precompile_headers(caelestia-pch INTERFACE
 qml_module(caelestia
     URI Caelestia
     SOURCES
+        appinit.cpp
         cutils.hpp cutils.cpp
         qalculator.hpp qalculator.cpp
         appdb.hpp appdb.cpp
