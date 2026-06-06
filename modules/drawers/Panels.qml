@@ -19,6 +19,7 @@ Item {
     id: root
 
     required property ShellScreen screen
+    Config.screen: screen.name
     required property DrawerVisibilities visibilities
     required property Bar.BarWrapper bar
     required property real borderThickness
@@ -40,9 +41,16 @@ Item {
     readonly property alias aiWrapper: aiWrapper
     readonly property alias lyricsHoverArea: lyricsHoverArea
 
+    readonly property real leftMargin: anchors.leftMargin
+    readonly property real rightMargin: anchors.rightMargin
+    readonly property real topMargin: anchors.topMargin
+    readonly property real bottomMargin: anchors.bottomMargin
+
     anchors.fill: parent
-    anchors.margins: borderThickness
-    anchors.leftMargin: bar.implicitWidth
+    anchors.leftMargin: Config.bar.position === "left" ? bar.implicitWidth : borderThickness
+    anchors.rightMargin: Config.bar.position === "right" ? bar.implicitWidth : borderThickness
+    anchors.topMargin: Config.bar.position === "top" ? bar.implicitHeight : borderThickness
+    anchors.bottomMargin: Config.bar.position === "bottom" ? bar.implicitHeight : borderThickness
 
     Item {
         id: aiWrapper
@@ -70,7 +78,8 @@ Item {
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: sessionWrapper.anchors.rightMargin + session.width * (1 - session.offsetScale)
+        anchors.leftMargin: Config.bar.position === "right" ? sidebar.width * (1 - sidebar.offsetScale) + session.width * (1 - session.offsetScale) : 0
+        anchors.rightMargin: Config.bar.position !== "right" ? sidebar.width * (1 - sidebar.offsetScale) + session.width * (1 - session.offsetScale) : 0
         clip: sidebar.visible || session.visible
 
         implicitWidth: osd.implicitWidth * (1 - osd.offsetScale)
@@ -98,14 +107,32 @@ Item {
 
         anchors.top: parent.top
         anchors.right: parent.right
+
+        readonly property bool isNoPushPopout: popoutsWrapper.content.hasCurrent && (popoutsWrapper.content.currentName === "dockhover" || popoutsWrapper.content.currentName === "dockcontext" || popoutsWrapper.content.currentName === "activewindow")
+
+        anchors.topMargin: (Config.bar.position === "top" && popoutsWrapper.offsetScale < 1 && !isNoPushPopout) ? (sidebar.visible ? popoutsWrapper.implicitHeight : (popoutsWrapper.implicitHeight - Tokens.padding.large * 2 + 10)) : 0
+        anchors.bottomMargin: (Config.bar.position === "bottom" && popoutsWrapper.offsetScale < 1 && !isNoPushPopout) ? (sidebar.visible ? popoutsWrapper.implicitHeight : (popoutsWrapper.implicitHeight - Tokens.padding.large * 2 + 10)) : 0
     }
 
     Item {
         id: sessionWrapper
 
         anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: {
+            const centerToBottomDistance = parent.height / 2 - implicitHeight / 2;
+            if (Config.bar.position === "top") {
+                const shift = notifications.anchors.topMargin - centerToBottomDistance;
+                return shift > 0 ? shift : 0;
+            }
+            if (Config.bar.position === "bottom") {
+                const shift = notifications.anchors.bottomMargin - centerToBottomDistance;
+                return shift > 0 ? -shift : 0;
+            }
+            return 0;
+        }
         anchors.right: parent.right
-        anchors.rightMargin: sidebar.width * (1 - sidebar.offsetScale)
+        anchors.leftMargin: Config.bar.position === "right" ? sidebar.width * (1 - sidebar.offsetScale) : 0
+        anchors.rightMargin: Config.bar.position !== "right" ? sidebar.width * (1 - sidebar.offsetScale) : 0
         clip: sidebar.visible
 
         implicitWidth: session.implicitWidth * (1 - session.offsetScale)
@@ -165,7 +192,10 @@ Item {
         id: popoutsWrapper
 
         screen: root.screen
+        bar: root.bar
         borderThickness: root.borderThickness
+        sidebar: root.sidebar
+        utilities: root.utilities
     }
 
     Utilities.Wrapper {
@@ -191,9 +221,43 @@ Item {
         id: sidebar
 
         visibilities: root.visibilities
+        popouts: root.popouts
+        popoutsWrapper: root.popoutsWrapper
 
         anchors.top: notifications.bottom
         anchors.bottom: utilities.top
         anchors.right: parent.right
+
+        anchors.topMargin: 0
+        anchors.bottomMargin: 0
     }
+
+    states: [
+        State {
+            name: "right"
+            Config.screen: root.screen.name
+            when: Config.bar.position === "right"
+            AnchorChanges { target: osdWrapper; anchors.left: parent.left; anchors.right: undefined }
+            AnchorChanges { target: osd; anchors.left: parent.left; anchors.right: undefined }
+            AnchorChanges { target: notifications; anchors.left: parent.left; anchors.right: undefined }
+            AnchorChanges { target: sessionWrapper; anchors.left: parent.left; anchors.right: undefined }
+            AnchorChanges { target: session; anchors.left: parent.left; anchors.right: undefined }
+            AnchorChanges { target: utilities; anchors.left: parent.left; anchors.right: undefined }
+            AnchorChanges { target: toasts; anchors.left: sidebar.right; anchors.right: undefined }
+            AnchorChanges { target: sidebar; anchors.left: parent.left; anchors.right: undefined }
+        },
+        State {
+            name: "bottom"
+            Config.screen: root.screen.name
+            when: Config.bar.position === "bottom"
+            AnchorChanges { target: notifications; anchors.top: undefined; anchors.bottom: parent.bottom }
+            AnchorChanges { target: utilities; anchors.bottom: undefined; anchors.top: parent.top }
+            AnchorChanges { target: toasts; anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.right: undefined }
+            AnchorChanges { target: sidebar; anchors.top: utilities.bottom; anchors.bottom: notifications.top }
+            PropertyChanges {
+                target: sidebar
+                anchors.topMargin: -4
+            }
+        }
+    ]
 }

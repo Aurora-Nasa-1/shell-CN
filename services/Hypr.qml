@@ -13,13 +13,17 @@ import qs.utils
 Singleton {
     id: root
 
+    property alias delayedRefreshTimer: delayedRefreshTimer
+
     readonly property var toplevels: Hyprland.toplevels
     readonly property var workspaces: Hyprland.workspaces
     readonly property var monitors: Hyprland.monitors
 
     readonly property HyprlandToplevel activeToplevel: {
         const t = Hyprland.activeToplevel;
-        return t?.workspace?.name.startsWith("special:") || Hyprland.focusedWorkspace?.toplevels.values.length > 0 ? t : null;
+        const toplevels = Hyprland.focusedWorkspace?.toplevels.values;
+        const hasWindows = toplevels ? (toplevels.length > 0 || toplevels.count > 0 || toplevels[0] !== undefined) : false;
+        return t?.workspace?.name.startsWith("special:") || hasWindows ? t : null;
     }
     readonly property HyprlandWorkspace focusedWorkspace: Hyprland.focusedWorkspace
     readonly property HyprlandMonitor focusedMonitor: Hyprland.focusedMonitor
@@ -135,16 +139,28 @@ Singleton {
             } else if (["openwindow", "closewindow", "movewindow"].includes(n)) {
                 Hyprland.refreshToplevels();
                 Hyprland.refreshWorkspaces();
+                delayedRefreshTimer.restart();
             } else if (n.includes("mon")) {
                 Hyprland.refreshMonitors();
             } else if (n.includes("workspace")) {
                 Hyprland.refreshWorkspaces();
             } else if (n.includes("window") || n.includes("group") || ["pin", "fullscreen", "changefloatingmode", "minimize"].includes(n)) {
                 Hyprland.refreshToplevels();
+                delayedRefreshTimer.restart();
             }
         }
 
         target: Hyprland
+    }
+
+    Timer {
+        id: delayedRefreshTimer
+        interval: 50
+        repeat: false
+        onTriggered: {
+            Hyprland.refreshToplevels();
+            Hyprland.refreshWorkspaces();
+        }
     }
 
     Connections {

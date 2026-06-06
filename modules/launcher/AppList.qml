@@ -51,7 +51,8 @@ StyledListView {
         const text = search.text;
         const prefix = GlobalConfig.launcher.actionPrefix;
         if (text.startsWith(prefix)) {
-            for (const action of ["calc", "scheme", "variant"])
+            const actionPrefixes = ["calc", "scheme", "variant", "emoji", "clipboard", "windows"];
+            for (const action of actionPrefixes)
                 if (text.startsWith(`${prefix}${action} `))
                     return action;
 
@@ -64,6 +65,10 @@ StyledListView {
     onStateChanged: {
         if (state === "scheme" || state === "variant")
             Schemes.reload();
+        if (state === "emoji")
+            Emojis.reload();
+        if (state === "clipboard")
+            Clipboard.reload();
     }
 
     states: [
@@ -105,6 +110,44 @@ StyledListView {
             PropertyChanges {
                 model.values: M3Variants.query(search.text)
                 root.delegate: variantItem
+            }
+        },
+        State {
+            name: "emoji"
+
+            PropertyChanges {
+                model.values: {
+                    const prefix = GlobalConfig.launcher.actionPrefix;
+                    const text = root.search.text.slice((prefix + "emoji ").length).toLowerCase();
+                    if (!text) return Emojis.getSortedItems();
+                    return Emojis.items.filter(function(item) {
+                        return item.name.toLowerCase().includes(text);
+                    });
+                }
+                root.delegate: emojiItem
+            }
+        },
+        State {
+            name: "clipboard"
+
+            PropertyChanges {
+                model.values: {
+                    const prefix = GlobalConfig.launcher.actionPrefix;
+                    const text = root.search.text.slice((prefix + "clipboard ").length).toLowerCase();
+                    if (!text) return Clipboard.getSortedItems();
+                    return Clipboard.items.filter(function(item) {
+                        return item.preview.toLowerCase().includes(text);
+                    });
+                }
+                root.delegate: clipItem
+            }
+        },
+        State {
+            name: "windows"
+
+            PropertyChanges {
+                model.values: Windows.items
+                root.delegate: windowsItem
             }
         }
     ]
@@ -250,6 +293,30 @@ StyledListView {
         id: variantItem
 
         VariantItem {
+            list: root
+        }
+    }
+
+    Component {
+        id: emojiItem
+
+        EmojiItem {
+            list: root
+        }
+    }
+
+    Component {
+        id: clipItem
+
+        ClipItem {
+            list: root
+        }
+    }
+
+    Component {
+        id: windowsItem
+
+        WindowSwitcherItem {
             list: root
         }
     }

@@ -46,13 +46,16 @@ StackView {
         property bool isSubMenu
         property bool shown
 
-        padding: Tokens.padding.smaller
-        spacing: Tokens.spacing.small
+        padding: 0
+        spacing: Tokens.spacing.normal
 
         opacity: shown ? 1 : 0
         scale: shown ? 1 : 0.8
 
-        Component.onCompleted: shown = true
+        Component.onCompleted: {
+            shown = true;
+            updateGroups();
+        }
         StackView.onActivating: shown = true
         StackView.onDeactivating: shown = false
         StackView.onRemoved: destroy()
@@ -71,103 +74,174 @@ StackView {
             menu: menu.handle
         }
 
+        property var entryGroups: []
+
+        function updateGroups(): void {
+            if (!menuOpener.children) {
+                entryGroups = [];
+                return;
+            }
+            let groups = [];
+            let currentGroup = [];
+            for (let i = 0; i < childrenTracker.count; i++) {
+                let trackerItem = childrenTracker.itemAt(i);
+                if (!trackerItem) {
+                    Qt.callLater(updateGroups);
+                    return;
+                }
+                let child = trackerItem.modelData;
+                if (!child) continue;
+                if (child.isSeparator) {
+                    if (currentGroup.length > 0) {
+                        groups.push(currentGroup);
+                        currentGroup = [];
+                    }
+                } else {
+                    currentGroup.push(child);
+                }
+            }
+            if (currentGroup.length > 0) {
+                groups.push(currentGroup);
+            }
+            entryGroups = groups;
+        }
+
+        Connections {
+            target: menuOpener
+            ignoreUnknownSignals: true
+            function onChildrenChanged() { menu.updateGroups() }
+        }
+
         Repeater {
+            id: childrenTracker
             model: menuOpener.children
+            delegate: Item {
+                required property var modelData
+                Component.onCompleted: menu.updateGroups()
+                Component.onDestruction: menu.updateGroups()
+            }
+        }
+
+        Repeater {
+            model: menu.entryGroups
 
             StyledRect {
-                id: item
+                id: container
 
-                required property QsMenuEntry modelData
+                required property var modelData
 
-                implicitWidth: Tokens.sizes.bar.trayMenuWidth
-                implicitHeight: modelData.isSeparator ? 1 : children.implicitHeight
+                implicitWidth: Tokens.sizes.bar.trayMenuWidth + Tokens.padding.normal * 2
+                implicitHeight: groupColumn.implicitHeight + Tokens.padding.normal * 2
+                radius: Tokens.rounding.normal
+                color: Colours.tPalette.m3surfaceContainer
 
-                radius: Tokens.rounding.full
-                color: modelData.isSeparator ? Colours.palette.m3outlineVariant : "transparent"
+                Column {
+                    id: groupColumn
 
-                Loader {
-                    id: children
-
-                    asynchronous: true
                     anchors.left: parent.left
                     anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: Tokens.padding.normal
+                    spacing: Tokens.spacing.small
 
-                    active: !item.modelData.isSeparator
+                    Repeater {
+                        model: container.modelData || []
 
-                    sourceComponent: Item {
-                        implicitHeight: label.implicitHeight
+                        StyledRect {
+                            id: item
 
-                        StateLayer {
-                            anchors.margins: -Tokens.padding.small / 2
-                            anchors.leftMargin: -Tokens.padding.smaller
-                            anchors.rightMargin: -Tokens.padding.smaller
+                            required property QsMenuEntry modelData
 
-                            radius: item.radius
-                            disabled: !item.modelData.enabled
+                            implicitWidth: Tokens.sizes.bar.trayMenuWidth
+                            implicitHeight: children.implicitHeight
 
-                            onClicked: {
-                                const entry = item.modelData;
-                                if (entry.hasChildren)
-                                    root.push(subMenuComp.createObject(null, {
-                                        handle: entry,
-                                        isSubMenu: true
-                                    }));
-                                else {
-                                    item.modelData.triggered();
-                                    root.popouts.hasCurrent = false;
-                                }
-                            }
-                        }
+                            radius: Tokens.rounding.full
+                            color: "transparent"
 
-                        Loader {
-                            id: icon
+                            Loader {
+                                id: children
 
-                            asynchronous: true
-                            anchors.left: parent.left
-
-                            active: item.modelData.icon !== ""
-
-                            sourceComponent: IconImage {
                                 asynchronous: true
-                                implicitSize: label.implicitHeight
+                                anchors.left: parent.left
+                                anchors.right: parent.right
 
-                                source: item.modelData.icon
-                            }
-                        }
+                                sourceComponent: Item {
+                                    implicitHeight: label.implicitHeight
 
-                        StyledText {
-                            id: label
+                                    StateLayer {
+                                        anchors.margins: -Tokens.padding.normal / 2
+                                        anchors.leftMargin: -Tokens.padding.normal
+                                        anchors.rightMargin: -Tokens.padding.normal
 
-                            anchors.left: icon.right
-                            anchors.leftMargin: icon.active ? Tokens.spacing.smaller : 0
+                                        radius: item.radius
+                                        disabled: !item.modelData.enabled
 
-                            text: labelMetrics.elidedText
-                            color: item.modelData.enabled ? Colours.palette.m3onSurface : Colours.palette.m3outline
-                        }
+                                        onClicked: {
+                                            const entry = item.modelData;
+                                            if (entry.hasChildren)
+                                                root.push(subMenuComp.createObject(null, {
+                                                    handle: entry,
+                                                    isSubMenu: true
+                                                }));
+                                            else {
+                                                item.modelData.triggered();
+                                                root.popouts.hasCurrent = false;
+                                            }
+                                        }
+                                    }
 
-                        TextMetrics {
-                            id: labelMetrics
+                                    Loader {
+                                        id: icon
 
-                            text: item.modelData.text
-                            font.pointSize: label.font.pointSize
-                            font.family: label.font.family
+                                        asynchronous: true
+                                        anchors.left: parent.left
 
-                            elide: Text.ElideRight
-                            elideWidth: root.Tokens.sizes.bar.trayMenuWidth - (icon.active ? icon.implicitWidth + label.anchors.leftMargin : 0) - (expand.active ? expand.implicitWidth + root.Tokens.spacing.normal : 0)
-                        }
+                                        active: item.modelData.icon !== ""
 
-                        Loader {
-                            id: expand
+                                        sourceComponent: IconImage {
+                                            asynchronous: true
+                                            implicitSize: label.implicitHeight
 
-                            asynchronous: true
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: parent.right
+                                            source: item.modelData.icon
+                                        }
+                                    }
 
-                            active: item.modelData.hasChildren
+                                    StyledText {
+                                        id: label
 
-                            sourceComponent: MaterialIcon {
-                                text: "chevron_right"
-                                color: item.modelData.enabled ? Colours.palette.m3onSurface : Colours.palette.m3outline
+                                        anchors.left: icon.right
+                                        anchors.leftMargin: icon.active ? Tokens.spacing.smaller : 0
+
+                                        text: labelMetrics.elidedText
+                                        color: item.modelData.enabled ? Colours.palette.m3onSurface : Colours.palette.m3outline
+                                    }
+
+                                    TextMetrics {
+                                        id: labelMetrics
+
+                                        text: item.modelData.text
+                                        font.pointSize: label.font.pointSize
+                                        font.family: label.font.family
+
+                                        elide: Text.ElideRight
+                                        elideWidth: Tokens.sizes.bar.trayMenuWidth - (icon.active ? icon.implicitWidth + label.anchors.leftMargin : 0) - (expand.active ? expand.implicitWidth + Tokens.spacing.normal : 0)
+                                    }
+
+                                    Loader {
+                                        id: expand
+
+                                        asynchronous: true
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.right: parent.right
+
+                                        active: item.modelData.hasChildren
+
+                                        sourceComponent: MaterialIcon {
+                                            text: "chevron_right"
+                                            color: item.modelData.enabled ? Colours.palette.m3onSurface : Colours.palette.m3outline
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

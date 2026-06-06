@@ -19,13 +19,15 @@ Item {
     required property int rounding
 
     readonly property bool showWallpapers: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}wallpaper `)
-    readonly property var currentList: showWallpapers ? wallpaperList.item : appList.item // Can be either ListView or PathView, so can't type properly
+    readonly property bool showWindowSwitcher: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}windows `)
+    readonly property bool showKeybinds: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}keybinds `)
+    readonly property var currentList: showWallpapers ? wallpaperList.item : (showWindowSwitcher ? windowSwitcherList.item : (showKeybinds ? keybindsList.item : appList.item))
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
 
     clip: true
-    state: showWallpapers ? "wallpapers" : "apps"
+    state: showWindowSwitcher ? "windowSwitcher" : (showKeybinds ? "keybinds" : (showWallpapers ? "wallpapers" : "apps"))
 
     states: [
         State {
@@ -50,6 +52,29 @@ Item {
                 root.implicitHeight: root.Tokens.sizes.launcher.wallpaperHeight
                 wallpaperList.active: true
             }
+        },
+        State {
+            name: "windowSwitcher"
+
+            PropertyChanges {
+                root.implicitWidth: Math.max(root.Tokens.sizes.launcher.itemWidth * 1.2, windowSwitcherList.implicitWidth)
+                root.implicitHeight: root.Tokens.sizes.launcher.windowSwitcherHeight
+                windowSwitcherList.active: true
+            }
+        },
+        State {
+            name: "keybinds"
+
+            PropertyChanges {
+                root.implicitWidth: root.Tokens.sizes.launcher.itemWidth
+                root.implicitHeight: Math.min(root.maxHeight, root.Tokens.sizes.launcher.itemHeight * 7)
+                keybindsList.active: true
+            }
+
+            AnchorChanges {
+                anchors.left: root.parent.left
+                anchors.right: root.parent.right
+            }
         }
     ]
 
@@ -69,6 +94,24 @@ Item {
                 from: 0
                 to: 1
                 type: Anim.StandardSmall
+            }
+        }
+    }
+
+    onStateChanged: {
+        if (state === "keybinds") {
+            keybindsList.active = true;
+        } else {
+            keybindsList.active = false;
+        }
+    }
+
+    Timer {
+        id: keybindsTimer
+        interval: 50
+        onTriggered: {
+            if (state === "keybinds" && keybindsList.item) {
+                keybindsList.item.refreshModel();
             }
         }
     }
@@ -104,6 +147,37 @@ Item {
         }
     }
 
+    Loader {
+        id: windowSwitcherList
+
+        asynchronous: true
+        active: false
+
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        sourceComponent: WindowSwitcherList {
+            search: root.search
+            visibilities: root.visibilities
+            panels: root.panels
+            content: root.content
+        }
+    }
+
+    Loader {
+        id: keybindsList
+
+        active: false
+
+        anchors.fill: parent
+
+        sourceComponent: KeybindsList {
+            search: root.search
+            visibilities: root.visibilities
+        }
+    }
+
     Row {
         id: empty
 
@@ -117,7 +191,11 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
 
         MaterialIcon {
-            text: root.state === "wallpapers" ? "wallpaper_slideshow" : "manage_search"
+            text: {
+                if (root.state === "wallpapers") return "wallpaper_slideshow";
+                if (root.state === "keybinds") return "keyboard";
+                return "manage_search";
+            }
             color: Colours.palette.m3onSurfaceVariant
             font.pointSize: Tokens.font.size.extraLarge
 
@@ -128,14 +206,22 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             StyledText {
-                text: root.state === "wallpapers" ? I18n.tr("No wallpapers found") : I18n.tr("No results")
+                text: {
+                    if (root.state === "wallpapers") return I18n.tr("No wallpapers found");
+                    if (root.state === "keybinds") return I18n.tr("No keybinds found");
+                    return I18n.tr("No results");
+                }
                 color: Colours.palette.m3onSurfaceVariant
                 font.pointSize: Tokens.font.size.larger
                 font.weight: 500
             }
 
             StyledText {
-                text: root.state === "wallpapers" && Wallpapers.list.length === 0 ? I18n.tr("Try putting some wallpapers in %1").arg(Paths.shortenHome(Paths.wallsdir)) : I18n.tr("Try searching for something else")
+                text: {
+                    if (root.state === "wallpapers") return Wallpapers.list.length === 0 ? I18n.tr("Try putting some wallpapers in %1").arg(Paths.shortenHome(Paths.wallsdir)) : I18n.tr("Try searching for something else");
+                    if (root.state === "keybinds") return I18n.tr("No keybinds match your search");
+                    return I18n.tr("Try searching for something else");
+                }
                 color: Colours.palette.m3onSurfaceVariant
                 font.pointSize: Tokens.font.size.normal
             }

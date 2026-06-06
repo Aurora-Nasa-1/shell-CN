@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import ".."
 import "../components"
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
@@ -27,6 +28,7 @@ Item {
     property bool persistent: Config.bar.persistent ?? true
     property bool showOnHover: Config.bar.showOnHover ?? true
     property int dragThreshold: Config.bar.dragThreshold ?? 20
+    property string position: Config.bar.position ?? "left"
     property bool showAudio: Config.bar.status.showAudio ?? true
     property bool showMicrophone: Config.bar.status.showMicrophone ?? true
     property bool showKbLayout: Config.bar.status.showKbLayout ?? false
@@ -44,6 +46,7 @@ Item {
     property bool workspacesShowWindows: Config.bar.workspaces.showWindows ?? false
     property int workspacesMaxWindowIcons: Config.bar.workspaces.maxWindowIcons ?? 0
     property bool workspacesPerMonitor: GlobalConfig.bar.workspaces.perMonitorWorkspaces ?? true
+    property bool workspacesUseIcon: Config.bar.workspaces.useIcon ?? false
     property bool scrollWorkspaces: Config.bar.scrollActions.workspaces ?? true
     property bool scrollVolume: Config.bar.scrollActions.volume ?? true
     property bool scrollBrightness: Config.bar.scrollActions.brightness ?? true
@@ -62,6 +65,7 @@ Item {
         GlobalConfig.bar.persistent = root.persistent;
         GlobalConfig.bar.showOnHover = root.showOnHover;
         GlobalConfig.bar.dragThreshold = root.dragThreshold;
+        GlobalConfig.bar.position = root.position;
         GlobalConfig.bar.status.showAudio = root.showAudio;
         GlobalConfig.bar.status.showMicrophone = root.showMicrophone;
         GlobalConfig.bar.status.showKbLayout = root.showKbLayout;
@@ -79,6 +83,7 @@ Item {
         GlobalConfig.bar.workspaces.showWindows = root.workspacesShowWindows;
         GlobalConfig.bar.workspaces.maxWindowIcons = root.workspacesMaxWindowIcons;
         GlobalConfig.bar.workspaces.perMonitorWorkspaces = root.workspacesPerMonitor;
+        GlobalConfig.bar.workspaces.useIcon = root.workspacesUseIcon;
         GlobalConfig.bar.scrollActions.workspaces = root.scrollWorkspaces;
         GlobalConfig.bar.scrollActions.volume = root.scrollVolume;
         GlobalConfig.bar.scrollActions.brightness = root.scrollBrightness;
@@ -107,12 +112,25 @@ Item {
     Component.onCompleted: {
         if (Config.bar.entries) {
             entriesModel.clear();
+            let activeWindowIdx = -1;
+            let dockIdx = -1;
             for (let i = 0; i < Config.bar.entries.length; i++) {
                 const entry = Config.bar.entries[i];
+                if (entry.id === "activeWindow") activeWindowIdx = i;
+                if (entry.id === "dock") dockIdx = i;
                 entriesModel.append({
                     id: entry.id,
                     enabled: entry.enabled !== false
                 });
+            }
+            
+            if (activeWindowIdx === -1 && dockIdx !== -1) {
+                entriesModel.insert(dockIdx, { id: "activeWindow", enabled: false });
+            } else if (dockIdx === -1 && activeWindowIdx !== -1) {
+                entriesModel.insert(activeWindowIdx + 1, { id: "dock", enabled: false });
+            } else if (activeWindowIdx === -1 && dockIdx === -1) {
+                entriesModel.append({ id: "activeWindow", enabled: true });
+                entriesModel.append({ id: "dock", enabled: false });
             }
         }
     }
@@ -494,6 +512,40 @@ Item {
                                     }
                                 }
                             }
+
+                            StyledRect {
+                                Layout.fillWidth: true
+                                implicitHeight: workspacesUseIconRow.implicitHeight + Tokens.padding.large * 2
+                                radius: Tokens.rounding.normal
+                                color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
+
+                                Behavior on implicitHeight {
+                                    Anim {}
+                                }
+
+                                RowLayout {
+                                    id: workspacesUseIconRow
+
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.margins: Tokens.padding.large
+                                    spacing: Tokens.spacing.normal
+
+                                    StyledText {
+                                        Layout.fillWidth: true
+                                        text: I18n.tr("Use icon")
+                                    }
+
+                                    StyledSwitch {
+                                        checked: root.workspacesUseIcon
+                                        onToggled: {
+                                            root.workspacesUseIcon = checked;
+                                            root.saveConfig();
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         SectionContainer {
@@ -544,6 +596,116 @@ Item {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
                         spacing: Tokens.spacing.normal
+
+                        SectionContainer {
+                            Layout.fillWidth: true
+                            alignTop: true
+
+                            StyledText {
+                                text: I18n.tr("Active window")
+                                font.pointSize: Tokens.font.size.normal
+                            }
+                            
+                            SwitchRow {
+                                id: activeWindowSwitch
+                                label: I18n.tr("Enable")
+                                checked: {
+                                    for (let i = 0; i < entriesModel.count; i++) {
+                                        if (entriesModel.get(i).id === "activeWindow") return entriesModel.get(i).enabled;
+                                    }
+                                    return false;
+                                }
+                                onToggled: checked => {
+                                    let activeWindowIdx = -1;
+                                    let dockIdx = -1;
+                                    for (let i = 0; i < entriesModel.count; i++) {
+                                        if (entriesModel.get(i).id === "activeWindow") activeWindowIdx = i;
+                                        if (entriesModel.get(i).id === "dock") dockIdx = i;
+                                    }
+                                    
+                                    if (activeWindowIdx !== -1) {
+                                        entriesModel.setProperty(activeWindowIdx, "enabled", checked);
+                                    }
+                                    if (checked && dockIdx !== -1) {
+                                        entriesModel.setProperty(dockIdx, "enabled", false);
+                                        dockSwitch.checked = false;
+                                    }
+                                    root.saveConfig();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: I18n.tr("Compact")
+                                checked: root.activeWindowCompact
+                                onToggled: checked => {
+                                    root.activeWindowCompact = checked;
+                                    root.saveConfig();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: I18n.tr("Inverted")
+                                checked: root.activeWindowInverted
+                                onToggled: checked => {
+                                    root.activeWindowInverted = checked;
+                                    root.saveConfig();
+                                }
+                            }
+                        }
+
+                        SectionContainer {
+                            Layout.fillWidth: true
+                            alignTop: true
+
+                            StyledText {
+                                text: I18n.tr("Dock")
+                                font.pointSize: Tokens.font.size.normal
+                            }
+                            
+                            SwitchRow {
+                                id: dockSwitch
+                                label: I18n.tr("Enable")
+                                checked: {
+                                    for (let i = 0; i < entriesModel.count; i++) {
+                                        if (entriesModel.get(i).id === "dock") return entriesModel.get(i).enabled;
+                                    }
+                                    return false;
+                                }
+                                onToggled: checked => {
+                                    let activeWindowIdx = -1;
+                                    let dockIdx = -1;
+                                    for (let i = 0; i < entriesModel.count; i++) {
+                                        if (entriesModel.get(i).id === "activeWindow") activeWindowIdx = i;
+                                        if (entriesModel.get(i).id === "dock") dockIdx = i;
+                                    }
+                                    
+                                    if (dockIdx !== -1) {
+                                        entriesModel.setProperty(dockIdx, "enabled", checked);
+                                    }
+                                    if (checked && activeWindowIdx !== -1) {
+                                        entriesModel.setProperty(activeWindowIdx, "enabled", false);
+                                        activeWindowSwitch.checked = false;
+                                    }
+                                    root.saveConfig();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: I18n.tr("Monitor center")
+                                checked: Config.bar.dock.monitorCenter ?? true
+                                onToggled: checked => {
+                                    GlobalConfig.bar.dock.monitorCenter = checked;
+                                }
+                            }
+
+                            SwitchRow {
+                                label: I18n.tr("Recolour icons")
+                                checked: Config.bar.dock.recolourIcons ?? false
+                                onToggled: checked => {
+                                    GlobalConfig.bar.dock.recolourIcons = checked;
+                                }
+                            }
+                        }
 
                         SectionContainer {
                             Layout.fillWidth: true
@@ -609,6 +771,89 @@ Item {
                                 }
                             }
 
+                            SplitButtonRow {
+                                id: positionSelector
+
+                                function syncActiveItem(): void {
+                                    if (root.position === "left") {
+                                        active = positionLeftItem;
+                                        return;
+                                    }
+                                    if (root.position === "right") {
+                                        active = positionRightItem;
+                                        return;
+                                    }
+                                    if (root.position === "top") {
+                                        active = positionTopItem;
+                                        return;
+                                    }
+                                    active = positionBottomItem;
+                                }
+
+                                Layout.fillWidth: true
+                                z: expanded ? 100 : 0
+                                label: I18n.tr("Position")
+                                menuItems: [positionLeftItem, positionRightItem, positionTopItem, positionBottomItem]
+
+                                Component.onCompleted: syncActiveItem()
+
+                                Connections {
+                                    function onPositionChanged(): void {
+                                        positionSelector.syncActiveItem();
+                                    }
+
+                                    target: root
+                                }
+
+                                MenuItem {
+                                    id: positionLeftItem
+
+                                    text: I18n.tr("Left")
+                                    icon: "align_horizontal_left"
+                                    activeText: I18n.tr("Left")
+                                    onClicked: {
+                                        root.position = "left";
+                                        root.saveConfig();
+                                    }
+                                }
+
+                                MenuItem {
+                                    id: positionRightItem
+
+                                    text: I18n.tr("Right")
+                                    icon: "align_horizontal_right"
+                                    activeText: I18n.tr("Right")
+                                    onClicked: {
+                                        root.position = "right";
+                                        root.saveConfig();
+                                    }
+                                }
+
+                                MenuItem {
+                                    id: positionTopItem
+
+                                    text: I18n.tr("Top")
+                                    icon: "vertical_align_top"
+                                    activeText: I18n.tr("Top")
+                                    onClicked: {
+                                        root.position = "top";
+                                        root.saveConfig();
+                                    }
+                                }
+
+                                MenuItem {
+                                    id: positionBottomItem
+
+                                    text: I18n.tr("Bottom")
+                                    icon: "vertical_align_bottom"
+                                    activeText: I18n.tr("Bottom")
+                                    onClicked: {
+                                        root.position = "bottom";
+                                        root.saveConfig();
+                                    }
+                                }
+                            }
+
                             SectionContainer {
                                 contentSpacing: Tokens.spacing.normal
 
@@ -631,34 +876,6 @@ Item {
                                         root.dragThreshold = Math.round(newValue);
                                         root.saveConfig();
                                     }
-                                }
-                            }
-                        }
-
-                        SectionContainer {
-                            Layout.fillWidth: true
-                            alignTop: true
-
-                            StyledText {
-                                text: I18n.tr("Active window")
-                                font.pointSize: Tokens.font.size.normal
-                            }
-
-                            SwitchRow {
-                                label: I18n.tr("Compact")
-                                checked: root.activeWindowCompact
-                                onToggled: checked => {
-                                    root.activeWindowCompact = checked;
-                                    root.saveConfig();
-                                }
-                            }
-
-                            SwitchRow {
-                                label: I18n.tr("Inverted")
-                                checked: root.activeWindowInverted
-                                onToggled: checked => {
-                                    root.activeWindowInverted = checked;
-                                    root.saveConfig();
                                 }
                             }
                         }

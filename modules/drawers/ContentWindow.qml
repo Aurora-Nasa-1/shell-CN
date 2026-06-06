@@ -16,6 +16,8 @@ import qs.modules.bar
 StyledWindow {
     id: root
 
+    Config.screen: screen.name
+
     readonly property alias bar: bar
     readonly property alias interactionWrapper: interactions
 
@@ -86,15 +88,15 @@ StyledWindow {
     Region {
         id: emptyRegion
 
-        x: panels.notifications.x + bar.implicitWidth
-        y: panels.notifications.y + root.borderThickness
+        x: panels.notifications.x + panels.leftMargin
+        y: panels.notifications.y + panels.topMargin
         width: panels.notifications.width
         height: panels.notifications.height
 
         Region {
             x: root.width - width
-            y: panels.osdWrapper.y + root.borderThickness
-            width: panels.osdWrapper.width * (1 - panels.osd.offsetScale) + root.borderThickness
+            y: panels.osdWrapper.y + panels.topMargin
+            width: panels.osdWrapper.width * (1 - panels.osd.offsetScale) + panels.topMargin
             height: panels.osd.height
         }
     }
@@ -134,8 +136,13 @@ StyledWindow {
     }
 
     Item {
+        id: layoutContainer
+        Config.screen: root.screen.name
         anchors.fill: parent
-        opacity: Colours.transparency.enabled ? Colours.transparency.base : 1
+        opacity: GlobalConfig.appearance.pitchBlack ? 1 : (Colours.transparency.enabled ? Colours.transparency.base : 1)
+
+        readonly property bool sidebarShouldFlatCorner: panels.popouts.hasCurrent && (panels.popouts.currentName !== "dockhover" && panels.popouts.currentName !== "dockcontext" && panels.popouts.currentName !== "activewindow")
+        readonly property bool sidebarCornerTransition: !sidebarShouldFlatCorner && panels.sidebar.offsetScale > 0
         layer.enabled: true
         layer.effect: MultiEffect {
             shadowEnabled: true
@@ -146,7 +153,7 @@ StyledWindow {
         BlobGroup {
             id: blobGroup
 
-            color: root.effectiveBorderColour
+            color: GlobalConfig.appearance.pitchBlack ? "#000000" : Colours.palette.m3surface
             smoothing: root.contentItem.Config.border.smoothing
 
             Behavior on color {
@@ -155,14 +162,15 @@ StyledWindow {
         }
 
         BlobInvertedRect {
+            Config.screen: root.screen.name
             anchors.fill: parent
             anchors.margins: -50 // Make border thicker to smooth out bulge from closed drawers
             group: blobGroup
             radius: root.borderRounding
-            borderLeft: bar.implicitWidth - anchors.margins - root.sdfBorderOffset
-            borderRight: root.borderThickness - anchors.margins - root.sdfBorderOffset
-            borderTop: root.borderThickness - anchors.margins - root.sdfBorderOffset
-            borderBottom: root.borderThickness - anchors.margins - root.sdfBorderOffset
+            borderLeft: (Config.bar.position === "left" ? bar.implicitWidth : root.borderThickness) - anchors.margins - root.sdfBorderOffset
+            borderRight: (Config.bar.position === "right" ? bar.implicitWidth : root.borderThickness) - anchors.margins - root.sdfBorderOffset
+            borderTop: (Config.bar.position === "top" ? bar.implicitHeight : root.borderThickness) - anchors.margins - root.sdfBorderOffset
+            borderBottom: (Config.bar.position === "bottom" ? bar.implicitHeight : root.borderThickness) - anchors.margins - root.sdfBorderOffset
         }
 
         PanelBg {
@@ -198,7 +206,7 @@ StyledWindow {
 
             panel: panels.sessionWrapper
             deformAmount: 0.2
-            x: panels.sessionWrapper.x + panels.session.x + bar.implicitWidth
+            x: panels.sessionWrapper.x + panels.session.x + panels.leftMargin
             implicitWidth: panels.session.width
         }
 
@@ -208,8 +216,42 @@ StyledWindow {
             panel: panels.sidebar
             deformAmount: 0.03
             implicitHeight: panel.height * (1 / rawDeformMatrix.m22) + 2
-            exclude: panels.sidebar.offsetScale > 0.08 ? [] : [utilsBg]
-            bottomLeftRadius: Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius
+            readonly property real sidebarOffset: panels.sidebar.offsetScale
+            exclude: {
+                const list = [];
+                if (sidebarOffset <= 0.08) {
+                    list.push(utilsBg);
+                    if (layoutContainer.sidebarShouldFlatCorner && (Config.bar.position === "bottom" || Config.bar.position === "top")) {
+                        list.push(popoutBg);
+                    }
+                }
+                return list;
+            }
+            topLeftRadius: {
+                if (Config.bar.position === "bottom") {
+                    // Only animate during opening transition; stay rounded when open
+                    return layoutContainer.sidebarCornerTransition ? Math.max(0, Math.min(1, sidebarOffset / 0.3)) * radius : radius;
+                } else if (Config.bar.position === "top") {
+                    return (layoutContainer.sidebarShouldFlatCorner ? 0 : radius);
+                } else {
+                    return radius;
+                }
+            }
+            topRightRadius: {
+                if (Config.bar.position === "bottom") {
+                    return layoutContainer.sidebarCornerTransition ? Math.max(0, Math.min(1, sidebarOffset / 0.3)) * radius : radius;
+                } else if (Config.bar.position === "top") {
+                    return (layoutContainer.sidebarShouldFlatCorner ? 0 : radius);
+                } else {
+                    return radius;
+                }
+            }
+            bottomLeftRadius: Config.bar.position === "bottom"
+                ? (layoutContainer.sidebarShouldFlatCorner ? 0 : radius)
+                : (Config.bar.position === "right" ? radius : Math.max(0, Math.min(1, sidebarOffset / 0.3)) * radius)
+            bottomRightRadius: Config.bar.position === "bottom"
+                ? (layoutContainer.sidebarShouldFlatCorner ? 0 : radius)
+                : (Config.bar.position === "right" ? Math.max(0, Math.min(1, sidebarOffset / 0.3)) * radius : radius)
         }
 
         PanelBg {
@@ -217,7 +259,7 @@ StyledWindow {
 
             panel: panels.osdWrapper
             deformAmount: 0.25
-            x: panels.osdWrapper.x + panels.osd.x + bar.implicitWidth
+            x: panels.osdWrapper.x + panels.osd.x + panels.leftMargin
             implicitWidth: panels.osd.width
         }
 
@@ -233,21 +275,49 @@ StyledWindow {
             panel: panels.utilities
             deformAmount: panels.sidebar.visible ? 0.1 : 0.15
             exclude: panels.sidebar.offsetScale > 0.08 ? [] : [sidebarBg]
-            topLeftRadius: Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius
+            topLeftRadius: Config.bar.position === "bottom" ? radius : (Config.bar.position === "right" ? radius : Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius)
+            topRightRadius: Config.bar.position === "bottom" ? radius : (Config.bar.position === "right" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius)
+            bottomLeftRadius: Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius
+            bottomRightRadius: Config.bar.position === "bottom" ? Math.max(0, Math.min(1, panels.sidebar.offsetScale / 0.3)) * radius : radius
         }
 
         PanelBg {
             id: popoutBg
 
-            // Extra width to prevent vertical movement deformation partially detaching panel from bar
-            property real extraWidth: panels.popouts.isDetached ? 0 : 0.2
+            // Extra width/height to prevent dynamic movement deformation partially detaching panel from bar
+            property real extraShift: panels.popouts.isDetached ? 0 : 0.2
 
             panel: panels.popoutsWrapper
             deformAmount: panels.popouts.isDetached ? 0.05 : panels.popouts.hasCurrent ? 0.15 : 0.1
-            x: panels.popoutsWrapper.x + panels.popouts.x + bar.implicitWidth - panels.popouts.width * extraWidth
-            implicitWidth: panels.popouts.width * (1 + extraWidth)
+            exclude: (panels.sidebar.offsetScale <= 0.08 && (Config.bar.position === "bottom" || Config.bar.position === "top")) ? [sidebarBg] : []
+            topLeftRadius: (Config.bar.position === "bottom" && panels.sidebar.offsetScale <= 0.08) ? (layoutContainer.sidebarShouldFlatCorner ? 0 : radius) : radius
+            topRightRadius: (Config.bar.position === "bottom" && panels.sidebar.offsetScale <= 0.08) ? (layoutContainer.sidebarShouldFlatCorner ? 0 : radius) : radius
+            bottomLeftRadius: (Config.bar.position === "top" && panels.sidebar.offsetScale <= 0.08) ? (layoutContainer.sidebarShouldFlatCorner ? 0 : radius) : radius
+            bottomRightRadius: (Config.bar.position === "top" && panels.sidebar.offsetScale <= 0.08) ? (layoutContainer.sidebarShouldFlatCorner ? 0 : radius) : radius
+            x: {
+                const baseX = panels.popoutsWrapper.x + panels.popouts.x + panels.leftMargin;
+                if (bar.position === "left")
+                    return baseX - panels.popouts.implicitWidth * extraShift;
+                return baseX;
+            }
+            implicitWidth: {
+                if (bar.position === "left" || bar.position === "right")
+                    return panels.popouts.implicitWidth * (1 + extraShift);
+                return panels.popouts.implicitWidth;
+            }
+            y: {
+                const baseY = panels.popoutsWrapper.y + panels.popouts.y + panels.topMargin;
+                if (bar.position === "top")
+                    return baseY - panels.popouts.implicitHeight * extraShift;
+                return baseY;
+            }
+            implicitHeight: {
+                if (bar.position === "top" || bar.position === "bottom")
+                    return panels.popouts.implicitHeight * (1 + extraShift);
+                return panels.popouts.implicitHeight;
+            }
 
-            Behavior on extraWidth {
+            Behavior on extraShift {
                 Anim {
                     type: Anim.DefaultSpatial
                 }
@@ -315,29 +385,99 @@ StyledWindow {
         BarWrapper {
             id: bar
 
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-
             screen: root.screen
             visibilities: visibilities
             popouts: panels.popouts
 
             fullscreen: root.hasFullscreen
 
-            Component.onCompleted: Visibilities.bars.set(root.screen, this)
+            Component.onCompleted: Visibilities.registerBar(root.screen, this)
         }
+
+        states: [
+            State {
+                name: "left"
+                Config.screen: root.screen.name
+                when: Config.bar.position === "left"
+                AnchorChanges {
+                    target: bar
+                    anchors.left: parent.left
+                    anchors.right: undefined
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                }
+                PropertyChanges {
+                    target: bar
+                    width: bar.implicitWidth
+                    height: undefined
+                }
+            },
+            State {
+                name: "right"
+                Config.screen: root.screen.name
+                when: Config.bar.position === "right"
+                AnchorChanges {
+                    target: bar
+                    anchors.left: undefined
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                }
+                PropertyChanges {
+                    target: bar
+                    width: bar.implicitWidth
+                    height: undefined
+                }
+            },
+            State {
+                name: "top"
+                Config.screen: root.screen.name
+                when: Config.bar.position === "top"
+                AnchorChanges {
+                    target: bar
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.bottom: undefined
+                }
+                PropertyChanges {
+                    target: bar
+                    width: undefined
+                    height: bar.implicitHeight
+                }
+            },
+            State {
+                name: "bottom"
+                Config.screen: root.screen.name
+                when: Config.bar.position === "bottom"
+                AnchorChanges {
+                    target: bar
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: undefined
+                    anchors.bottom: parent.bottom
+                }
+                PropertyChanges {
+                    target: bar
+                    width: undefined
+                    height: bar.implicitHeight
+                }
+            }
+        ]
     }
 
     component PanelBg: BlobRect {
         required property Item panel
         property real deformAmount: 0.15
+        Config.screen: root.screen.name
 
         group: blobGroup
-        x: panel.x + bar.implicitWidth
-        y: panel.y + root.borderThickness
+        x: panel.x + panels.leftMargin
+        y: panel.y + panels.topMargin
         implicitWidth: panel.width
         implicitHeight: panel.height
         radius: Tokens.rounding.large
         deformScale: (deformAmount * Config.appearance.deformScale) / 10000
+        opacity: panel.opacity
     }
 }

@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Caelestia
+import Caelestia.Config
 import qs.components.misc
 import qs.services
 import qs.modules.controlcenter
@@ -105,6 +106,114 @@ Scope {
                 return;
             const visibilities = Visibilities.getForActive();
             visibilities.utilities = !visibilities.utilities;
+        }
+    }
+
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "emoji"
+        description: "Open emoji picker"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}emoji `;
+            const visibilities = Visibilities.getForActive();
+            visibilities.launcher = true;
+        }
+    }
+
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "clipboard"
+        description: "Open clipboard history"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}clipboard `;
+            const visibilities = Visibilities.getForActive();
+            visibilities.launcher = true;
+        }
+    }
+
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "windowSwitcher"
+        description: "Open window switcher"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}windows `;
+            const visibilities = Visibilities.getForActive();
+            visibilities.launcher = true;
+        }
+    }
+
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "wallpaper"
+        description: "Open wallpaper picker"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}wallpaper `;
+            const visibilities = Visibilities.getForActive();
+            visibilities.launcher = true;
+        }
+    }
+
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "keybinds"
+        description: "Open keybinds list"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            Visibilities.launcherInitialSearch = `${GlobalConfig.launcher.actionPrefix}keybinds `;
+            const visibilities = Visibilities.getForActive();
+            visibilities.launcher = true;
+        }
+    }
+
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "terminal"
+        description: "Toggle terminal drawer"
+        onPressed: {
+            if (root.hasFullscreen)
+                return;
+            const visibilities = Visibilities.getForActive();
+            
+            let isTerminalActive = false;
+            if (visibilities.dashboard && Visibilities.activeDashboard) {
+                let tabs = Visibilities.activeDashboard.dashboardTabs;
+                let currentIndex = Visibilities.activeDashboard.dashState.currentTab;
+                if (currentIndex >= 0 && currentIndex < tabs.length && tabs[currentIndex].iconName === "terminal") {
+                    isTerminalActive = true;
+                }
+            }
+
+            if (isTerminalActive) {
+                visibilities.dashboard = false;
+            } else {
+                visibilities.dashboard = true;
+                if (Visibilities.activeDashboard) {
+                    let tabs = Visibilities.activeDashboard.dashboardTabs;
+                    for (let i = 0; i < tabs.length; i++) {
+                        if (tabs[i].iconName === "terminal") {
+                            Visibilities.activeDashboard.dashState.currentTab = i;
+                            break;
+                        }
+                    }
+                } else {
+                    Visibilities.switchToTerminalOnOpen = true;
+                }
+            }
         }
     }
 

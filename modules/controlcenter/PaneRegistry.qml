@@ -62,6 +62,12 @@ QtObject {
             readonly property string displayLabel: I18n.tr("Dashboard")
             readonly property string icon: "dashboard"
             readonly property string component: "dashboard/DashboardPane.qml"
+        },
+        QtObject {
+            readonly property string id: "wallhaven"
+            readonly property string label: "wallhaven"
+            readonly property string icon: "image"
+            readonly property string component: "wallhaven/WallhavenPane.qml"
         }
     ]
 

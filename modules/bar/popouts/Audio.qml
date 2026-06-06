@@ -15,8 +15,8 @@ Item {
 
     required property PopoutState popouts
 
-    implicitWidth: layout.implicitWidth + Tokens.padding.normal * 2
-    implicitHeight: layout.implicitHeight + Tokens.padding.normal * 2
+    implicitWidth: layout.implicitWidth
+    implicitHeight: layout.implicitHeight
 
     ButtonGroup {
         id: sinks
@@ -30,83 +30,108 @@ Item {
         id: layout
 
         anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        anchors.top: parent.top
         spacing: Tokens.spacing.normal
 
         StyledText {
-            text: I18n.tr("Output device")
+            Layout.leftMargin: Tokens.padding.small
+            text: I18n.tr("Audio")
             font.weight: 500
         }
 
-        Repeater {
-            model: Audio.sinks
-
-            StyledRadioButton {
-                id: control
-
-                required property PwNode modelData
-
-                ButtonGroup.group: sinks
-                checked: Audio.sink?.id === modelData.id
-                onClicked: Audio.setAudioSink(modelData)
-                text: modelData.description
-            }
-        }
-
-        StyledText {
-            Layout.topMargin: Tokens.spacing.smaller
-            text: I18n.tr("Input device")
-            font.weight: 500
-        }
-
-        Repeater {
-            model: Audio.sources
-
-            StyledRadioButton {
-                required property PwNode modelData
-
-                ButtonGroup.group: sources
-                checked: Audio.source?.id === modelData.id
-                onClicked: Audio.setAudioSource(modelData)
-                text: modelData.description
-            }
-        }
-
-        StyledText {
-            Layout.topMargin: Tokens.spacing.smaller
-            Layout.bottomMargin: -Tokens.spacing.small / 2
-            text: I18n.tr("Volume (%1)").arg(Audio.muted ? I18n.tr("Muted") : `${Math.round(Audio.volume * 100)}%`)
-            font.weight: 500
-        }
-
-        CustomMouseArea {
+        StyledRect {
             Layout.fillWidth: true
-            implicitHeight: Tokens.padding.normal * 3
+            implicitWidth: cardLayout.implicitWidth + Tokens.padding.normal * 2
+            implicitHeight: cardLayout.implicitHeight + Tokens.padding.normal * 2
+            radius: Tokens.rounding.normal
+            color: Colours.tPalette.m3surfaceContainer
+            clip: true
 
-            onWheel: event => {
-                if (event.angleDelta.y > 0)
-                    Audio.incrementVolume();
-                else if (event.angleDelta.y < 0)
-                    Audio.decrementVolume();
-            }
+            ColumnLayout {
+                id: cardLayout
 
-            StyledSlider {
                 anchors.left: parent.left
                 anchors.right: parent.right
-                implicitHeight: parent.implicitHeight
+                anchors.top: parent.top
+                anchors.margins: Tokens.padding.normal
+                spacing: Tokens.spacing.normal
 
-                value: Audio.volume
-                onMoved: Audio.setVolume(value)
+                StyledText {
+                    text: I18n.tr("Output device")
+                    font.weight: 500
+                }
 
-                Behavior on value {
-                    Anim {}
+                Repeater {
+                    model: Audio.sinks
+
+                    StyledRadioButton {
+                        id: control
+
+                        required property PwNode modelData
+
+                        ButtonGroup.group: sinks
+                        checked: Audio.sink?.id === modelData.id
+                        onClicked: Audio.setAudioSink(modelData)
+                        text: modelData.description
+                    }
+                }
+
+                StyledText {
+                    Layout.topMargin: Tokens.spacing.smaller
+                    text: I18n.tr("Input device")
+                    font.weight: 500
+                }
+
+                Repeater {
+                    model: Audio.sources
+
+                    StyledRadioButton {
+                        required property PwNode modelData
+
+                        ButtonGroup.group: sources
+                        checked: Audio.source?.id === modelData.id
+                        onClicked: Audio.setAudioSource(modelData)
+                        text: modelData.description
+                    }
+                }
+
+                StyledText {
+                    Layout.topMargin: Tokens.spacing.smaller
+                    Layout.bottomMargin: -Tokens.spacing.small / 2
+                    text: I18n.tr("Volume (%1)").arg(Audio.muted ? I18n.tr("Muted") : `${Math.round(Audio.volume * 100)}%`)
+                    font.weight: 500
+                }
+
+                CustomMouseArea {
+                    Layout.fillWidth: true
+                    implicitHeight: Tokens.padding.normal * 3
+
+                    onWheel: event => {
+                        if (event.angleDelta.y > 0)
+                            Audio.incrementVolume();
+                        else if (event.angleDelta.y < 0)
+                            Audio.decrementVolume();
+                    }
+
+                    StyledSlider {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        implicitHeight: parent.implicitHeight
+
+                        value: Audio.volume
+                        onMoved: Audio.setVolume(value)
+
+                        Behavior on value {
+                            Anim {}
+                        }
+                    }
                 }
             }
         }
 
         IconTextButton {
             Layout.fillWidth: true
-            Layout.topMargin: Tokens.spacing.normal
             inactiveColour: Colours.palette.m3primaryContainer
             inactiveOnColour: Colours.palette.m3onPrimaryContainer
             verticalPadding: Tokens.padding.small

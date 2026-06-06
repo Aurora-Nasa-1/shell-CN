@@ -17,7 +17,8 @@ Item {
         const count = repeater.count;
         for (let i = 0; i < count; i++) {
             const item = repeater.itemAt(i) as Loader;
-            if (item?.sourceComponent === mediaComponent && (item?.item as MediaWrapper)?.needsKeyboard)
+            if ((item?.sourceComponent === mediaComponent && (item?.item as MediaWrapper)?.needsKeyboard) ||
+                (item?.sourceComponent === terminalComponent))
                 return true;
         }
         return false;
@@ -50,6 +51,12 @@ Item {
                 iconName: "cloud",
                 text: I18n.tr("Weather"),
                 enabled: Config.dashboard.showWeather
+            },
+            {
+                component: terminalComponent,
+                iconName: "terminal",
+                text: qsTr("Terminal"),
+                enabled: Config.dashboard.showTerminal
             }
         ];
         return allTabs.filter(tab => tab.enabled);
@@ -192,6 +199,12 @@ Item {
                 WeatherTab {}
             }
 
+            Component {
+                id: terminalComponent
+
+                TerminalTab {}
+            }
+
             Behavior on contentX {
                 Anim {}
             }
@@ -207,6 +220,19 @@ Item {
     Behavior on implicitHeight {
         Anim {
             type: Anim.EmphasizedLarge
+        }
+    }
+
+    Component.onCompleted: {
+        Visibilities.activeDashboard = this;
+        if (Visibilities.switchToTerminalOnOpen) {
+            Visibilities.switchToTerminalOnOpen = false;
+            for (let i = 0; i < dashboardTabs.length; i++) {
+                if (dashboardTabs[i].iconName === "terminal") {
+                    dashState.currentTab = i;
+                    break;
+                }
+            }
         }
     }
 }

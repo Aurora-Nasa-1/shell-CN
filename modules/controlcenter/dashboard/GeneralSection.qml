@@ -106,6 +106,16 @@ SectionContainer {
         }
     }
 
+    SwitchRow {
+        Layout.fillWidth: true
+        label: qsTr("Colorize media GIF")
+        checked: root.rootItem.colorizeMediaGif
+        onToggled: checked => {
+            root.rootItem.colorizeMediaGif = checked;
+            root.rootItem.saveConfig();
+        }
+    }
+
     SliderInput {
         Layout.fillWidth: true
 

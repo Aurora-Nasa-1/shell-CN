@@ -12,6 +12,8 @@ import qs.components.controls
 import qs.components.effects
 import qs.services
 import qs.utils
+import Qt.labs.folderlistmodel
+import Caelestia
 
 Item {
     id: root
@@ -546,13 +548,13 @@ Item {
                                             }
 
                                             Connections {
-                                                function onAudioChanged() {
+                                                function onVolumeChanged() {
                                                     if (!streamVolumeInput.hasFocus && modelData?.audio) {
                                                         streamVolumeInput.text = Math.round(modelData.audio.volume * 100).toString();
                                                     }
                                                 }
 
-                                                target: modelData
+                                                target: modelData?.audio || null
                                             }
                                         }
 
@@ -601,13 +603,13 @@ Item {
                                         }
 
                                         Connections {
-                                            function onAudioChanged() {
+                                            function onVolumeChanged() {
                                                 if (modelData?.audio) {
                                                     value = modelData.audio.volume;
                                                 }
                                             }
 
-                                            target: modelData
+                                            target: modelData?.audio || null
                                         }
                                     }
                                 }
@@ -620,6 +622,291 @@ Item {
                                 color: Colours.palette.m3outline
                                 font.pointSize: Tokens.font.size.small
                                 horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+                    }
+
+                    SectionHeader {
+                        title: I18n.tr("Sound Effects")
+                        description: I18n.tr("System-wide sound effects")
+                    }
+
+                    SectionContainer {
+                        contentSpacing: Tokens.spacing.normal
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: Tokens.spacing.small
+
+                            SwitchRow {
+                                label: I18n.tr("Enable sound effects")
+                                checked: GlobalConfig.audio.sounds.enabled
+                                onToggled: checked => {
+                                    GlobalConfig.audio.sounds.enabled = checked;
+                                    GlobalConfig.save();
+                                }
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: Tokens.spacing.normal
+                                visible: GlobalConfig.audio.sounds.enabled
+
+                                StyledText {
+                                    text: I18n.tr("Effects volume")
+                                    font.pointSize: Tokens.font.size.normal
+                                    font.weight: 500
+                                }
+
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+
+                                StyledText {
+                                    text: Math.round(GlobalConfig.audio.sounds.sfxVolume * 100) + "%"
+                                    color: Colours.palette.m3outline
+                                    font.pointSize: Tokens.font.size.normal
+                                }
+                            }
+
+                            StyledSlider {
+                                Layout.fillWidth: true
+                                visible: GlobalConfig.audio.sounds.enabled
+                                implicitHeight: Tokens.padding.normal * 3
+
+                                value: GlobalConfig.audio.sounds.sfxVolume
+                                onMoved: {
+                                    GlobalConfig.audio.sounds.sfxVolume = value;
+                                    GlobalConfig.save();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: I18n.tr("Camera click")
+                                checked: GlobalConfig.audio.sounds.cameraClick
+                                enabled: GlobalConfig.audio.sounds.enabled
+                                onToggled: checked => {
+                                    GlobalConfig.audio.sounds.cameraClick = checked;
+                                    GlobalConfig.save();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: I18n.tr("Charging started")
+                                checked: GlobalConfig.audio.sounds.chargingStarted
+                                enabled: GlobalConfig.audio.sounds.enabled
+                                onToggled: checked => {
+                                    GlobalConfig.audio.sounds.chargingStarted = checked;
+                                    GlobalConfig.save();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: I18n.tr("Effect tick")
+                                checked: GlobalConfig.audio.sounds.effectTick
+                                enabled: GlobalConfig.audio.sounds.enabled
+                                onToggled: checked => {
+                                    GlobalConfig.audio.sounds.effectTick = checked;
+                                    GlobalConfig.save();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: I18n.tr("Lock")
+                                checked: GlobalConfig.audio.sounds.lock
+                                enabled: GlobalConfig.audio.sounds.enabled
+                                onToggled: checked => {
+                                    GlobalConfig.audio.sounds.lock = checked;
+                                    GlobalConfig.save();
+                                    if (checked) Audio.playLock();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: I18n.tr("Unlock screen")
+                                checked: GlobalConfig.audio.sounds.unlock
+                                enabled: GlobalConfig.audio.sounds.enabled
+                                onToggled: checked => {
+                                    GlobalConfig.audio.sounds.unlock = checked;
+                                    GlobalConfig.save();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: I18n.tr("Low battery")
+                                checked: GlobalConfig.audio.sounds.lowBattery
+                                enabled: GlobalConfig.audio.sounds.enabled
+                                onToggled: checked => {
+                                    GlobalConfig.audio.sounds.lowBattery = checked;
+                                    GlobalConfig.save();
+                                }
+                            }
+
+                            SwitchRow {
+                                label: I18n.tr("Screen recording")
+                                checked: GlobalConfig.audio.sounds.screenRecord
+                                enabled: GlobalConfig.audio.sounds.enabled
+                                onToggled: checked => {
+                                    GlobalConfig.audio.sounds.screenRecord = checked;
+                                    GlobalConfig.save();
+                                }
+                            }
+
+                            SplitButtonRow {
+                                id: notifSoundRow
+                                label: I18n.tr("Notification sound")
+                                expandedZ: 10
+                                enabled: GlobalConfig.audio.sounds.enabled
+
+                                FolderListModel {
+                                    id: notifSoundModel
+                                    folder: Qt.resolvedUrl("../../../assets/sounds/notifications")
+                                    nameFilters: ["*.wav"]
+                                    showDirs: false
+                                }
+
+                                Instantiator {
+                                    model: notifSoundModel
+                                    delegate: MenuItem {
+                                        required property string fileName
+                                        text: fileName
+                                        trailingIcon: GlobalConfig.audio.sounds.notificationSound === fileName ? "check" : ""
+                                    }
+                                    onObjectAdded: (index, object) => {
+                                        const newItems = Array.from(notifSoundRow.menuItems);
+                                        newItems.splice(index, 0, object);
+                                        notifSoundRow.menuItems = newItems;
+                                    }
+                                    onObjectRemoved: (index, object) => {
+                                        const newItems = Array.from(notifSoundRow.menuItems);
+                                        newItems.splice(index, 1);
+                                        notifSoundRow.menuItems = newItems;
+                                    }
+                                }
+
+                                onSelected: item => {
+                                    GlobalConfig.audio.sounds.notificationSound = item.text;
+                                    GlobalConfig.save();
+                                    Audio.playNotification();
+                                }
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: Tokens.spacing.normal
+                                visible: GlobalConfig.audio.sounds.enabled
+
+                                StyledText {
+                                    text: I18n.tr("Notification volume")
+                                    font.pointSize: Tokens.font.size.normal
+                                    font.weight: 500
+                                }
+
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+
+                                StyledText {
+                                    text: Math.round(GlobalConfig.audio.sounds.notificationVolume * 100) + "%"
+                                    color: Colours.palette.m3outline
+                                    font.pointSize: Tokens.font.size.normal
+                                }
+                            }
+
+                            StyledSlider {
+                                Layout.fillWidth: true
+                                visible: GlobalConfig.audio.sounds.enabled
+                                implicitHeight: Tokens.padding.normal * 3
+
+                                value: GlobalConfig.audio.sounds.notificationVolume
+                                onMoved: {
+                                    GlobalConfig.audio.sounds.notificationVolume = value;
+                                    GlobalConfig.save();
+                                }
+                            }
+                        }
+                    }
+
+                    SectionHeader {
+                        title: I18n.tr("Notification Silencing")
+                        description: I18n.tr("Mute notification sounds for specific apps")
+                    }
+
+                    SectionContainer {
+                        contentSpacing: Tokens.spacing.normal
+                        
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: Tokens.spacing.small
+                            
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: Tokens.spacing.small
+
+                                StyledInputField {
+                                    id: silenceAppInput
+                                    Layout.fillWidth: true
+                                    placeholderText: I18n.tr("Enter exact app name (e.g. Spotify)")
+                                    onAccepted: {
+                                        if (text.trim() !== "") {
+                                            let list = GlobalConfig.audio.sounds.disabledNotifApps;
+                                            if (!list.includes(text.trim())) {
+                                                list.push(text.trim());
+                                                GlobalConfig.audio.sounds.disabledNotifApps = list;
+                                                GlobalConfig.save();
+                                            }
+                                            text = "";
+                                        }
+                                    }
+                                }
+                                
+                                IconTextButton {
+                                    text: I18n.tr("Add")
+                                    icon: "add"
+                                    onClicked: silenceAppInput.accepted()
+                                }
+                            }
+
+                            Flow {
+                                Layout.fillWidth: true
+                                spacing: Tokens.spacing.small
+                                
+                                Repeater {
+                                    model: GlobalConfig.audio.sounds.disabledNotifApps
+                                    delegate: StyledRect {
+                                        required property string modelData
+                                        required property int index
+                                        
+                                        color: Colours.layer(Colours.palette.m3surfaceContainer, 2)
+                                        radius: Tokens.rounding.large
+                                        implicitWidth: chipLayout.implicitWidth + Tokens.padding.normal * 2
+                                        implicitHeight: chipLayout.implicitHeight + Tokens.padding.smaller * 2
+
+                                        RowLayout {
+                                            id: chipLayout
+                                            anchors.centerIn: parent
+                                            spacing: Tokens.spacing.smaller
+                                            
+                                            StyledText {
+                                                text: modelData
+                                            }
+                                            
+                                            MaterialIcon {
+                                                text: "close"
+                                                font.pointSize: Tokens.font.size.small
+                                                
+                                                StateLayer {
+                                                    onClicked: {
+                                                        let list = GlobalConfig.audio.sounds.disabledNotifApps;
+                                                        list.splice(index, 1);
+                                                        GlobalConfig.audio.sounds.disabledNotifApps = list;
+                                                        GlobalConfig.save();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

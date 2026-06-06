@@ -1,4 +1,5 @@
 #include "config.hpp"
+#include "audioconfig.hpp"
 #include "appearanceconfig.hpp"
 #include "backgroundconfig.hpp"
 #include "barconfig.hpp"
@@ -13,6 +14,7 @@
 #include "osdconfig.hpp"
 #include "serviceconfig.hpp"
 #include "sessionconfig.hpp"
+#include "shimejiconfig.hpp"
 #include "sidebarconfig.hpp"
 #include "tokens.hpp"
 #include "userpaths.hpp"
@@ -50,7 +52,9 @@ GlobalConfig::GlobalConfig(QObject* parent)
     , m_utilities(new UtilitiesConfig(this))
     , m_sidebar(new SidebarConfig(this))
     , m_services(new ServiceConfig(this))
-    , m_paths(new UserPaths(this)) {
+    , m_shimeji(new ShimejiConfig(this))
+    , m_paths(new UserPaths(this))
+    , m_audio(new AudioConfig(this)) {
     setupFileBackend(configDir() + QStringLiteral("shell.json"));
 }
 
@@ -72,7 +76,9 @@ GlobalConfig::GlobalConfig(GlobalConfig* fallback, const QString& filePath, cons
     , m_utilities(new UtilitiesConfig(this))
     , m_sidebar(new SidebarConfig(this))
     , m_services(new ServiceConfig(this))
-    , m_paths(new UserPaths(this)) {
+    , m_shimeji(new ShimejiConfig(this))
+    , m_paths(new UserPaths(this))
+    , m_audio(new AudioConfig(this)) {
     if (!filePath.isEmpty())
         setupFileBackend(filePath, screen);
     if (fallback)

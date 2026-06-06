@@ -12,11 +12,23 @@ import qs.services
 Item {
     id: root
 
+    Config.screen: screen.name
+
     required property ShellScreen screen
     required property Item wallpaper
 
     readonly property bool shouldBeActive: Config.background.visualiser.enabled && (!Config.background.visualiser.autoHide || (Hypr.monitorFor(screen)?.activeWorkspace?.toplevels?.values.every(t => t.lastIpcObject?.floating) ?? true))
     property real offset: shouldBeActive ? 0 : screen.height * 0.2
+
+    readonly property var barWrapper: {
+        let name = root.screen ? root.screen.name : undefined;
+        let bar = name ? Visibilities.bars.get(name) : undefined;
+        console.log("Visualiser: screen name:", name, "retrieved barWrapper from Map:", bar);
+        return bar;
+    }
+    readonly property int barExclusiveZone: barWrapper ? barWrapper.exclusiveZone : 0
+    readonly property real visualiserSpacing: Tokens.spacing.small * Config.background.visualiser.spacing
+    readonly property real fallbackMargin: Tokens.padding.large + Tokens.spacing.small
 
     opacity: shouldBeActive ? 1 : 0
 
@@ -58,9 +70,14 @@ Item {
                 VisualiserBars {
                     id: bars
 
+                    readonly property real baseMargin: root.barExclusiveZone
+
                     anchors.fill: parent
                     anchors.margins: Config.border.thickness
-                    anchors.leftMargin: Visibilities.bars.get(root.screen).exclusiveZone + Tokens.spacing.small * Config.background.visualiser.spacing
+                    anchors.leftMargin: Config.bar.position === "left" ? (root.barExclusiveZone + Tokens.padding.large * 2) : root.fallbackMargin
+                    anchors.rightMargin: Config.bar.position === "right" ? (root.barExclusiveZone + Tokens.padding.large * 2) : (root.fallbackMargin - root.visualiserSpacing)
+                    anchors.topMargin: Config.bar.position === "top" ? baseMargin : Config.border.thickness
+                    anchors.bottomMargin: Config.bar.position === "bottom" ? baseMargin : Config.border.thickness
 
                     values: Audio.cava.values
                     primaryColor: Qt.alpha(Colours.palette.m3primary, 0.7)
@@ -70,6 +87,15 @@ Item {
                     animationDuration: Tokens.anim.durations.normal
 
                     Behavior on anchors.leftMargin {
+                        Anim {}
+                    }
+                    Behavior on anchors.rightMargin {
+                        Anim {}
+                    }
+                    Behavior on anchors.topMargin {
+                        Anim {}
+                    }
+                    Behavior on anchors.bottomMargin {
                         Anim {}
                     }
                 }

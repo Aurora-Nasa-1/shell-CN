@@ -22,14 +22,39 @@ PathView {
         if (!screen)
             return 0;
 
-        // Screen width - 4x outer rounding - 2x max side thickness (cause centered)
-        const barMargins = Math.max(Config.border.thickness, panels.bar.implicitWidth);
-        let outerMargins = 0;
-        if (panels.popouts.hasCurrent && panels.popouts.currentCenter + panels.popouts.nonAnimHeight / 2 > screen.height - content.implicitHeight - Config.border.thickness * 2)
-            outerMargins = panels.popouts.nonAnimWidth;
-        if ((visibilities.utilities || visibilities.sidebar) && panels.utilities.implicitWidth > outerMargins)
-            outerMargins = panels.utilities.implicitWidth;
-        const maxWidth = screen.width - Config.border.rounding * 4 - (barMargins + outerMargins) * 2;
+        const isBarHorizontal = Config.bar.position === "top" || Config.bar.position === "bottom";
+        const barThickness = isBarHorizontal ? panels.bar.implicitHeight : panels.bar.implicitWidth;
+        const barMargins = Math.max(Config.border.thickness, barThickness);
+
+        // Subtract sidebar/utilities width when visible (they take horizontal space)
+        let sidebarReduction = 0;
+        if ((visibilities.sidebar || visibilities.utilities) && panels.utilities.implicitWidth > sidebarReduction) {
+            if (!isBarHorizontal) {
+                // Vertical bars: sidebar takes space from the side
+                sidebarReduction = panels.utilities.implicitWidth;
+            } else if (panels.sidebar.visible) {
+                // Horizontal bars: sidebar takes space on the right side
+                sidebarReduction = panels.sidebar.implicitWidth;
+            }
+        }
+
+        // For horizontal bars with popouts, calculate how much horizontal space the popout takes
+        let popoutReduction = 0;
+        if (panels.popouts.hasCurrent && isBarHorizontal) {
+            // Popout center position and width
+            const popoutCenter = panels.popouts.currentCenter;
+            const popoutHalfWidth = panels.popouts.nonAnimWidth / 2;
+            const popoutRight = popoutCenter + popoutHalfWidth;
+            const popoutLeft = popoutCenter - popoutHalfWidth;
+            const screenCenter = screen.width / 2;
+
+            // Calculate how far the popout extends from screen center in each direction
+            const extendLeft = popoutLeft < screenCenter ? screenCenter - popoutLeft : 0;
+            const extendRight = popoutRight > screenCenter ? popoutRight - screenCenter : 0;
+            popoutReduction = Math.max(extendLeft, extendRight);
+        }
+
+        const maxWidth = screen.width - Config.border.rounding * 4 - (barMargins + sidebarReduction) * 2 - popoutReduction;
 
         if (maxWidth <= 0)
             return 0;

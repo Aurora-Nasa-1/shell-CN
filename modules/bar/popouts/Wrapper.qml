@@ -15,15 +15,26 @@ Item {
 
     required property ShellScreen screen
     required property real offsetScale
+    required property var sidebar
+    required property var bar
+    required property var utilities
 
     readonly property alias content: content
     readonly property alias winfo: winfo
     readonly property alias controlCenter: controlCenter
+    readonly property var wrapperRoot: root
 
-    readonly property real nonAnimWidth: children.find(c => c.shouldBeActive)?.implicitWidth ?? content.implicitWidth
-    readonly property real nonAnimHeight: children.find(c => c.shouldBeActive)?.implicitHeight ?? content.implicitHeight
+    readonly property real nonAnimWidth: content.shouldBeActive ? content.implicitWidth :
+                                         winfo.shouldBeActive ? winfo.implicitWidth :
+                                         controlCenter.shouldBeActive ? controlCenter.implicitWidth :
+                                         content.implicitWidth
+    readonly property real nonAnimHeight: content.shouldBeActive ? content.implicitHeight :
+                                          winfo.shouldBeActive ? winfo.implicitHeight :
+                                          controlCenter.shouldBeActive ? controlCenter.implicitHeight :
+                                          content.implicitHeight
     readonly property Item current: (content.item as Content)?.current ?? null
     readonly property bool isDetached: detachedMode.length > 0
+    readonly property real popoutNaturalWidth: (content.item && content.item.naturalWidth) ? content.item.naturalWidth : 0
 
     property alias currentName: popoutState.currentName
     property alias hasCurrent: popoutState.hasCurrent
@@ -31,6 +42,8 @@ Item {
 
     property string detachedMode
     property string queuedMode
+    property alias dockModel: popoutState.dockModel
+    property alias selectedClientAddress: popoutState.selectedClientAddress
 
     // Dummy object so Tokens attached prop resolves to global config
     // Anim configs are not per-monitor
@@ -61,7 +74,7 @@ Item {
         detachedMode = "";
     }
 
-    implicitWidth: nonAnimWidth
+    implicitWidth: (bar.isHorizontal && sidebar && sidebar.visible && currentName !== "dockhover" && currentName !== "dockcontext" && currentName !== "activewindow") ? sidebar.width : nonAnimWidth
     implicitHeight: nonAnimHeight
 
     focus: hasCurrent
@@ -112,6 +125,8 @@ Item {
 
         sourceComponent: Content {
             popouts: popoutState
+            sidebar: root.sidebar
+            utilities: root.utilities
         }
     }
 
@@ -122,8 +137,14 @@ Item {
         anchors.centerIn: parent
 
         sourceComponent: WindowInfo {
-            screen: root.screen
-            client: Hypr.activeToplevel
+            screen: wrapperRoot.screen
+            clientAddress: wrapperRoot.selectedClientAddress
+        }
+        
+        onShouldBeActiveChanged: {
+            if (!shouldBeActive) {
+                wrapperRoot.selectedClientAddress = "";
+            }
         }
     }
 
@@ -141,6 +162,8 @@ Item {
     }
 
     Behavior on implicitWidth {
+        enabled: !(bar.isHorizontal && sidebar && sidebar.visible)
+
         Anim {
             duration: root.animLength
             easing: root.animCurve

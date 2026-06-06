@@ -37,6 +37,127 @@ CollapsibleSection {
         }
     }
 
+    SwitchRow {
+        label: I18n.tr("Video wallpaper sound")
+        checked: rootPane.videoWallpaperSoundEnabled
+        enabled: rootPane.backgroundEnabled
+        onToggled: checked => {
+            rootPane.videoWallpaperSoundEnabled = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    SwitchRow {
+        label: I18n.tr("Pause on all displays")
+        checked: rootPane.videoWallpaperPauseOnAllDisplays
+        enabled: rootPane.backgroundEnabled
+        onToggled: checked => {
+            rootPane.videoWallpaperPauseOnAllDisplays = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    SwitchRow {
+        label: I18n.tr("Pause on fullscreen")
+        checked: rootPane.videoWallpaperPauseOnFullscreen
+        enabled: rootPane.backgroundEnabled
+        onToggled: checked => {
+            rootPane.videoWallpaperPauseOnFullscreen = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    SwitchRow {
+        label: I18n.tr("Pause on tiled")
+        checked: rootPane.videoWallpaperPauseOnTiled
+        enabled: rootPane.backgroundEnabled
+        onToggled: checked => {
+            rootPane.videoWallpaperPauseOnTiled = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    SwitchRow {
+        label: I18n.tr("Mute when media playing")
+        checked: rootPane.videoWallpaperMuteOnMedia
+        enabled: rootPane.backgroundEnabled
+        onToggled: checked => {
+            rootPane.videoWallpaperMuteOnMedia = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    StyledText {
+        Layout.topMargin: Tokens.spacing.normal
+        text: I18n.tr("Shimeji")
+        font.pointSize: Tokens.font.size.larger
+        font.weight: 500
+    }
+
+    SwitchRow {
+        label: I18n.tr("Shimeji enabled")
+        checked: rootPane.shimejiEnabled
+        onToggled: checked => {
+            rootPane.shimejiEnabled = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    SwitchRow {
+        label: I18n.tr("Shimeji auto hide")
+        checked: rootPane.shimejiAutoHide
+        onToggled: checked => {
+            rootPane.shimejiAutoHide = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    ConnectedButtonGroup {
+        rootItem: root
+        rows: Math.ceil(rootPane.monitorNames.length / 3)
+
+        options: rootPane.monitorNames.map(e => ({
+            label: I18n.tr(e),
+            propertyName: `shimejiScreen${e}`,
+            onToggled: function (_) {
+                let addedBack = rootPane.shimejiExcludedScreens.includes(e);
+                if (addedBack) {
+                    const index = rootPane.shimejiExcludedScreens.indexOf(e);
+                    if (index !== -1) {
+                        rootPane.shimejiExcludedScreens.splice(index, 1);
+                    }
+                } else {
+                    if (!rootPane.shimejiExcludedScreens.includes(e)) {
+                        rootPane.shimejiExcludedScreens.push(e);
+                    }
+                }
+                rootPane.saveConfig();
+            },
+            state: !Strings.testRegexList(rootPane.shimejiExcludedScreens, e)
+        }))
+    }
+
+    SliderInput {
+        Layout.fillWidth: true
+
+        label: I18n.tr("Shimeji count")
+        value: rootPane.shimejiCount
+        from: 1
+        to: 50
+        suffix: ""
+        validator: IntValidator {
+            bottom: 1
+            top: 50
+        }
+        formatValueFunction: val => Math.round(val).toString()
+        parseValueFunction: text => parseInt(text)
+
+        onValueModified: newValue => {
+            rootPane.shimejiCount = newValue;
+            rootPane.saveConfig();
+        }
+    }
+
     StyledText {
         Layout.topMargin: Tokens.spacing.normal
         text: I18n.tr("Desktop Clock")
@@ -106,7 +227,6 @@ CollapsibleSection {
                 }
             }
 
-            // The signal from SplitButtonRow
             onSelected: item => posContainer.updateClockPos(item.val, posContainer.currentH)
         }
 
@@ -346,6 +466,329 @@ CollapsibleSection {
             onValueModified: newValue => {
                 rootPane.visualiserSpacing = newValue;
                 rootPane.saveConfig();
+            }
+        }
+    }
+
+    StyledText {
+        Layout.topMargin: Tokens.spacing.normal
+        text: I18n.tr("Desktop Lyrics")
+        font.pointSize: Tokens.font.size.larger
+        font.weight: 500
+    }
+
+    SwitchRow {
+        label: I18n.tr("Desktop Lyrics enabled")
+        checked: rootPane.desktopLyricsEnabled
+        onToggled: checked => {
+            rootPane.desktopLyricsEnabled = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    SwitchRow {
+        label: I18n.tr("Auto-hide")
+        checked: rootPane.desktopLyricsAutoHide
+        enabled: rootPane.desktopLyricsEnabled
+        onToggled: checked => {
+            rootPane.desktopLyricsAutoHide = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    SectionContainer {
+        id: lyricsPosContainer
+
+        readonly property var pos: (rootPane.desktopLyricsPosition || "bottom-center").split('-')
+        readonly property string currentV: pos[0]
+        readonly property string currentH: pos[1]
+
+        function updateLyricsPos(v, h) {
+            rootPane.desktopLyricsPosition = v + "-" + h;
+            rootPane.saveConfig();
+        }
+
+        contentSpacing: Tokens.spacing.small
+        z: 1
+
+        StyledText {
+            text: I18n.tr("Positioning")
+            font.pointSize: Tokens.font.size.larger
+            font.weight: 500
+        }
+
+        SplitButtonRow {
+            label: I18n.tr("Vertical Position")
+            enabled: rootPane.desktopLyricsEnabled
+
+            menuItems: [
+                MenuItem {
+                    property string val: "top"
+
+                    text: I18n.tr("Top")
+                    icon: "vertical_align_top"
+                },
+                MenuItem {
+                    property string val: "middle"
+
+                    text: I18n.tr("Middle")
+                    icon: "vertical_align_center"
+                },
+                MenuItem {
+                    property string val: "bottom"
+
+                    text: I18n.tr("Bottom")
+                    icon: "vertical_align_bottom"
+                }
+            ]
+
+            Component.onCompleted: {
+                for (let i = 0; i < menuItems.length; i++) {
+                    if (menuItems[i].val === lyricsPosContainer.currentV)
+                        active = menuItems[i];
+                }
+            }
+
+            onSelected: item => lyricsPosContainer.updateLyricsPos(item.val, lyricsPosContainer.currentH)
+        }
+
+        SplitButtonRow {
+            label: I18n.tr("Horizontal Position")
+            enabled: rootPane.desktopLyricsEnabled
+            expandedZ: 99
+
+            menuItems: [
+                MenuItem {
+                    property string val: "left"
+
+                    text: I18n.tr("Left")
+                    icon: "align_horizontal_left"
+                },
+                MenuItem {
+                    property string val: "center"
+
+                    text: I18n.tr("Center")
+                    icon: "align_horizontal_center"
+                },
+                MenuItem {
+                    property string val: "right"
+
+                    text: I18n.tr("Right")
+                    icon: "align_horizontal_right"
+                }
+            ]
+
+            Component.onCompleted: {
+                for (let i = 0; i < menuItems.length; i++) {
+                    if (menuItems[i].val === lyricsPosContainer.currentH)
+                        active = menuItems[i];
+                }
+            }
+
+            onSelected: item => lyricsPosContainer.updateLyricsPos(lyricsPosContainer.currentV, item.val)
+        }
+    }
+
+    SectionContainer {
+        contentSpacing: Tokens.spacing.small
+
+        StyledText {
+            text: I18n.tr("Text Alignment")
+            font.pointSize: Tokens.font.size.larger
+            font.weight: 500
+        }
+
+        SplitButtonRow {
+            label: I18n.tr("Alignment")
+            enabled: rootPane.desktopLyricsEnabled
+
+            menuItems: [
+                MenuItem {
+                    property int val: 0
+
+                    text: I18n.tr("Left")
+                    icon: "format_align_left"
+                },
+                MenuItem {
+                    property int val: 1
+
+                    text: I18n.tr("Center")
+                    icon: "format_align_center"
+                },
+                MenuItem {
+                    property int val: 2
+
+                    text: I18n.tr("Right")
+                    icon: "format_align_right"
+                }
+            ]
+
+            Component.onCompleted: {
+                for (let i = 0; i < menuItems.length; i++) {
+                    if (menuItems[i].val === rootPane.desktopLyricsAlignment)
+                        active = menuItems[i];
+                }
+            }
+
+            onSelected: item => {
+                rootPane.desktopLyricsAlignment = item.val;
+                rootPane.saveConfig();
+            }
+        }
+    }
+
+    SectionContainer {
+        contentSpacing: Tokens.spacing.normal
+
+        SliderInput {
+            Layout.fillWidth: true
+
+            label: I18n.tr("Scale")
+            value: rootPane.desktopLyricsScale * 100
+            from: 50
+            to: 200
+            suffix: "%"
+            validator: IntValidator {
+                bottom: 50
+                top: 200
+            }
+            formatValueFunction: val => Math.round(val).toString()
+            parseValueFunction: text => parseInt(text)
+
+            onValueModified: newValue => {
+                rootPane.desktopLyricsScale = newValue / 100;
+                rootPane.saveConfig();
+            }
+        }
+    }
+
+    SwitchRow {
+        label: I18n.tr("Invert colors")
+        checked: rootPane.desktopLyricsInvertColors
+        onToggled: checked => {
+            rootPane.desktopLyricsInvertColors = checked;
+            rootPane.saveConfig();
+        }
+    }
+
+    SectionContainer {
+        contentSpacing: Tokens.spacing.small
+
+        StyledText {
+            text: I18n.tr("Shadow")
+            font.pointSize: Tokens.font.size.larger
+            font.weight: 500
+        }
+
+        SwitchRow {
+            label: I18n.tr("Enabled")
+            checked: rootPane.desktopLyricsShadowEnabled
+            onToggled: checked => {
+                rootPane.desktopLyricsShadowEnabled = checked;
+                rootPane.saveConfig();
+            }
+        }
+
+        SectionContainer {
+            contentSpacing: Tokens.spacing.normal
+
+            SliderInput {
+                Layout.fillWidth: true
+
+                label: I18n.tr("Opacity")
+                value: rootPane.desktopLyricsShadowOpacity * 100
+                from: 0
+                to: 100
+                suffix: "%"
+                validator: IntValidator {
+                    bottom: 0
+                    top: 100
+                }
+                formatValueFunction: val => Math.round(val).toString()
+                parseValueFunction: text => parseInt(text)
+
+                onValueModified: newValue => {
+                    rootPane.desktopLyricsShadowOpacity = newValue / 100;
+                    rootPane.saveConfig();
+                }
+            }
+        }
+
+        SectionContainer {
+            contentSpacing: Tokens.spacing.normal
+
+            SliderInput {
+                Layout.fillWidth: true
+
+                label: I18n.tr("Blur")
+                value: rootPane.desktopLyricsShadowBlur * 100
+                from: 0
+                to: 100
+                suffix: "%"
+                validator: IntValidator {
+                    bottom: 0
+                    top: 100
+                }
+                formatValueFunction: val => Math.round(val).toString()
+                parseValueFunction: text => parseInt(text)
+
+                onValueModified: newValue => {
+                    rootPane.desktopLyricsShadowBlur = newValue / 100;
+                    rootPane.saveConfig();
+                }
+            }
+        }
+    }
+
+    SectionContainer {
+        contentSpacing: Tokens.spacing.small
+
+        StyledText {
+            text: I18n.tr("Background")
+            font.pointSize: Tokens.font.size.larger
+            font.weight: 500
+        }
+
+        SwitchRow {
+            label: I18n.tr("Enabled")
+            checked: rootPane.desktopLyricsBackgroundEnabled
+            onToggled: checked => {
+                rootPane.desktopLyricsBackgroundEnabled = checked;
+                rootPane.saveConfig();
+            }
+        }
+
+        SwitchRow {
+            label: I18n.tr("Blur enabled")
+            checked: rootPane.desktopLyricsBackgroundBlur
+            onToggled: checked => {
+                rootPane.desktopLyricsBackgroundBlur = checked;
+                rootPane.saveConfig();
+            }
+        }
+
+        SectionContainer {
+            contentSpacing: Tokens.spacing.normal
+
+            SliderInput {
+                Layout.fillWidth: true
+
+                label: I18n.tr("Opacity")
+                value: rootPane.desktopLyricsBackgroundOpacity * 100
+                from: 0
+                to: 100
+                suffix: "%"
+                validator: IntValidator {
+                    bottom: 0
+                    top: 100
+                }
+                formatValueFunction: val => Math.round(val).toString()
+                parseValueFunction: text => parseInt(text)
+
+                onValueModified: newValue => {
+                    rootPane.desktopLyricsBackgroundOpacity = newValue / 100;
+                    rootPane.saveConfig();
+                }
             }
         }
     }

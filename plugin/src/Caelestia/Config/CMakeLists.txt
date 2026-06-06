@@ -10,6 +10,7 @@ qml_module(caelestia-config
         tokensattached.cpp
         anim.cpp
         monitorconfigmanager.cpp
+        audioconfig.hpp
         backgroundconfig.hpp
         barconfig.hpp
         borderconfig.hpp
@@ -22,6 +23,7 @@ qml_module(caelestia-config
         osdconfig.hpp
         serviceconfig.hpp
         sessionconfig.hpp
+        shimejiconfig.hpp
         sidebarconfig.hpp
         userpaths.hpp
         utilitiesconfig.hpp

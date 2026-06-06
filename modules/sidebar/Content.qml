@@ -9,6 +9,8 @@ Item {
 
     required property Props props
     required property DrawerVisibilities visibilities
+    required property var popouts
+    required property var popoutsWrapper
 
     readonly property color sidebarColour: {
         var c = Config.sidebar.colour;
@@ -17,16 +19,20 @@ Item {
         // Use custom colour only if alpha > 0 (not the default transparent/invalid colour)
         return c.a > 0 ? c : Colours.tPalette.m3surfaceContainerLow;
     }
+    readonly property bool isBarHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
+    readonly property bool showPopoutSeparator: isBarHorizontal && sidebar.visible && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext" && popouts.currentName !== "activewindow"
 
-    ColumnLayout {
+    GridLayout {
         id: layout
 
         anchors.fill: parent
-        spacing: Tokens.spacing.normal
+        columns: 1
+        rowSpacing: Tokens.spacing.normal
 
         StyledRect {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.row: isBarHorizontal ? 1 : 0
 
             radius: Tokens.rounding.normal
             color: root.sidebarColour
@@ -37,8 +43,23 @@ Item {
             }
         }
 
+        // Utilities Separator
         StyledRect {
-            Layout.topMargin: Tokens.padding.large - layout.spacing
+            Layout.row: Config.bar.position === "bottom" ? 0 : (Config.bar.position === "top" ? 2 : 1)
+            Layout.topMargin: Config.bar.position === "bottom" ? 0 : (Tokens.padding.large - layout.rowSpacing)
+            Layout.bottomMargin: Config.bar.position === "bottom" ? (Tokens.padding.large - layout.rowSpacing) : 0
+            Layout.fillWidth: true
+            implicitHeight: 1
+
+            color: Colours.tPalette.m3outlineVariant
+        }
+
+        // Popout Separator
+        StyledRect {
+            visible: showPopoutSeparator
+            Layout.row: Config.bar.position === "bottom" ? 2 : 0
+            Layout.topMargin: Config.bar.position === "top" ? 6 : (Tokens.padding.large - layout.rowSpacing)
+            Layout.bottomMargin: Config.bar.position === "top" ? (Tokens.padding.large - layout.rowSpacing) : 6
             Layout.fillWidth: true
             implicitHeight: 1
 

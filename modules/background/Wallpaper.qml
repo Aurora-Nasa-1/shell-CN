@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtMultimedia
 import Caelestia.Config
 import qs.components
 import qs.components.filedialog
@@ -12,22 +13,35 @@ Item {
     id: root
 
     property string source: Wallpapers.current
-    property Image current: one
+    property Item current: one
     property bool completed
+    property var screen: null
+
+    function isVideo(path: string): bool {
+        if (!path)
+            return false;
+        const ext = path.split('.').pop().toLowerCase();
+        return ["mp4", "webm", "mkv", "avi", "mov", "wmv", "flv"].includes(ext);
+    }
 
     onSourceChanged: {
         if (!source)
             current = null;
-        else if (current === one)
+        else if (current !== one) {
+            two.screen = screen;
             two.update();
-        else
+        }
+        else {
+            one.screen = screen;
             one.update();
+        }
     }
 
     Component.onCompleted: {
         if (source)
             Qt.callLater(() => {
-                one.update();
+                one.screen = screen;
+                Qt.callLater(() => one.update());
                 completed = true;
             });
     }
@@ -73,8 +87,8 @@ Item {
                             id: dialog
 
                             title: I18n.tr("Select a wallpaper")
-                            filterLabel: I18n.tr("Image files")
-                            filters: Images.validImageExtensions
+                            filterLabel: I18n.tr("Media files")
+                            filters: Images.validImageExtensions.concat(Images.validVideoExtensions)
                             onAccepted: path => Wallpapers.setWallpaper(path)
                         }
 
@@ -101,20 +115,53 @@ Item {
 
     Img {
         id: one
+
+        property var screen: null
     }
 
     Img {
         id: two
+
+        property var screen: null
     }
 
-    component Img: CachingImage {
+    component Img: Item {
         id: img
 
+        property string imagePath: ""
+        property string videoPath: ""
+        property bool isVideoImage: root.isVideo(root.source)
+        property var screen: null
+
+        onIsVideoImageChanged: updateContent()
+        
         function update(): void {
-            if (path === root.source)
-                root.current = this;
-            else
-                path = root.source;
+            this.screen = root.screen;
+            if (isVideoImage) {
+                if (videoPath === root.source)
+                    root.current = this;
+                else {
+                    imagePath = "";
+                    videoPath = root.source;
+                }
+            } else {
+                if (imagePath === root.source)
+                    root.current = this;
+                else {
+                    videoPath = "";
+                    imagePath = root.source;
+                }
+            }
+        }
+
+        function updateContent(): void {
+            if (isVideoImage) {
+                imagePath = "";
+                videoPath = root.source;
+            } else {
+                videoPath = "";
+                imagePath = root.source;
+            }
         }
 
         anchors.fill: parent
@@ -122,9 +169,31 @@ Item {
         opacity: 0
         scale: Wallpapers.showPreview ? 1 : 0.8
 
-        onStatusChanged: {
-            if (status === Image.Ready)
-                root.current = this;
+        CachingAnimatedImage {
+            anchors.fill: parent
+            path: img.imagePath
+            visible: !img.isVideoImage && img.imagePath !== ""
+            asynchronous: true
+            fillMode: AnimatedImage.PreserveAspectCrop
+            source: img.imagePath || ""
+            playing: true
+
+            onStatusChanged: {
+                if (status === Image.Ready && !img.isVideoImage)
+                    root.current = img;
+            }
+        }
+
+        CachingVideo {
+            anchors.fill: parent
+            path: img.videoPath
+            screen: root.screen
+            visible: img.isVideoImage && img.videoPath !== ""
+
+            onPlayingChanged: {
+                if (playing && img.isVideoImage)
+                    root.current = img;
+            }
         }
 
         states: State {

@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Services.UPower
 import Caelestia
 import Caelestia.Config
+import Caelestia.Services
 import qs.utils
 
 Scope {
@@ -16,6 +17,7 @@ Scope {
                 if (GlobalConfig.utilities.toasts.chargingChanged)
                     Toaster.toast(I18n.tr("Charger unplugged"), I18n.tr("Battery is discharging"), "power_off");
             } else {
+                Audio.playChargingStarted();
                 if (GlobalConfig.utilities.toasts.chargingChanged)
                     Toaster.toast(I18n.tr("Charger plugged in"), I18n.tr("Battery is charging"), "power");
                 for (const level of root.warnLevels)
@@ -35,6 +37,7 @@ Scope {
             for (const level of root.warnLevels) {
                 if (p <= level.level && !level.warned) {
                     level.warned = true;
+                    Audio.playLowBattery();
                     Toaster.toast(level.title ?? I18n.tr("Battery warning"), level.message ?? I18n.tr("Battery level is low"), level.icon ?? "battery_android_alert", level.critical ? Toast.Error : Toast.Warning);
                 }
             }
