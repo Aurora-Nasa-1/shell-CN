@@ -58,20 +58,24 @@ Item {
                     asynchronous: true
                 }
 
-                StyledText {
+                TextEdit {
                     id: textContent
                     
                     Layout.fillWidth: true
                     Layout.maximumWidth: root.width * 0.85 - Tokens.padding.normal * 2
                     
                     text: root.text
-                    textFormat: Text.MarkdownText
-                    wrapMode: Text.Wrap
+                    readOnly: true
+                    selectByMouse: true
+                    selectByKeyboard: true
+                    wrapMode: TextEdit.Wrap
                     color: root.isUser ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface
-                    onLinkActivated: (link) => Qt.openUrlExternally(link)
+                    font.family: Tokens.font.family.sans
                     font.pointSize: Tokens.font.size.normal
+                    selectionColor: root.isUser ? Colours.palette.m3onPrimary : Colours.palette.m3primary
+                    selectedTextColor: root.isUser ? Colours.palette.m3primary : Colours.palette.m3onPrimary
                     
-                    // Simple interaction: right click or long press to copy? Let's add a copy button for AI
+                    onLinkActivated: (link) => Qt.openUrlExternally(link)
                 }
 
                 // Action row
@@ -95,14 +99,11 @@ Item {
                         icon: "content_copy"
                         type: 2
                         onClicked: {
-                            // Basic clipboard copy if accessible
-                            // In QtQuick we can use TextInput for quick copy hack if clipboard isn't exposed
-                            var copyHelper = Qt.createQmlObject('import QtQuick; TextInput { text: "' + root.text.replace(/"/g, '\\"').replace(/\n/g, '\\n') + '"; visible: false }', root, "copyHelper");
-                            copyHelper.selectAll();
-                            copyHelper.copy();
-                            copyHelper.destroy();
+                            // Use textContent's built-in selection and copy
+                            textContent.selectAll();
+                            textContent.copy();
+                            textContent.deselect();
                             
-                            // Let's assume we have a toast service
                             try {
                                 ConfigToasts.show("Copied to clipboard");
                             } catch(e) {}
