@@ -74,7 +74,7 @@ Item {
         detachedMode = "";
     }
 
-    implicitWidth: (bar.isHorizontal && sidebar && sidebar.visible) ? sidebar.width : nonAnimWidth
+    implicitWidth: (bar.isHorizontal && sidebar && sidebar.visible && currentName !== "dockhover" && currentName !== "dockcontext") ? sidebar.width : nonAnimWidth
     implicitHeight: nonAnimHeight
 
     focus: hasCurrent

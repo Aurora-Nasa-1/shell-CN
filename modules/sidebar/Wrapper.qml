@@ -21,6 +21,9 @@ Item {
     implicitWidth: {
         const defaultWidth = Tokens.sizes.sidebar.width;
         if (popouts && popouts.hasCurrent && (Config.bar.position === "bottom" || Config.bar.position === "top")) {
+            // Don't push/merge with dock pop-outs
+            if (popouts.currentName === "dockhover" || popouts.currentName === "dockcontext")
+                return defaultWidth;
             const naturalWidth = Math.max(defaultWidth, popouts.popoutNaturalWidth);
             if (popoutsWrapper) {
                 const extendedWidth = parent.width - popoutsWrapper.normalX;
@@ -53,7 +56,7 @@ Item {
         anchors.margins: Tokens.padding.large
         anchors.topMargin: {
             if (Config.bar.position === "top") {
-                return (popouts && popouts.hasCurrent) ? 0 : Tokens.padding.large;
+                return (popouts && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext") ? 0 : Tokens.padding.large;
             }
             if (Config.bar.position === "bottom") {
                 return 0;
@@ -62,7 +65,7 @@ Item {
         }
         anchors.bottomMargin: {
             if (Config.bar.position === "bottom") {
-                return (popouts && popouts.hasCurrent) ? 0 : Tokens.padding.large;
+                return (popouts && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext") ? 0 : Tokens.padding.large;
             }
             if (Config.bar.position === "top") {
                 return Tokens.padding.large;

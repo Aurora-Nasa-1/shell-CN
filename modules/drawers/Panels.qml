@@ -81,8 +81,10 @@ Item {
         anchors.top: parent.top
         anchors.right: parent.right
 
-        anchors.topMargin: (Config.bar.position === "top" && popoutsWrapper.offsetScale < 1) ? (sidebar.visible ? popoutsWrapper.implicitHeight : (popoutsWrapper.implicitHeight - Tokens.padding.large * 2 + 10)) : 0
-        anchors.bottomMargin: (Config.bar.position === "bottom" && popoutsWrapper.offsetScale < 1) ? (sidebar.visible ? popoutsWrapper.implicitHeight : (popoutsWrapper.implicitHeight - Tokens.padding.large * 2 + 10)) : 0
+        readonly property bool isDockPopout: popoutsWrapper.content.hasCurrent && (popoutsWrapper.content.currentName === "dockhover" || popoutsWrapper.content.currentName === "dockcontext")
+
+        anchors.topMargin: (Config.bar.position === "top" && popoutsWrapper.offsetScale < 1 && !isDockPopout) ? (sidebar.visible ? popoutsWrapper.implicitHeight : (popoutsWrapper.implicitHeight - Tokens.padding.large * 2 + 10)) : 0
+        anchors.bottomMargin: (Config.bar.position === "bottom" && popoutsWrapper.offsetScale < 1 && !isDockPopout) ? (sidebar.visible ? popoutsWrapper.implicitHeight : (popoutsWrapper.implicitHeight - Tokens.padding.large * 2 + 10)) : 0
     }
 
     Item {
