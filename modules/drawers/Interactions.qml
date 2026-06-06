@@ -259,7 +259,7 @@ CustomMouseArea {
 // Show popouts on hover
         if (inBarArea(x, y)) {
             bar.checkPopout(isBarHorizontal ? x : y);
-        } else if (popouts.currentName === "dockcontext" || popouts.currentName === "dockhover") {
+        } else if (popouts.currentName === "dockcontext" || popouts.currentName === "dockhover" || popouts.currentName === "activewindow") {
             // Close dock popouts if cursor is outside bar area (moving up/left/right but not into popout area)
             if (!inLeftPanel(panels.popoutsWrapper, x, y)) {
                 popouts.hasCurrent = false;

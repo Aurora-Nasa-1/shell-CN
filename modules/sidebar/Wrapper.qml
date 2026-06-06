@@ -22,7 +22,7 @@ Item {
         const defaultWidth = Tokens.sizes.sidebar.width;
         if (root.visible && popouts && popouts.hasCurrent && (Config.bar.position === "bottom" || Config.bar.position === "top")) {
             // Don't push/merge with dock pop-outs
-            if (popouts.currentName === "dockhover" || popouts.currentName === "dockcontext")
+            if (popouts.currentName === "dockhover" || popouts.currentName === "dockcontext" || popouts.currentName === "activewindow")
                 return defaultWidth;
             const naturalWidth = Math.max(defaultWidth, popouts.popoutNaturalWidth);
             if (popoutsWrapper) {
@@ -56,7 +56,7 @@ Item {
         anchors.margins: Tokens.padding.large
         anchors.topMargin: {
             if (Config.bar.position === "top") {
-                return (root.visible && popouts && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext") ? 0 : Tokens.padding.large;
+                return (root.visible && popouts && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext" && popouts.currentName !== "activewindow") ? 0 : Tokens.padding.large;
             }
             if (Config.bar.position === "bottom") {
                 return 0;
@@ -65,7 +65,7 @@ Item {
         }
         anchors.bottomMargin: {
             if (Config.bar.position === "bottom") {
-                return (root.visible && popouts && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext") ? 0 : Tokens.padding.large;
+                return (root.visible && popouts && popouts.hasCurrent && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext" && popouts.currentName !== "activewindow") ? 0 : Tokens.padding.large;
             }
             if (Config.bar.position === "top") {
                 return Tokens.padding.large;

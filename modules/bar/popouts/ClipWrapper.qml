@@ -24,7 +24,7 @@ Item {
     clip: true
 
     implicitWidth: {
-        if (isHorizontal && sidebar && sidebar.visible && content.currentName !== "dockhover" && content.currentName !== "dockcontext")
+        if (isHorizontal && sidebar && sidebar.visible && content.currentName !== "dockhover" && content.currentName !== "dockcontext" && content.currentName !== "activewindow")
             return sidebar.width;
         return isHorizontal ? content.implicitWidth : content.implicitWidth * (1 - offsetScale);
     }
@@ -47,7 +47,7 @@ Item {
         if (content.isDetached)
             return (parent.width - content.nonAnimWidth) / 2;
         if (isHorizontal) {
-            if (sidebar && sidebar.visible && content.currentName !== "dockhover" && content.currentName !== "dockcontext")
+            if (sidebar && sidebar.visible && content.currentName !== "dockhover" && content.currentName !== "dockcontext" && content.currentName !== "activewindow")
                 return parent.width - implicitWidth;
             return normalX;
         }
@@ -78,7 +78,7 @@ Item {
     }
 
     Behavior on x {
-        enabled: (content.isDetached || isHorizontal) && !(isHorizontal && sidebar && sidebar.visible && content.currentName !== "dockhover" && content.currentName !== "dockcontext")
+        enabled: (content.isDetached || isHorizontal) && !(isHorizontal && sidebar && sidebar.visible && content.currentName !== "dockhover" && content.currentName !== "dockcontext" && content.currentName !== "activewindow")
 
         Anim {
             duration: content.animLength

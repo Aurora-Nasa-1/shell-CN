@@ -47,7 +47,7 @@ GridLayout {
         }
 
         // Don't close dock popouts
-        if (popouts.hasCurrent && (popouts.currentName === "dockcontext" || popouts.currentName === "dockhover")) return;
+        if (popouts.hasCurrent && (popouts.currentName === "dockcontext" || popouts.currentName === "dockhover" || popouts.currentName === "activewindow")) return;
         
         const ch = childAt(isHorizontal ? pos : width / 2, isHorizontal ? height / 2 : pos) as WrappedLoader;
 
@@ -107,7 +107,7 @@ GridLayout {
             }
         } else if (id === "dock") {
             // Don't close dock popouts - only handleHover
-            if (popouts.hasCurrent && (popouts.currentName === "dockcontext" || popouts.currentName === "dockhover")) {
+            if (popouts.hasCurrent && (popouts.currentName === "dockcontext" || popouts.currentName === "dockhover" || popouts.currentName === "activewindow")) {
                 return;
             }
             const item = ch.item as Item;

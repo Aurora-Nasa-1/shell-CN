@@ -13,7 +13,7 @@ Item {
     required property PopoutState popouts
     required property var sidebar
     required property var utilities
-    readonly property bool isSidebarOpen: sidebar && sidebar.visible && (Config.bar.position === "bottom" || Config.bar.position === "top") && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext"
+    readonly property bool isSidebarOpen: sidebar && sidebar.visible && (Config.bar.position === "bottom" || Config.bar.position === "top") && popouts.currentName !== "dockhover" && popouts.currentName !== "dockcontext" && popouts.currentName !== "activewindow"
 
     readonly property Popout currentPopout: content.children.find(c => c.shouldBeActive) ?? null
     readonly property Item current: currentPopout?.item ?? null
