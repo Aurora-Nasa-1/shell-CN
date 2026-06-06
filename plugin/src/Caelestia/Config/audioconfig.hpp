@@ -16,6 +16,10 @@ class AudioSounds : public ConfigObject {
     CONFIG_GLOBAL_PROPERTY(bool, unlock, true)
     CONFIG_GLOBAL_PROPERTY(bool, lowBattery, true)
     CONFIG_GLOBAL_PROPERTY(bool, screenRecord, true)
+    CONFIG_GLOBAL_PROPERTY(QString, notificationSound, QStringLiteral("Iapetus.wav"))
+    CONFIG_GLOBAL_PROPERTY(QStringList, disabledNotifApps)
+    CONFIG_GLOBAL_PROPERTY(qreal, sfxVolume, 1.0)
+    CONFIG_GLOBAL_PROPERTY(qreal, notificationVolume, 1.0)
 
 public:
     explicit AudioSounds(QObject* parent = nullptr)
