@@ -31,13 +31,13 @@ Region {
     R {
         panel: root.panels.dashboard
         y: 0
-        height: panel.height * (1 - root.panels.dashboard.offsetScale) + root.borderThickness
+        height: root.panels.dashboard.offsetScale < 1 ? panel.height * (1 - root.panels.dashboard.offsetScale) + root.borderThickness : 0
     }
 
     R {
         panel: root.panels.launcher
         y: root.win.height - height
-        height: panel.height * (1 - root.panels.launcher.offsetScale) + root.borderThickness
+        height: root.panels.launcher.offsetScale < 1 ? panel.height * (1 - root.panels.launcher.offsetScale) + root.borderThickness : 0
     }
 
     R {
@@ -45,7 +45,7 @@ Region {
 
         panel: root.panels.sessionWrapper
         x: root.Config.bar.position === "right" ? 0 : root.win.width - sessionRegion.width
-        width: panel.width * (1 - root.panels.session.offsetScale) + root.borderThickness + sidebarRegion.width
+        width: panel.width * (1 - root.panels.session.offsetScale) + (root.panels.session.offsetScale < 1 ? root.borderThickness : 0) + sidebarRegion.width
     }
 
     R {
@@ -53,7 +53,7 @@ Region {
 
         panel: root.panels.sidebar
         x: root.Config.bar.position === "right" ? 0 : root.win.width - sidebarRegion.width
-        width: panel.width * (1 - root.panels.sidebar.offsetScale) + root.borderThickness
+        width: panel.width * (1 - root.panels.sidebar.offsetScale) + (root.panels.sidebar.offsetScale < 1 ? root.borderThickness : 0)
     }
 
     R {
@@ -65,25 +65,25 @@ Region {
         id: osdRegion
         panel: root.panels.osdWrapper
         x: root.Config.bar.position === "right" ? 0 : root.win.width - osdRegion.width
-        width: panel.width * (1 - root.panels.osd.offsetScale) + root.borderThickness + sessionRegion.width
+        width: panel.width * (1 - root.panels.osd.offsetScale) + (root.panels.osd.offsetScale < 1 ? root.borderThickness : 0) + sessionRegion.width
     }
 
     R {
         panel: root.panels.notifications
         y: Config.bar.position === "bottom" ? (panel.y + root.panels.topMargin) : 0
-        height: Config.bar.position === "bottom" ? (root.win.height - y) : (panel.height + panel.y + root.panels.topMargin)
+        height: Config.bar.position === "bottom" ? (root.win.height - y) : (panel.height > 0 ? panel.height + panel.y + root.panels.topMargin : 0)
     }
 
     R {
         panel: root.panels.utilities
         y: root.Config.bar.position === "bottom" ? 0 : root.win.height - height
-        height: panel.height * (1 - root.panels.utilities.offsetScale) + root.borderThickness
+        height: root.panels.utilities.offsetScale < 1 ? panel.height * (1 - root.panels.utilities.offsetScale) + root.borderThickness : 0
     }
 
     R {
         panel: root.panels.lyricsHoverArea
         y: 0
-        height: panel.height + root.borderThickness
+        height: root.panels.lyricsHoverArea.forceHide ? 0 : (panel.height > 0 ? panel.height + root.borderThickness : 0)
     }
 
     R {

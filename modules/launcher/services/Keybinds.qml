@@ -16,7 +16,7 @@ QtObject {
 
     property Process reader: Process {
         running: false
-        command: ["sh", "-c", "grep -rhE '^bind\\s*=' " + hyprConfPath.substring(0, hyprConfPath.lastIndexOf('/')) + "/ 2>/dev/null; grep -rhE '^\\$[a-zA-Z_][a-zA-Z0-9_]*\\s*=' " + hyprConfPath.substring(0, hyprConfPath.lastIndexOf('/')) + "/ 2>/dev/null | sort"]
+        command: ["sh", "-c", "grep -rhE '^bind[aeilmnr]?\\s*=' " + hyprConfPath.substring(0, hyprConfPath.lastIndexOf('/')) + "/ 2>/dev/null; grep -rhE '^\\$[a-zA-Z_][a-zA-Z0-9_]*\\s*=' " + hyprConfPath.substring(0, hyprConfPath.lastIndexOf('/')) + "/ 2>/dev/null | sort"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const lines = text.split('\n').map(l => l.trim()).filter(l => l);

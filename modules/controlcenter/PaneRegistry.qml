@@ -66,6 +66,7 @@ QtObject {
         QtObject {
             readonly property string id: "wallhaven"
             readonly property string label: "wallhaven"
+            readonly property string displayLabel: I18n.tr("Wallhaven")
             readonly property string icon: "image"
             readonly property string component: "wallhaven/WallhavenPane.qml"
         }

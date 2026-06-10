@@ -4,6 +4,8 @@ import ".."
 import "../components"
 import QtQuick
 import QtQuick.Layouts
+import QtQml
+import QtQml.Models
 import Quickshell.Widgets
 import Caelestia.Config
 import qs.components
@@ -28,6 +30,7 @@ Item {
         leftContent: Component {
             StyledFlickable {
                 id: leftAudioFlickable
+                anchors.fill: parent
 
                 flickableDirection: Flickable.VerticalFlick
                 contentHeight: leftContent.height
@@ -218,6 +221,7 @@ Item {
         rightContent: Component {
             StyledFlickable {
                 id: rightAudioFlickable
+                anchors.fill: parent
 
                 flickableDirection: Flickable.VerticalFlick
                 contentHeight: contentLayout.height
@@ -279,7 +283,7 @@ Item {
                                         text = Math.round(Audio.volume * 100).toString();
                                     }
 
-                                    onTextEdited: text => {
+                                    onTextEdited: function(text) {
                                         if (hasFocus) {
                                             const val = parseInt(text);
                                             if (!isNaN(val) && val >= 0 && val <= 100) {
@@ -397,7 +401,7 @@ Item {
                                         text = Math.round(Audio.sourceVolume * 100).toString();
                                     }
 
-                                    onTextEdited: text => {
+                                    onTextEdited: function(text) {
                                         if (hasFocus) {
                                             const val = parseInt(text);
                                             if (!isNaN(val) && val >= 0 && val <= 100) {
@@ -531,7 +535,7 @@ Item {
                                                 text = Math.round(Audio.getStreamVolume(modelData) * 100).toString();
                                             }
 
-                                            onTextEdited: text => {
+                                            onTextEdited: function(text) {
                                                 if (hasFocus) {
                                                     const val = parseInt(text);
                                                     if (!isNaN(val) && val >= 0 && val <= 100) {
@@ -641,7 +645,7 @@ Item {
                             SwitchRow {
                                 label: I18n.tr("Enable sound effects")
                                 checked: GlobalConfig.audio.sounds.enabled
-                                onToggled: checked => {
+                                onToggled: function(checked) {
                                     GlobalConfig.audio.sounds.enabled = checked;
                                     GlobalConfig.save();
                                 }
@@ -685,7 +689,7 @@ Item {
                                 label: I18n.tr("Camera click")
                                 checked: GlobalConfig.audio.sounds.cameraClick
                                 enabled: GlobalConfig.audio.sounds.enabled
-                                onToggled: checked => {
+                                onToggled: function(checked) {
                                     GlobalConfig.audio.sounds.cameraClick = checked;
                                     GlobalConfig.save();
                                 }
@@ -695,7 +699,7 @@ Item {
                                 label: I18n.tr("Charging started")
                                 checked: GlobalConfig.audio.sounds.chargingStarted
                                 enabled: GlobalConfig.audio.sounds.enabled
-                                onToggled: checked => {
+                                onToggled: function(checked) {
                                     GlobalConfig.audio.sounds.chargingStarted = checked;
                                     GlobalConfig.save();
                                 }
@@ -705,7 +709,7 @@ Item {
                                 label: I18n.tr("Effect tick")
                                 checked: GlobalConfig.audio.sounds.effectTick
                                 enabled: GlobalConfig.audio.sounds.enabled
-                                onToggled: checked => {
+                                onToggled: function(checked) {
                                     GlobalConfig.audio.sounds.effectTick = checked;
                                     GlobalConfig.save();
                                 }
@@ -715,7 +719,7 @@ Item {
                                 label: I18n.tr("Lock")
                                 checked: GlobalConfig.audio.sounds.lock
                                 enabled: GlobalConfig.audio.sounds.enabled
-                                onToggled: checked => {
+                                onToggled: function(checked) {
                                     GlobalConfig.audio.sounds.lock = checked;
                                     GlobalConfig.save();
                                     if (checked) Audio.playLock();
@@ -726,7 +730,7 @@ Item {
                                 label: I18n.tr("Unlock screen")
                                 checked: GlobalConfig.audio.sounds.unlock
                                 enabled: GlobalConfig.audio.sounds.enabled
-                                onToggled: checked => {
+                                onToggled: function(checked) {
                                     GlobalConfig.audio.sounds.unlock = checked;
                                     GlobalConfig.save();
                                 }
@@ -736,7 +740,7 @@ Item {
                                 label: I18n.tr("Low battery")
                                 checked: GlobalConfig.audio.sounds.lowBattery
                                 enabled: GlobalConfig.audio.sounds.enabled
-                                onToggled: checked => {
+                                onToggled: function(checked) {
                                     GlobalConfig.audio.sounds.lowBattery = checked;
                                     GlobalConfig.save();
                                 }
@@ -746,7 +750,7 @@ Item {
                                 label: I18n.tr("Screen recording")
                                 checked: GlobalConfig.audio.sounds.screenRecord
                                 enabled: GlobalConfig.audio.sounds.enabled
-                                onToggled: checked => {
+                                onToggled: function(checked) {
                                     GlobalConfig.audio.sounds.screenRecord = checked;
                                     GlobalConfig.save();
                                 }
@@ -772,19 +776,19 @@ Item {
                                         text: fileName
                                         trailingIcon: GlobalConfig.audio.sounds.notificationSound === fileName ? "check" : ""
                                     }
-                                    onObjectAdded: (index, object) => {
+                                    onObjectAdded: function(index, object) {
                                         const newItems = Array.from(notifSoundRow.menuItems);
                                         newItems.splice(index, 0, object);
                                         notifSoundRow.menuItems = newItems;
                                     }
-                                    onObjectRemoved: (index, object) => {
+                                    onObjectRemoved: function(index, object) {
                                         const newItems = Array.from(notifSoundRow.menuItems);
                                         newItems.splice(index, 1);
                                         notifSoundRow.menuItems = newItems;
                                     }
                                 }
 
-                                onSelected: item => {
+                                onSelected: function(item) {
                                     GlobalConfig.audio.sounds.notificationSound = item.text;
                                     GlobalConfig.save();
                                     Audio.playNotification();

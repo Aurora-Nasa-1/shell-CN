@@ -175,7 +175,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
 
-        forceRetract: dashboard.offsetScale < 1 || lyricsHoverArea.containsMouse
+        forceRetract: dashboard.offsetScale < 1 || lyricsHoverArea.forceHide
     }
 
     MouseArea {
@@ -185,7 +185,21 @@ Item {
         width: lyrics.implicitWidth
         height: lyrics.implicitHeight
         hoverEnabled: true
-        // Doesn't move when lyrics Wrapper moves up, so hover remains stable!
+
+        property bool forceHide: false
+
+        Timer {
+            id: lyricsHideTimer
+            interval: 2000
+            onTriggered: lyricsHoverArea.forceHide = false
+        }
+
+        onContainsMouseChanged: {
+            if (containsMouse) {
+                forceHide = true;
+                lyricsHideTimer.restart();
+            }
+        }
     }
 
     BarPopouts.ClipWrapper {

@@ -9,6 +9,7 @@ Item {
     id: root
 
     property string text: ""
+    property string placeholderText: ""
     property var validator: null
     property bool readOnly: false
     property int horizontalAlignment: TextInput.AlignHCenter
@@ -19,6 +20,8 @@ Item {
     signal textEdited(string text)
 
     signal editingFinished
+    
+    signal accepted()
 
     implicitWidth: 70
     implicitHeight: inputField.implicitHeight + Tokens.padding.small * 2
@@ -56,6 +59,7 @@ Item {
             anchors.centerIn: parent
             width: parent.width - Tokens.padding.normal
             horizontalAlignment: root.horizontalAlignment
+            placeholderText: root.placeholderText
             validator: root.validator
             readOnly: root.readOnly
             enabled: root.enabled
@@ -67,6 +71,10 @@ Item {
 
             onEditingFinished: {
                 root.editingFinished();
+            }
+            
+            onAccepted: {
+                root.accepted();
             }
 
             Binding {
